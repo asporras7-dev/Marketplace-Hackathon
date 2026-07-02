@@ -6,6 +6,8 @@ import { getCurrentUser } from '@/lib/auth/dal'
 import { AccountStatusProvider } from '@/components/features/auth/AccountStatusContext'
 import { PendingAccountBanner } from '@/components/features/auth/PendingAccountBanner'
 
+import { GlobalLoaderProvider } from '@/components/layout/GlobalLoaderProvider'
+
 /**
  * Layout del grupo (company) — rutas de empresario.
  * Verifica que el usuario esté autenticado, tenga rol 'empresario',
@@ -56,9 +58,11 @@ export default async function CompanyLayout({
   const estado = estadoCuenta as string | null
 
   return (
-    <AccountStatusProvider estadoCuenta={estado}>
-      {estado !== 'activa' && <PendingAccountBanner />}
-      {children}
-    </AccountStatusProvider>
+    <GlobalLoaderProvider>
+      <AccountStatusProvider estadoCuenta={estado}>
+        {estado !== 'activa' && <PendingAccountBanner />}
+        {children}
+      </AccountStatusProvider>
+    </GlobalLoaderProvider>
   )
 }

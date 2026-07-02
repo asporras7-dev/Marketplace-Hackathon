@@ -5,6 +5,7 @@ import { normalizeRole, ROLE_HOME } from '@/lib/auth/roles'
 import { getCurrentUser } from '@/lib/auth/dal'
 import { AccountStatusProvider } from '@/components/features/auth/AccountStatusContext'
 import { PendingAccountBanner } from '@/components/features/auth/PendingAccountBanner'
+import { GlobalLoaderProvider } from '@/components/layout/GlobalLoaderProvider'
 
 /**
  * Layout del grupo (app) — rutas de egresado.
@@ -56,9 +57,11 @@ export default async function AppLayout({
   const estado = estadoCuenta as string | null
 
   return (
-    <AccountStatusProvider estadoCuenta={estado}>
-      {estado !== 'activa' && <PendingAccountBanner />}
-      {children}
-    </AccountStatusProvider>
+    <GlobalLoaderProvider>
+      <AccountStatusProvider estadoCuenta={estado}>
+        {estado !== 'activa' && <PendingAccountBanner />}
+        {children}
+      </AccountStatusProvider>
+    </GlobalLoaderProvider>
   )
 }
