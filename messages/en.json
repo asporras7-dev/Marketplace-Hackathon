@@ -89,12 +89,47 @@
     "companyBenefit1": "FWD graduates ready to add value from day one.",
     "companyBenefit2": "Agile short-term projects with optimized costs.",
     "companyBenefit3": "Moderated and filtered candidates to ensure the ideal match.",
-    "statsProjectsNumber": "+500",
-    "statsProjectsLabel": "Completed Projects",
-    "statsTalentNumber": "+1,200",
-    "statsTalentLabel": "Registered Developers",
-    "statsCompaniesNumber": "+150",
-    "statsCompaniesLabel": "Allied Companies"
+    "statsProjectsNumber": "450+",
+    "statsProjectsLabel": "Finished Projects",
+    "statsTalentNumber": "1,200+",
+    "statsTalentLabel": "Active Developers",
+    "statsCompaniesNumber": "85+",
+    "statsCompaniesLabel": "Partner Companies",
+    "howItWorksTitle": "How does the ecosystem work?",
+    "howItWorksSubtitle": "Two paths, one goal: technological excellence and mutual professional growth.",
+    "howItWorksCompanyTitle": "For Companies",
+    "howItWorksCompanyBenefit1": "Direct access to technically and humanly validated profiles.",
+    "howItWorksCompanyBenefit2": "Advanced filters by technology stack and experience.",
+    "howItWorksCompanyBenefit3": "Centralized interview and hiring management.",
+    "howItWorksCompanyCta": "Register my Company",
+    "howItWorksGraduateTitle": "For Graduates",
+    "howItWorksGraduateDesc": "Showcase your portfolio, connect with top-tier recruiters, and scale your professional career.",
+    "howItWorksGraduateCta": "Complete my Profile",
+    "vanguardTitle": "Cutting-edge Mastery",
+    "vanguardSubtitle": "Our students specialize in the most demanded technologies in the global market.",
+    "vanguardTagFrontend": "FRONTEND",
+    "vanguardTagBackend": "BACKEND",
+    "vanguardTagCloud": "CLOUD",
+    "vanguardCard1Title": "MERN Stack",
+    "vanguardCard1Desc": "React, Node.js, Express",
+    "vanguardCard2Title": "Python / Data",
+    "vanguardCard2Desc": "Pandas, Scikit-learn",
+    "vanguardCard3Title": "AWS / Azure",
+    "vanguardCard3Desc": "Architecture, Lambda",
+    "vanguardCard4Title": "UI / UX Design",
+    "vanguardCard4Desc": "Figma, Design Systems",
+    "successStoriesTitle": "Success Stories",
+    "successStoriesSubtitle": "Meet the protagonists who are transforming the industry.",
+    "successStory1Tag": "Valeria | Frontend Dev",
+    "successStory1Quote": "\"FWD gave me the tools not only to code, but to think like a world-class Engineer.\"",
+    "successStory2Tag": "Ricardo | Cloud Engineer",
+    "successStory2Quote": "\"The direct connection with real companies was the differentiator. Today I lead projects for all of Latin America.\"",
+    "successStory3Tag": "Clara | Product Designer",
+    "successStory3Quote": "\"The marketplace is the perfect showcase. I found my current job less than a month after graduating.\"",
+    "joinTitle": "This is MarketPlace FWD Costa Rica.",
+    "joinSubtitle": "Whether you are looking for your first tech job or the next great talent for your team, Marketplace FWD is the place where magic happens.",
+    "joinCtaFree": "Start today for free",
+    "joinCtaConsulting": "Schedule a Consultation"
   },
   "Login": {
     "title": "Log in to FWD Talent",
@@ -290,6 +325,8 @@
     "myContractsDesc": "Projects you were selected for. Access your deliverables from here.",
     "emptyContracts": "You have no active contracts yet.",
     "emptyContractsDesc": "When a company selects you for a project, it will appear here.",
+    "contractFilterAll": "All",
+    "contractFilterEmpty": "No contracts match this filter.",
     "contractActive": "Active",
     "contractFinished": "Finished",
     "contractPaused": "Paused",
@@ -371,7 +408,8 @@
     "technicalDocUrlHelp": "Required: upload a PDF or ZIP (max 5 MB) with your proposal's documentation.",
     "unexpectedError": "An unexpected error occurred",
     "withdrawOffer": "Withdraw Offer",
-    "confirmWithdraw": "Are you sure you want to withdraw your application?",
+    "withdrawDialogTitle": "Withdraw application",
+    "confirmWithdraw": "Are you sure you want to withdraw your application? This action cannot be undone.",
     "withdrawSuccess": "Application withdrawn successfully.",
     "withdrawError": "Failed to withdraw the application.",
     "deliverables": "Project Deliverables",
@@ -391,6 +429,10 @@
     "uploadClickToSelect": "Click to attach a file",
     "uploadMaxSize": "Max. 50 MB",
     "uploadRemoveFile": "Remove file",
+    "uploadConfirmTitle": "Confirm upload",
+    "uploadConfirmDescHito": "Are you sure you want to upload this milestone? Once submitted, it cannot be deleted.",
+    "uploadConfirmDescFinal": "Are you sure you want to upload the final deliverable? This action cannot be undone.",
+    "uploadConfirmBtn": "Upload",
     "tipoParcial": "Partial milestone",
     "tipoFinal": "Final deliverable",
     "versionLabel": "v{n}",
@@ -892,7 +934,13 @@
     "rateEgresadoCommentLabel": "Comment (optional)",
     "rateEgresadoCommentPlaceholder": "Share your experience working with this graduate...",
     "rateEgresadoSubmit": "Submit rating",
-    "rateEgresadoAlreadyRated": "You have already rated this graduate"
+    "rateEgresadoAlreadyRated": "You have already rated this graduate",
+    "contratacionInicio": "Start date",
+    "contratacionFinEstimada": "Estimated end",
+    "periodoVigente": "Active contract",
+    "periodoPausado": "Paused",
+    "periodoFinalizado": "Finished",
+    "periodoCancelado": "Cancelled"
   },
   "Admin": {
     "dashboard": "Admin Dashboard",
@@ -1324,7 +1372,9 @@
     "labelSitioWeb": "Website (optional)",
     "errorCedula": "Enter a valid ID number.",
     "errorSitioWeb": "Enter a valid URL (e.g. https://...).",
-    "emailNotAllowed": "Your email is not enabled as an FWD graduate. Contact Forward Costa Rica."
+    "emailNotAllowed": "Your email is not enabled as an FWD graduate. Contact Forward Costa Rica.",
+    "backToLogin": "Return to login",
+    "logout": "Log out"
   },
   "Account": {
     "pendingBanner": "Your account is pending activation. Please verify your email.",
@@ -1524,7 +1574,12 @@
     "errorSkillExists": "This skill already exists",
     "cropImageTitle": "Crop image",
     "cropImageDesc": "Adjust your image to look perfect.",
-    "cropAndUpload": "Crop and Upload"
+    "cropAndUpload": "Crop and Upload",
+    "defaultRole": "FWD Graduate",
+    "ratingsSection": "Received ratings",
+    "noRatings": "You have no ratings from companies yet.",
+    "ratingAverage": "Average",
+    "ratingFrom": "Company"
   },
   "EgresadoMensajes": {
     "title": "My Messages",
@@ -1544,7 +1599,9 @@
     "errorEnvio": "Could not send the message. Please try again.",
     "proyectoLabel": "Project",
     "empresaLabel": "Company",
-    "relativeDateYesterday": "Yesterday"
+    "relativeDateYesterday": "Yesterday",
+    "msgLeido": "Seen",
+    "msgNoLeido": "Sent"
   },
   "Ranking": {
     "snippetTitle": "Talent Ranking",
@@ -1583,7 +1640,9 @@
     "errorCarga": "Could not load messages. Please try again.",
     "errorEnvio": "Could not send the message. Please try again.",
     "proyectoLabel": "Project",
-    "egresadoLabel": "Graduate"
+    "egresadoLabel": "Graduate",
+    "msgLeido": "Seen",
+    "msgNoLeido": "Sent"
   },
   "EgresadoEmpresa": {
     "pageTitle": "Company Profile",
@@ -1592,6 +1651,15 @@
     "noDesc": "No description available.",
     "backToContracts": "Back to my contracts",
     "tipoEmpresa": "Formal company",
-    "tipoEmprendedor": "Individual entrepreneur"
+    "tipoEmprendedor": "Individual entrepreneur",
+    "rateTitle": "Rate your experience",
+    "rateDesc": "Share your opinion about working with this company.",
+    "rateProjectLabel": "Project",
+    "ratingLabel": "Score",
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "How was the experience?",
+    "submitRating": "Submit rating",
+    "alreadyRated": "You already rated your experience with this company.",
+    "rateSuccess": "Rating submitted successfully."
   }
 }

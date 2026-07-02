@@ -46,9 +46,7 @@ export default async function ProjectMatchesPage(props: PageProps) {
             Matches con Egresados
           </h1>
           <Button variant="outline" asChild>
-            <Link href={`/${locale}/empresario/proyectos`}>
-              Volver a mis proyectos
-            </Link>
+            <Link href={`/${locale}/empresario`}>Volver a mis proyectos</Link>
           </Button>
         </div>
         <div className="p-8 text-center border rounded-lg bg-surface text-muted-foreground">
@@ -91,9 +89,7 @@ export default async function ProjectMatchesPage(props: PageProps) {
           </p>
         </div>
         <Button variant="outline" asChild>
-          <Link href={`/${locale}/empresario/proyectos`}>
-            Volver a mis proyectos
-          </Link>
+          <Link href={`/${locale}/empresario`}>Volver a mis proyectos</Link>
         </Button>
       </div>
 

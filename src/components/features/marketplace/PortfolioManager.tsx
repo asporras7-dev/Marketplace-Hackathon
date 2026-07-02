@@ -47,8 +47,10 @@ import {
   Lock,
   BookOpen,
   Loader2,
+  Star,
 } from 'lucide-react'
 import type { PortfolioProject, StudentSkill } from '@/types'
+import type { CalificacionRecibida } from '@/lib/evaluaciones/actions'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -226,10 +228,12 @@ export function PortfolioManager({
   initialProfile,
   countries = [],
   initialRegions = [],
+  calificaciones = [],
 }: {
   initialProfile?: StudentProfileView | null
   countries?: ComboboxOption[]
   initialRegions?: ComboboxOption[]
+  calificaciones?: CalificacionRecibida[]
 }) {
   const router = useRouter()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -604,8 +608,9 @@ export function PortfolioManager({
 
         {/* Right Column: Preview */}
         <div className="lg:col-span-7">
-          <Card className="h-full border border-primary/20 bg-surface shadow-sm">
-            <CardHeader className="border-b bg-muted/20 pb-4">
+          <Card className="h-full border border-primary/20 bg-surface shadow-sm overflow-hidden">
+            <CardHeader className="relative pb-5 pt-7 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5">
+              <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-secondary to-accent" />
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4">
                   <Dialog
@@ -613,7 +618,7 @@ export function PortfolioManager({
                     onOpenChange={setIsPhotoModalOpen}
                   >
                     <DialogTrigger asChild>
-                      <button className="relative group rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-transform hover:scale-105 active:scale-95 cursor-pointer">
+                      <button className="relative group rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-transform hover:scale-105 active:scale-95 cursor-pointer ring-2 ring-primary/20 ring-offset-2">
                         {localPhotoUrl || initialProfile?.profilePhoto ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -622,11 +627,11 @@ export function PortfolioManager({
                                 initialProfile?.profilePhoto) as string
                             }
                             alt="Profile"
-                            className="w-12 h-12 rounded-full object-cover border border-primary/20"
+                            className="w-16 h-16 rounded-full object-cover"
                             style={{ opacity: isUploadingPhoto ? 0.5 : 1 }}
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 text-primary font-bold">
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-2xl">
                             {initialProfile?.firstName?.charAt(0) || 'U'}
                           </div>
                         )}
@@ -810,27 +815,34 @@ export function PortfolioManager({
                       </div>
                     </DialogContent>
                   </Dialog>
-                  <div>
-                    <CardTitle className="text-xl font-bold font-display">
+                  <div className="space-y-1">
+                    <CardTitle className="text-xl font-bold font-display leading-tight">
                       {initialProfile?.firstName} {initialProfile?.lastName1}{' '}
                       {initialProfile?.lastName2}
                     </CardTitle>
-                    <p className="text-sm font-medium text-primary mt-0.5 capitalize">
-                      {initialProfile?.tituloFwd || 'Estudiante FWD'}
+                    <p className="text-sm font-semibold text-primary capitalize">
+                      {initialProfile?.tituloFwd || t('defaultRole')}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('visibilityText')}{' '}
-                      <span className="font-semibold text-primary">
-                        {visibility === 'publico'
-                          ? t('visibilityPublic')
-                          : t('visibilityCompanies')}
-                      </span>
-                    </p>
+                    {initialProfile?.reputacion !== null &&
+                      initialProfile?.reputacion !== undefined &&
+                      initialProfile.reputacion > 0 && (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={`w-3.5 h-3.5 ${s <= Math.round(initialProfile.reputacion!) ? 'fill-highlight text-highlight' : 'text-muted-foreground/25'}`}
+                            />
+                          ))}
+                          <span className="text-xs font-bold text-foreground">
+                            {Number(initialProfile.reputacion).toFixed(1)}
+                          </span>
+                        </div>
+                      )}
                   </div>
                 </div>
                 <Badge
                   variant={visibility === 'publico' ? 'default' : 'secondary'}
-                  className="gap-1"
+                  className="gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shrink-0"
                 >
                   {visibility === 'publico' ? (
                     <Globe className="h-3 w-3" />
@@ -843,16 +855,12 @@ export function PortfolioManager({
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6 font-sans">
+            <CardContent className="space-y-5 pt-5 font-sans">
               {/* === Biografía === */}
               <div className="space-y-2">
-                <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-primary/20"></div>
-                  <div className="text-sm font-semibold tracking-wider text-muted-foreground font-display uppercase">
-                    {t('bioSection')}
-                  </div>
-                  <div className="h-px flex-1 bg-primary/20"></div>
-                </div>
+                <p className="text-[11px] font-bold tracking-widest text-primary/70 uppercase font-display">
+                  {t('bioSection')}
+                </p>
                 <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                   {portfolioBio ? (
                     portfolioBio
@@ -864,72 +872,82 @@ export function PortfolioManager({
                 </p>
               </div>
 
+              <div className="h-px bg-border/50" />
+
               {/* === Habilidades === */}
-              <div className="space-y-2 pt-2">
-                <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-primary/20"></div>
-                  <div className="text-sm font-semibold tracking-wider text-muted-foreground font-display uppercase">
-                    {t('skillsSection')}
-                  </div>
-                  <div className="h-px flex-1 bg-primary/20"></div>
-                </div>
+              <div className="space-y-2.5">
+                <p className="text-[11px] font-bold tracking-widest text-primary/70 uppercase font-display">
+                  {t('skillsSection')}
+                </p>
                 {skills.length === 0 ? (
                   <p className="text-sm text-muted-foreground italic">
                     {t('noSkills')}
                   </p>
                 ) : (
-                  <div className="space-y-1 pl-2 border-l-2 border-primary/20">
-                    {skills.map((skill) => (
-                      <div key={skill.id} className="text-sm text-foreground">
-                        {skill.name} <span className="opacity-50 mx-1">—</span>{' '}
-                        {skill.level === 'avanzado'
+                  <div className="flex flex-wrap gap-1.5">
+                    {skills.map((skill) => {
+                      const levelClass =
+                        skill.level === 'avanzado'
+                          ? 'bg-accent/10 text-accent border-accent/20'
+                          : skill.level === 'intermedio'
+                            ? 'bg-primary/10 text-primary border-primary/20'
+                            : 'bg-muted text-muted-foreground border-border'
+                      const levelLabel =
+                        skill.level === 'avanzado'
                           ? t('levelAdvanced')
                           : skill.level === 'intermedio'
                             ? t('levelIntermediate')
-                            : t('levelBasic')}
-                      </div>
-                    ))}
+                            : t('levelBasic')
+                      return (
+                        <span
+                          key={skill.id}
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${levelClass}`}
+                        >
+                          {skill.name}
+                          <span className="opacity-60 text-[10px]">
+                            · {levelLabel}
+                          </span>
+                        </span>
+                      )
+                    })}
                   </div>
                 )}
               </div>
 
               {/* === Ubicación === */}
               {(portfolioCountryName || portfolioRegionName) && (
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-center gap-4">
-                    <div className="h-px flex-1 bg-primary/20"></div>
-                    <div className="text-sm font-semibold tracking-wider text-muted-foreground font-display uppercase">
-                      Ubicación
-                    </div>
-                    <div className="h-px flex-1 bg-primary/20"></div>
+                <>
+                  <div className="h-px bg-border/50" />
+                  <div className="space-y-1.5">
+                    <p className="text-[11px] font-bold tracking-widest text-primary/70 uppercase font-display">
+                      {t('locationLabel')}
+                    </p>
+                    <p className="text-sm text-foreground">
+                      {[portfolioRegionName, portfolioCountryName]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </p>
                   </div>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {[portfolioRegionName, portfolioCountryName]
-                      .filter(Boolean)
-                      .join(', ')}
-                  </p>
-                </div>
+                </>
               )}
 
+              <div className="h-px bg-border/50" />
+
               {/* === Proyectos === */}
-              <div className="space-y-4 pt-2">
-                <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-primary/20"></div>
-                  <div className="text-sm font-semibold tracking-wider text-muted-foreground font-display uppercase">
-                    {t('projectsSection')}
-                  </div>
-                  <div className="h-px flex-1 bg-primary/20"></div>
-                </div>
+              <div className="space-y-3">
+                <p className="text-[11px] font-bold tracking-widest text-primary/70 uppercase font-display">
+                  {t('projectsSection')}
+                </p>
                 {projects.length === 0 ? (
                   <p className="text-sm text-muted-foreground italic">
                     {t('noProjects')}
                   </p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {projects.map((proj) => (
                       <div
                         key={proj.id}
-                        className="space-y-1 pl-2 border-l-2 border-primary/20"
+                        className="rounded-lg border border-border/60 bg-muted/20 p-3 space-y-1.5"
                       >
                         <div className="font-semibold text-sm text-foreground flex items-center justify-between">
                           <span>{proj.title}</span>
@@ -948,12 +966,18 @@ export function PortfolioManager({
                             {proj.description}
                           </p>
                         )}
-                        <div className="text-xs text-muted-foreground font-semibold pt-1">
-                          {t('technologiesUsed')}:
-                        </div>
-                        <div className="text-xs text-foreground font-medium">
-                          {proj.technologies.join(', ')}
-                        </div>
+                        {proj.technologies.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-0.5">
+                            {proj.technologies.map((tech) => (
+                              <span
+                                key={tech}
+                                className="rounded-full bg-secondary/10 border border-secondary/20 px-2 py-0.5 text-[10px] font-medium text-secondary"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <div className="flex gap-2 pt-1 text-xs">
                           {proj.repositoryUrl && (
                             <a
@@ -1145,6 +1169,70 @@ export function PortfolioManager({
                     <Trash2 className="mr-2 h-4 w-4" /> {t('delete')}
                   </Button>
                 </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Calificaciones recibidas */}
+      <div className="space-y-6 pt-8 border-t">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold tracking-tight">
+            {t('ratingsSection')}
+          </h2>
+          {initialProfile?.reputacion !== null &&
+            initialProfile?.reputacion !== undefined &&
+            initialProfile.reputacion > 0 && (
+              <div className="flex items-center gap-2 bg-highlight/10 border border-highlight/30 rounded-full px-4 py-1.5">
+                <Star className="w-4 h-4 fill-highlight text-highlight" />
+                <span className="text-sm font-bold text-foreground">
+                  {Number(initialProfile.reputacion).toFixed(1)}
+                </span>
+                <span className="text-xs text-muted-foreground">/ 5.0</span>
+              </div>
+            )}
+        </div>
+
+        {calificaciones.length === 0 ? (
+          <div className="flex h-28 items-center justify-center rounded-xl border border-dashed">
+            <p className="text-sm text-muted-foreground">{t('noRatings')}</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {calificaciones.map((cal) => (
+              <Card
+                key={cal.id_evaluacion}
+                className="border border-border/80 bg-card/60"
+              >
+                <CardContent className="p-5 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {cal.tituloProyecto}
+                      </p>
+                      <p className="text-xs text-primary font-medium">
+                        {cal.nombreEmpresa}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={`w-3.5 h-3.5 ${s <= cal.puntuacion ? 'fill-highlight text-highlight' : 'text-muted-foreground/30'}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {cal.comentario && (
+                    <p className="text-xs text-muted-foreground leading-relaxed italic border-t border-border/40 pt-2">
+                      &quot;{cal.comentario}&quot;
+                    </p>
+                  )}
+                  <p className="text-[10px] text-muted-foreground/60">
+                    {new Date(cal.evaluado_at).toLocaleDateString()}
+                  </p>
+                </CardContent>
               </Card>
             ))}
           </div>

@@ -19,6 +19,8 @@ export const FWD_STORAGE_KEYS = {
 interface AuthContextType {
   currentUser: User | null
   userRole: UserRole | null
+  displayName: string | null
+  avatarUrl: string | null
   setUserRole: (role: UserRole) => void
   resetAuth: () => void
 }
@@ -34,6 +36,8 @@ export function AuthProvider({
 }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [userRole, setUserRoleState] = useState<UserRole | null>(initialRole)
+  const [displayName, setDisplayName] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   // Rol autoritativo provisto por el servidor (layout raíz). Se re-afirma
   // cuando cambia entre navegaciones para ganar sobre el valor en memoria o el
@@ -66,8 +70,21 @@ export function AuthProvider({
         if (!role) {
           localStorage.removeItem(FWD_STORAGE_KEYS.ROLE)
         }
+
+        const { data: profile } = await supabase
+          .from('usuarios')
+          .select('nombre, apellido_1, foto_perfil')
+          .eq('id_usuario', user.id)
+          .maybeSingle()
+
+        if (profile) {
+          setDisplayName(`${profile.nombre} ${profile.apellido_1}`.trim())
+          setAvatarUrl(profile.foto_perfil ?? null)
+        }
       } else {
         setUserRoleState(null)
+        setDisplayName(null)
+        setAvatarUrl(null)
       }
     })
 
@@ -100,12 +117,21 @@ export function AuthProvider({
       }
       setCurrentUser(null)
       setUserRoleState(null)
+      setDisplayName(null)
+      setAvatarUrl(null)
     })
   }
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, userRole, setUserRole, resetAuth }}
+      value={{
+        currentUser,
+        userRole,
+        displayName,
+        avatarUrl,
+        setUserRole,
+        resetAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>

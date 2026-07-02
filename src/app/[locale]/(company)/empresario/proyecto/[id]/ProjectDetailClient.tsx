@@ -3,15 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import {
-  ArrowLeft,
-  ChevronRight,
-  Lock,
-  Package,
-  Pencil,
-  Sparkles,
-  XCircle,
-} from 'lucide-react'
+import { ArrowLeft, Package, Pencil, XCircle } from 'lucide-react'
 import { CompanyShell } from '@/components/layout/CompanyShell'
 import { SidebarEmpresaNuevo } from '@/components/layout/SidebarEmpresaNuevo'
 import { PageTitle } from '@/components/features/brand/PageTitle'
@@ -30,18 +22,13 @@ import {
 import { Link, useRouter } from '@/i18n/routing'
 import { useAccountStatus } from '@/components/features/auth/AccountStatusContext'
 import { cancelProject } from '@/lib/projects/dashboard'
-import { setProjectEstado } from '@/lib/projects/project-detail'
 import { editProjectDescription } from '@/lib/projects/edit-description'
 import { canEditProjectDescription } from '@/lib/projects/edit-description-logic'
 import type { PublishedProject } from '@/lib/projects/dashboard'
 import type { ParticipacionEmpresario } from '@/lib/projects/project-detail'
 import type { EntregableEmpresario } from '@/lib/deliverables/queries'
 import type { Result } from '@/lib/result'
-import {
-  getProjectForwardStates,
-  PANEL_FILTER_DETALLE,
-  type ProjectForwardTarget,
-} from '@/lib/projects/project-detail-logic'
+import { PANEL_FILTER_DETALLE } from '@/lib/projects/project-detail-logic'
 import {
   StatusPill,
   formatBudget,
@@ -88,13 +75,9 @@ export function ProjectDetailClient({
   const t = useTranslations('ProjectDetail')
   const tBoard = useTranslations('ProjectsBoard')
   const tCommon = useTranslations('Common')
-  const tAccount = useTranslations('Account')
   const router = useRouter()
   const { isPending } = useAccountStatus()
 
-  const [advanceTarget, setAdvanceTarget] =
-    useState<ProjectForwardTarget | null>(null)
-  const [advancing, setAdvancing] = useState(false)
   const [cancelOpen, setCancelOpen] = useState(false)
   const [cancelChecked, setCancelChecked] = useState(false)
   const [cancelMotivo, setCancelMotivo] = useState('')
@@ -109,7 +92,6 @@ export function ProjectDetailClient({
 
   const locale = useLocale()
 
-  const forwardStates = getProjectForwardStates(project.estadoEfectivo)
   const cancelable = isCancelable(project.estado)
   const descriptionEditable =
     !isPending && canEditProjectDescription(project.estadoEfectivo)
@@ -119,27 +101,6 @@ export function ProjectDetailClient({
     project.presupuestoMax,
     tBoard('budgetNonNegotiable'),
   )
-
-  const confirmAdvance = async () => {
-    if (!advanceTarget || advancing) return
-    setAdvancing(true)
-    const res = await setProjectEstado({
-      idProyecto: project.id,
-      destino: advanceTarget,
-    })
-    setAdvancing(false)
-    if (res.ok) {
-      toast.success(t('advanceSuccess'))
-      setAdvanceTarget(null)
-      router.refresh()
-      return
-    }
-    toast.error(
-      res.error === 'transicion_invalida'
-        ? t('errors.transicion_invalida')
-        : t('errors.generic'),
-    )
-  }
 
   const cerrarCancel = () => {
     setCancelOpen(false)
@@ -311,47 +272,17 @@ export function ProjectDetailClient({
               {project.involucraIa && (
                 <ChipRow items={[tBoard('involvesAi')]} />
               )}
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border/80 bg-card/40">
-            <CardContent className="p-6 space-y-4">
-              <SectionHeading>{t('manageTitle')}</SectionHeading>
-              {isPending ? (
-                <p className="text-sm text-muted-foreground italic">
-                  {tAccount('actionDisabledPending')}
-                </p>
-              ) : (
-                <div className="flex flex-wrap items-center gap-3">
-                  {forwardStates.map((destino) => (
-                    <Button
-                      key={destino}
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setAdvanceTarget(destino)}
-                      className="font-semibold"
-                    >
-                      {t('advanceTo', { state: tBoard(`status_${destino}`) })}
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  ))}
-                  {cancelable && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => setCancelOpen(true)}
-                      className="font-semibold text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      {tBoard('cancelAction')}
-                    </Button>
-                  )}
-                  {forwardStates.length === 0 && !cancelable && (
-                    <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground italic">
-                      <Lock className="w-3.5 h-3.5" />
-                      {t('noActionsAvailable')}
-                    </p>
-                  )}
+              {cancelable && !isPending && (
+                <div className="pt-4 border-t border-border/60">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setCancelOpen(true)}
+                    className="font-semibold text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    {tBoard('cancelAction')}
+                  </Button>
                 </div>
               )}
             </CardContent>
@@ -392,51 +323,6 @@ export function ProjectDetailClient({
           )}
         </main>
       </div>
-
-      <Dialog
-        open={advanceTarget !== null}
-        onOpenChange={(open) => !open && setAdvanceTarget(null)}
-      >
-        <DialogContent className="sm:max-w-md border border-border">
-          {advanceTarget && (
-            <>
-              <DialogHeader className="flex flex-col items-center text-center">
-                <div className="p-3 rounded-full mb-3 bg-secondary/15 text-secondary">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <DialogTitle className="text-xl font-bold font-heading">
-                  {t('advanceConfirmTitle')}
-                </DialogTitle>
-                <DialogDescription className="text-sm text-muted-foreground mt-2">
-                  {t('advanceConfirmDesc', {
-                    state: tBoard(`status_${advanceTarget}`),
-                  })}
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="flex gap-2 sm:justify-center pt-4 border-t border-border/40">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setAdvanceTarget(null)}
-                  disabled={advancing}
-                  className="flex-1 sm:flex-initial"
-                >
-                  {tCommon('cancel')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => void confirmAdvance()}
-                  disabled={advancing}
-                  className="font-semibold flex-1 sm:flex-initial"
-                >
-                  {advancing ? t('advancing') : t('advanceConfirm')}
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
 
       <Dialog
         open={cancelOpen}
@@ -588,14 +474,6 @@ export function ProjectDetailClient({
         </DialogContent>
       </Dialog>
     </CompanyShell>
-  )
-}
-
-function SectionHeading({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="text-lg font-bold font-heading text-foreground border-b border-border/60 pb-2">
-      {children}
-    </h2>
   )
 }
 

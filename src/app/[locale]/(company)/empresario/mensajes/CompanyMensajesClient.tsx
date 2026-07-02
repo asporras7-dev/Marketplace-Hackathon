@@ -3,7 +3,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { MessageSquare, Send, Lock, CheckCircle2 } from 'lucide-react'
+import {
+  MessageSquare,
+  Send,
+  Lock,
+  CheckCircle2,
+  Check,
+  CheckCheck,
+} from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { CompanyShell } from '@/components/layout/CompanyShell'
 import { SidebarEmpresaNuevo } from '@/components/layout/SidebarEmpresaNuevo'
@@ -26,11 +33,60 @@ interface Props {
   currentUserId: string
 }
 
+const AVATAR_COLORS = [
+  'bg-primary/20 text-primary',
+  'bg-secondary/20 text-secondary',
+  'bg-accent/20 text-accent',
+  'bg-warning/20 text-warning',
+  'bg-magenta/20 text-magenta',
+  'bg-highlight/20 text-foreground',
+]
+
+const FALLBACK_AVATAR_COLOR = 'bg-primary/20 text-primary'
+
+function getAvatarColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash + name.charCodeAt(i)) % AVATAR_COLORS.length
+  }
+  return AVATAR_COLORS[hash] ?? FALLBACK_AVATAR_COLOR
+}
+
+function getInitials(name: string): string {
+  const parts = name
+    .trim()
+    .split(' ')
+    .filter((p) => p.length > 0)
+  const first = parts[0]?.[0] ?? ''
+  const second = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : ''
+  return (first + second).toUpperCase()
+}
+
 function formatHora(fechaEnvio: string): string {
   return new Date(fechaEnvio).toLocaleTimeString(undefined, {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+function ContactAvatar({
+  name,
+  size = 'sm',
+}: {
+  name: string
+  size?: 'sm' | 'md'
+}) {
+  return (
+    <div
+      className={cn(
+        'rounded-full flex items-center justify-center font-bold shrink-0',
+        getAvatarColor(name),
+        size === 'sm' ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm',
+      )}
+    >
+      {getInitials(name)}
+    </div>
+  )
 }
 
 function EstadoBadge({ estado }: { estado: 'contratada' | 'finalizada' }) {
@@ -70,28 +126,33 @@ function ConversacionRow({
       type="button"
       onClick={onSelect}
       className={cn(
-        'w-full text-left px-4 py-3.5 border-l-2 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]',
+        'w-full text-left px-3 py-3 border-l-4 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)]',
         isActive
-          ? 'border-l-primary bg-primary/8 text-foreground'
+          ? 'border-l-primary bg-primary/10 text-foreground'
           : 'border-l-transparent hover:bg-muted/40 text-foreground',
       )}
     >
-      <div className="flex items-start justify-between gap-2 mb-1">
-        <p className="text-sm font-semibold leading-snug line-clamp-1 flex-1">
-          {conv.tituloProyecto}
-        </p>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          {conv.noLeidos > 0 && (
-            <span className="flex min-w-5 h-5 px-1.5 bg-primary text-white rounded-full items-center justify-center text-[10px] font-bold">
-              {conv.noLeidos}
-            </span>
-          )}
-          <EstadoBadge estado={conv.estado} />
+      <div className="flex items-start gap-2.5">
+        <ContactAvatar name={conv.nombreContraparte} size="sm" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-1.5 mb-0.5">
+            <p className="text-sm font-semibold leading-snug line-clamp-1 flex-1">
+              {conv.tituloProyecto}
+            </p>
+            {conv.noLeidos > 0 && (
+              <span className="flex min-w-5 h-5 px-1.5 bg-magenta text-white rounded-full items-center justify-center text-[10px] font-bold shrink-0">
+                {conv.noLeidos}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center justify-between gap-1">
+            <p className="text-xs text-muted-foreground truncate">
+              {conv.nombreContraparte}
+            </p>
+            <EstadoBadge estado={conv.estado} />
+          </div>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground truncate">
-        {conv.nombreContraparte}
-      </p>
     </button>
   )
 }
@@ -103,6 +164,8 @@ function ChatBubble({
   mensaje: Mensaje
   isMine: boolean
 }) {
+  const t = useTranslations('CompanyMensajes')
+
   return (
     <div
       className={cn(
@@ -115,20 +178,37 @@ function ChatBubble({
           'px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words',
           isMine
             ? 'bg-primary text-primary-foreground rounded-br-sm'
-            : 'bg-muted text-foreground rounded-bl-sm',
+            : 'bg-secondary/10 text-foreground rounded-bl-sm border border-secondary/15',
         )}
       >
         <p>{mensaje.contenido}</p>
-        <p
+        <div
           className={cn(
-            'text-[10px] mt-1',
-            isMine
-              ? 'text-primary-foreground/60 text-right'
-              : 'text-muted-foreground',
+            'flex items-center gap-1 mt-1',
+            isMine ? 'justify-end' : 'justify-start',
           )}
         >
-          {formatHora(mensaje.fechaEnvio)}
-        </p>
+          <p
+            className={cn(
+              'text-[10px]',
+              isMine ? 'text-primary-foreground/60' : 'text-muted-foreground',
+            )}
+          >
+            {formatHora(mensaje.fechaEnvio)}
+          </p>
+          {isMine &&
+            (mensaje.leido ? (
+              <CheckCheck
+                className="w-3.5 h-3.5 text-accent shrink-0"
+                aria-label={t('msgLeido')}
+              />
+            ) : (
+              <Check
+                className="w-3.5 h-3.5 text-primary-foreground/50 shrink-0"
+                aria-label={t('msgNoLeido')}
+              />
+            ))}
+        </div>
       </div>
       {!isMine && (
         <div className="flex items-center">
@@ -146,7 +226,7 @@ function ChatEmptyState() {
   const t = useTranslations('CompanyMensajes')
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-      <div className="p-4 bg-primary/8 rounded-full text-primary">
+      <div className="p-4 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-primary">
         <CheckCircle2 className="w-8 h-8" />
       </div>
       <p className="font-semibold text-foreground">{t('mensajesEmpty')}</p>
@@ -262,7 +342,7 @@ export function CompanyMensajesClient({
 
           {conversaciones.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-20">
-              <div className="p-5 bg-primary/8 rounded-full text-primary">
+              <div className="p-5 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-primary">
                 <MessageSquare className="w-10 h-10" />
               </div>
               <p className="font-semibold text-lg text-foreground">
@@ -274,13 +354,13 @@ export function CompanyMensajesClient({
             </div>
           ) : (
             <div
-              className="flex border border-border/60 rounded-2xl overflow-hidden bg-card/20"
+              className="flex border border-border/60 rounded-2xl overflow-hidden bg-card/20 shadow-sm"
               style={{ height: 'calc(100vh - 280px)', minHeight: '560px' }}
             >
               {/* Panel izquierdo — lista de conversaciones */}
-              <div className="w-72 shrink-0 border-r border-border/60 flex flex-col bg-card/30">
-                <div className="px-4 py-3.5 border-b border-border/40">
-                  <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              <div className="w-72 shrink-0 border-r border-border/60 flex flex-col bg-gradient-to-b from-secondary/5 to-card/20">
+                <div className="px-4 py-3.5 border-b border-border/40 bg-gradient-to-r from-primary/10 to-secondary/5">
+                  <p className="text-xs font-bold uppercase tracking-wide text-primary">
                     {t('proyectoLabel')}
                   </p>
                 </div>
@@ -299,7 +379,7 @@ export function CompanyMensajesClient({
               {/* Panel derecho — hilo de mensajes */}
               {selectedConv === null ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-                  <div className="p-4 bg-muted rounded-full text-muted-foreground">
+                  <div className="p-4 bg-gradient-to-br from-primary/10 to-secondary/8 rounded-full text-primary">
                     <MessageSquare className="w-8 h-8" />
                   </div>
                   <p className="font-semibold text-foreground">
@@ -312,7 +392,11 @@ export function CompanyMensajesClient({
               ) : (
                 <div className="flex-1 flex flex-col min-w-0">
                   {/* Header del chat */}
-                  <div className="px-5 py-3.5 border-b border-border/40 flex items-center gap-3 bg-card/10">
+                  <div className="px-5 py-3.5 border-b border-border/40 flex items-center gap-3 bg-gradient-to-r from-primary/8 to-secondary/5">
+                    <ContactAvatar
+                      name={selectedConv.nombreContraparte}
+                      size="md"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2.5 flex-wrap">
                         <p className="font-semibold text-sm text-foreground truncate">

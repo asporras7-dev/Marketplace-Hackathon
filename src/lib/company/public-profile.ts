@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { ok, err, type Result } from '@/lib/result'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { requireRole } from '@/lib/auth/guards'
 import { logger } from '@/lib/logger'
 
@@ -26,7 +26,7 @@ export async function getPublicCompanyProfile(
   const roleResult = await requireRole('egresado')
   if (!roleResult.ok) return roleResult
 
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
 
   const { data, error } = await supabase
     .from('empresarios')

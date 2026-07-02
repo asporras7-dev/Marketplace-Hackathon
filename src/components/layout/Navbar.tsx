@@ -6,6 +6,15 @@ import { useLocale, useTranslations } from 'next-intl'
 import type { UserRole } from '@/types'
 import { useAuth } from '@/lib/auth/AuthContext'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import Image from 'next/image'
 import { FwdLogo } from '@/components/features/brand/FwdLogo'
 import { NotificationBell } from '@/components/features/notifications/NotificationBell'
 import {
@@ -16,6 +25,7 @@ import {
   FolderOpen,
   Send,
   LayoutDashboard,
+  LogOut,
   PlusCircle,
   Building2,
   User,
@@ -45,22 +55,63 @@ export function Navbar({
   hideLinksFor,
 }: NavbarProps) {
   const t = useTranslations('Nav')
+  const tCommon = useTranslations('Common')
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
-  const { userRole: role, resetAuth } = useAuth()
+  const { userRole: role, resetAuth, displayName, avatarUrl } = useAuth()
+
+  const initials = displayName
+    ? displayName
+        .split(' ')
+        .map((w) => w[0] ?? '')
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase()
+    : null
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up')
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   // isHero = true solo en la landing page cuando está arriba
   const isHero = heroMode && !scrolled
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
+    let lastScrollY = window.scrollY
+    let ticking = false
+
+    const updateScroll = () => {
+      const currentScrollY = window.scrollY
+      const shouldBeScrolled = currentScrollY > 20
+
+      setScrolled((prev) => {
+        if (prev !== shouldBeScrolled) {
+          return shouldBeScrolled
+        }
+        return prev
+      })
+
+      if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setScrollDirection('down')
+      } else if (currentScrollY < lastScrollY) {
+        setScrollDirection('up')
+      }
+
+      lastScrollY = currentScrollY
+      ticking = false
     }
-    window.addEventListener('scroll', handleScroll)
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScroll)
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -94,6 +145,13 @@ export function Navbar({
 
   const handleLocaleChange = (nextLocale: string) => {
     router.replace(pathname, { locale: nextLocale })
+  }
+
+  const handleLogout = async () => {
+    const { signOut } = await import('@/lib/auth/actions')
+    await signOut()
+    resetAuth()
+    router.push('/login')
   }
 
   const navLinksByRole: Record<UserRole, NavLink[]> = {
@@ -161,15 +219,24 @@ export function Navbar({
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full animate-slide-down-fade transition-all duration-[var(--duration-base)] ease-[var(--ease-out)] ${
-        isHero
-          ? 'border-b border-transparent bg-transparent py-3.5'
-          : 'border-b border-border/80 bg-background/95 backdrop-blur-xl shadow-md py-2'
-      }`}
+      data-scroll-direction={scrollDirection}
+      className={cn(
+        'sticky top-0 z-50 w-full animate-slide-down-fade transition-all duration-300 ease-in-out',
+        scrolled
+          ? 'border-b border-transparent bg-transparent py-1.5 shadow-none backdrop-blur-none'
+          : heroMode
+            ? 'border-b border-transparent bg-transparent py-4 shadow-none backdrop-blur-none'
+            : 'border-b border-border/50 bg-background/95 backdrop-blur-md shadow-none py-3',
+      )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Main row: Logo + Inline links + Right actions */}
-        <div className="flex justify-between h-16 items-center">
+        <div
+          className={cn(
+            'flex justify-between items-center transition-all duration-300 ease-in-out',
+            scrolled ? 'h-12' : 'h-16',
+          )}
+        >
           {/* Logo */}
           <div
             className={cn(
@@ -190,13 +257,14 @@ export function Navbar({
             </Link>
           </div>
 
-          {/* Desktop Navigation Links — INLINE when scrolled or not on landing/hero */}
+          {/* Desktop Navigation Links — INLINE when at the top */}
           <div
-            className={`hidden md:flex items-center space-x-1 lg:space-x-2 transition-all duration-300 ${
-              isHero
+            className={cn(
+              'hidden md:flex items-center space-x-1 lg:space-x-2 transition-all duration-300',
+              scrolled
                 ? 'opacity-0 invisible absolute pointer-events-none'
-                : 'opacity-100 visible'
-            }`}
+                : 'opacity-100 visible',
+            )}
           >
             {navLinks.map((link) => {
               const isActive = pathname === link.href
@@ -204,11 +272,12 @@ export function Navbar({
                 <Link
                   key={`inline-${link.href}`}
                   href={link.href}
-                  className={`relative px-3.5 py-2 rounded-full text-sm font-semibold transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5 ${
+                  className={cn(
+                    'relative px-3.5 py-2 rounded-full text-sm font-semibold transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5',
                     isActive
                       ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
                     {renderIcon(link.icon, 'w-4 h-4')}
@@ -268,30 +337,55 @@ export function Navbar({
               </button>
             </div>
 
-            {/* User Profile Avatar / Logout Dropdown */}
-            <div className="relative group shrink-0">
+            {/* Logout solo para egresado; empresario y admin lo tienen en su sidebar */}
+            {role === 'egresado' ? (
               <button
                 type="button"
-                className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 cursor-default ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
-                aria-label={t('profile')}
+                onClick={() => setLogoutOpen(true)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] shrink-0 ${
+                  isHero
+                    ? 'border-white/25 bg-white/15 text-white hover:bg-white/25'
+                    : 'border-border/60 bg-muted/30 text-muted-foreground hover:border-destructive/40 hover:text-destructive hover:bg-destructive/5'
+                }`}
               >
-                <User className="w-5 h-5 pointer-events-none" />
+                <LogOut className="w-3.5 h-3.5" />
+                {t('logout')}
               </button>
-              <div className="absolute right-0 top-full mt-2 w-36 bg-card border border-border rounded-xl shadow-xl p-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const { signOut } = await import('@/lib/auth/actions')
-                    await signOut()
-                    resetAuth()
-                    router.push('/login')
-                  }}
-                  className="w-full text-left px-3 py-1.5 rounded-lg text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
-                >
-                  {t('logout')}
-                </button>
+            ) : (
+              <div className="relative group shrink-0">
+                {role === 'empresario' ? (
+                  <Link
+                    href="/empresario/perfil"
+                    className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+                    aria-label={t('profile')}
+                  >
+                    {avatarUrl ? (
+                      <Image
+                        src={avatarUrl}
+                        alt={displayName ?? ''}
+                        width={36}
+                        height={36}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : initials ? (
+                      <span className="text-xs font-bold leading-none">
+                        {initials}
+                      </span>
+                    ) : (
+                      <User className="w-5 h-5" />
+                    )}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+                    aria-label={t('profile')}
+                  >
+                    <User className="w-5 h-5" />
+                  </button>
+                )}
               </div>
-            </div>
+            )}
           </div>
 
           {/* Mobile Controls */}
@@ -324,26 +418,27 @@ export function Navbar({
           </div>
         </div>
 
-        {/* Desktop Navigation Links — FLOATING CAPSULE PROTRUDING FROM THE BOTTOM */}
         <div
-          className={`hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 transition-all duration-300 ${
-            isHero
+          className={cn(
+            'hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 transition-all duration-300',
+            scrolled
               ? 'opacity-100 visible scale-100'
-              : 'opacity-0 invisible pointer-events-none scale-95 translate-y-0'
-          }`}
+              : 'opacity-0 invisible pointer-events-none scale-95 translate-y-0',
+          )}
         >
-          <div className="flex items-center space-x-1 lg:space-x-2 bg-surface/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-full py-2.5 px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <div className="flex items-center space-x-1 lg:space-x-2 bg-zinc-900/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-800/80 rounded-full py-2 px-5 shadow-[0_8px_30px_rgb(0,0,0,0.15)]">
             {navLinks.map((link) => {
               const isActive = pathname === link.href
               return (
                 <Link
                   key={`float-${link.href}`}
                   href={link.href}
-                  className={`relative px-4 py-2 rounded-full text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5 ${
+                  className={cn(
+                    'relative px-4 py-2 rounded-full text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5',
                     isActive
-                      ? 'text-ink-strong bg-primary/10'
-                      : 'text-ink hover:text-ink-strong hover:bg-muted/40'
-                  }`}
+                      ? 'text-white bg-primary'
+                      : 'text-white/70 hover:text-white hover:bg-white/10',
+                  )}
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
                     {renderIcon(link.icon, 'w-4 h-4')}
@@ -404,10 +499,48 @@ export function Navbar({
                   </div>
                 </>
               )}
+              {role === 'egresado' && (
+                <button
+                  type="button"
+                  onClick={() => setLogoutOpen(true)}
+                  className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-base font-semibold text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  {t('logout')}
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
+      <Dialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('confirmLogoutTitle')}</DialogTitle>
+            <DialogDescription>{t('confirmLogoutDesc')}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setLogoutOpen(false)}
+              className="font-semibold"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="magenta"
+              onClick={() => void handleLogout()}
+              className="font-semibold"
+            >
+              {t('logout')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </nav>
   )
 }

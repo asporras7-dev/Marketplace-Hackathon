@@ -89,12 +89,47 @@
     "companyBenefit1": "Egresados de FWD listos para aportar valor desde el primer día.",
     "companyBenefit2": "Proyectos de corta duración ágiles y con costos optimizados.",
     "companyBenefit3": "Moderación y filtrado de candidatos para asegurar el perfil ideal.",
-    "statsProjectsNumber": "+500",
-    "statsProjectsLabel": "Proyectos Completados",
-    "statsTalentNumber": "+1,200",
-    "statsTalentLabel": "Desarrolladores Registrados",
-    "statsCompaniesNumber": "+150",
-    "statsCompaniesLabel": "Empresas Aliadas"
+    "statsProjectsNumber": "450+",
+    "statsProjectsLabel": "Proyectos Finalizados",
+    "statsTalentNumber": "1,200+",
+    "statsTalentLabel": "Desarrolladores Activos",
+    "statsCompaniesNumber": "85+",
+    "statsCompaniesLabel": "Empresas Partner",
+    "howItWorksTitle": "¿Cómo funciona el ecosistema?",
+    "howItWorksSubtitle": "Dos caminos, un mismo objetivo: la excelencia tecnológica y el crecimiento profesional mutuo.",
+    "howItWorksCompanyTitle": "Para Empresas",
+    "howItWorksCompanyBenefit1": "Acceso directo a perfiles validados técnica y humanamente.",
+    "howItWorksCompanyBenefit2": "Filtros avanzados por stack tecnológico y experiencia.",
+    "howItWorksCompanyBenefit3": "Gestión de entrevistas y contrataciones centralizada.",
+    "howItWorksCompanyCta": "Registrar mi Empresa",
+    "howItWorksGraduateTitle": "Para Egresados",
+    "howItWorksGraduateDesc": "Muestra tu portafolio, conecta con reclutadores de primer nivel y escala tu carrera profesional.",
+    "howItWorksGraduateCta": "Completar mi Perfil",
+    "vanguardTitle": "Dominio de Vanguardia",
+    "vanguardSubtitle": "Nuestros estudiantes se especializan en las tecnologías más demandadas por el mercado global.",
+    "vanguardTagFrontend": "FRONTEND",
+    "vanguardTagBackend": "BACKEND",
+    "vanguardTagCloud": "CLOUD",
+    "vanguardCard1Title": "MERN Stack",
+    "vanguardCard1Desc": "React, Node.js, Express",
+    "vanguardCard2Title": "Python / Data",
+    "vanguardCard2Desc": "Pandas, Scikit-learn",
+    "vanguardCard3Title": "AWS / Azure",
+    "vanguardCard3Desc": "Architecture, Lambda",
+    "vanguardCard4Title": "UI / UX Design",
+    "vanguardCard4Desc": "Figma, Design Systems",
+    "successStoriesTitle": "Historias de Éxito",
+    "successStoriesSubtitle": "Conoce a los protagonistas que están transformando la industria.",
+    "successStory1Tag": "Valeria | Frontend Dev",
+    "successStory1Quote": "\"FWD me dio las herramientas no solo para programar, sino para pensar como una Ingeniera de clase mundial.\"",
+    "successStory2Tag": "Ricardo | Cloud Engineer",
+    "successStory2Quote": "\"La conexión directa con empresas reales fue el diferenciador. Hoy lidero proyectos para toda Latinoamérica.\"",
+    "successStory3Tag": "Clara | Product Designer",
+    "successStory3Quote": "\"El marketplace es la vitrina perfecta. Encontré mi empleo actual en menos de un mes de graduarme.\"",
+    "joinTitle": "Esto es MarketPlace FWD Costa Rica.",
+    "joinSubtitle": "Sea que busques tu primer empleo en tech o el próximo gran talento para tu equipo, el Marketplace FWD es el lugar donde ocurre la magia.",
+    "joinCtaFree": "Empieza hoy gratis",
+    "joinCtaConsulting": "Agendar Consultoría"
   },
   "Login": {
     "title": "Ingresa a FWD Talent",
@@ -289,6 +324,8 @@
     "myContractsDesc": "Proyectos en los que fuiste seleccionado. Accedé a tus entregables desde aquí.",
     "emptyContracts": "Todavía no tenés contrataciones activas.",
     "emptyContractsDesc": "Cuando una empresa te seleccione para un proyecto, aparecerá aquí.",
+    "contractFilterAll": "Todos",
+    "contractFilterEmpty": "No hay contrataciones en este estado.",
     "contractActive": "Vigente",
     "contractFinished": "Finalizado",
     "contractPaused": "Pausado",
@@ -370,7 +407,8 @@
     "technicalDocUrlHelp": "Requerido: subí un PDF o ZIP (máx. 5 MB) con la documentación de tu propuesta.",
     "unexpectedError": "Ocurrió un error inesperado",
     "withdrawOffer": "Retirar Oferta",
-    "confirmWithdraw": "¿Estás seguro de que deseas retirar tu postulación?",
+    "withdrawDialogTitle": "Retirar postulación",
+    "confirmWithdraw": "¿Estás seguro de que deseas retirar tu postulación? Esta acción no se puede deshacer.",
     "withdrawSuccess": "Postulación retirada con éxito.",
     "withdrawError": "Error al retirar la postulación.",
     "deliverables": "Entregables del Proyecto",
@@ -390,6 +428,10 @@
     "uploadClickToSelect": "Haz clic para adjuntar",
     "uploadMaxSize": "Máx. 50 MB",
     "uploadRemoveFile": "Quitar archivo",
+    "uploadConfirmTitle": "Confirmar subida",
+    "uploadConfirmDescHito": "¿Confirmás que querés subir este hito? Una vez enviado, no se puede eliminar.",
+    "uploadConfirmDescFinal": "¿Confirmás que querés subir el entregable final? Esta acción no se puede revertir.",
+    "uploadConfirmBtn": "Subir",
     "tipoParcial": "Hito parcial",
     "tipoFinal": "Entregable final",
     "versionLabel": "v{n}",
@@ -892,7 +934,13 @@
     "rateEgresadoCommentLabel": "Comentario (opcional)",
     "rateEgresadoCommentPlaceholder": "Compartí tu experiencia trabajando con este egresado...",
     "rateEgresadoSubmit": "Enviar calificacion",
-    "rateEgresadoAlreadyRated": "Ya calificaste a este egresado"
+    "rateEgresadoAlreadyRated": "Ya calificaste a este egresado",
+    "contratacionInicio": "Fecha de inicio",
+    "contratacionFinEstimada": "Fin estimado",
+    "periodoVigente": "Contrato vigente",
+    "periodoPausado": "Pausado",
+    "periodoFinalizado": "Finalizado",
+    "periodoCancelado": "Cancelado"
   },
   "Admin": {
     "dashboard": "Panel Administrador",
@@ -1324,7 +1372,9 @@
     "labelSitioWeb": "Sitio web (opcional)",
     "errorCedula": "Ingresá una cédula o identificación válida.",
     "errorSitioWeb": "Ingresá una URL válida (ej. https://...).",
-    "emailNotAllowed": "Tu correo no está habilitado como egresado FWD. Comunicáte con Forward Costa Rica."
+    "emailNotAllowed": "Tu correo no está habilitado como egresado FWD. Comunicáte con Forward Costa Rica.",
+    "backToLogin": "Regresar al login",
+    "logout": "Cerrar sesión"
   },
   "Account": {
     "pendingBanner": "Tu cuenta está pendiente de aprobación por el equipo FWD. Las acciones se habilitarán una vez aprobada.",
@@ -1524,7 +1574,12 @@
     "errorSkillExists": "Esta habilidad ya existe",
     "cropImageTitle": "Recortar imagen",
     "cropImageDesc": "Ajustá tu imagen para que se vea perfecta.",
-    "cropAndUpload": "Recortar y Subir"
+    "cropAndUpload": "Recortar y Subir",
+    "defaultRole": "Egresado FWD",
+    "ratingsSection": "Calificaciones recibidas",
+    "noRatings": "Aún no tenés calificaciones de empresas.",
+    "ratingAverage": "Promedio",
+    "ratingFrom": "Empresa"
   },
   "EgresadoMensajes": {
     "title": "Mis Mensajes",
@@ -1544,7 +1599,9 @@
     "errorEnvio": "No se pudo enviar el mensaje. Intentá de nuevo.",
     "proyectoLabel": "Proyecto",
     "empresaLabel": "Empresa",
-    "relativeDateYesterday": "Ayer"
+    "relativeDateYesterday": "Ayer",
+    "msgLeido": "Visto",
+    "msgNoLeido": "Enviado"
   },
   "Ranking": {
     "snippetTitle": "Ranking de Talento",
@@ -1583,7 +1640,9 @@
     "errorCarga": "No se pudieron cargar los mensajes. Intentá de nuevo.",
     "errorEnvio": "No se pudo enviar el mensaje. Intentá de nuevo.",
     "proyectoLabel": "Proyecto",
-    "egresadoLabel": "Egresado"
+    "egresadoLabel": "Egresado",
+    "msgLeido": "Visto",
+    "msgNoLeido": "Enviado"
   },
   "EgresadoEmpresa": {
     "pageTitle": "Perfil de la Empresa",
@@ -1592,6 +1651,15 @@
     "noDesc": "Sin descripción disponible.",
     "backToContracts": "Volver a mis contrataciones",
     "tipoEmpresa": "Empresa formal",
-    "tipoEmprendedor": "Emprendedor individual"
+    "tipoEmprendedor": "Emprendedor individual",
+    "rateTitle": "Calificar experiencia",
+    "rateDesc": "Dejá tu opinión sobre trabajar con esta empresa.",
+    "rateProjectLabel": "Proyecto",
+    "ratingLabel": "Puntuación",
+    "commentLabel": "Comentario (opcional)",
+    "commentPlaceholder": "¿Cómo fue la experiencia?",
+    "submitRating": "Enviar calificación",
+    "alreadyRated": "Ya calificaste tu experiencia con esta empresa.",
+    "rateSuccess": "Calificación enviada con éxito."
   }
 }

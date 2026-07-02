@@ -33,11 +33,17 @@ vi.mock('@/lib/supabase/admin', () => ({
   })),
 }))
 
-import { postularse, retirarPostulacion } from './actions'
+import {
+  postularse,
+  retirarPostulacion,
+  getSignedUrlDocumentacionTecnica,
+} from './actions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { requireRole, requireVerifiedEgresado } from '@/lib/auth/guards'
 
 const mockedServer = vi.mocked(createSupabaseServerClient)
+const mockedAdmin = vi.mocked(createSupabaseAdminClient)
 const mockedRequireRole = vi.mocked(requireRole)
 const mockedVerifiedEgresado = vi.mocked(requireVerifiedEgresado)
 
@@ -324,6 +330,233 @@ describe('postularse', () => {
 
     const result = await postularse(buildFormData())
     expect(result.ok).toBe(true)
+  })
+
+  it('borra el archivo huérfano del Storage si el insert falla (cleanup)', async () => {
+    const removeMock = vi.fn().mockResolvedValue({ data: [], error: null })
+    mockedServer.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: USER_ID } },
+          error: null,
+        }),
+      },
+      from: vi.fn((table: string) => {
+        if (table === 'estudiantes') {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                single: vi.fn().mockResolvedValue({
+                  data: {
+                    id_estudiante: EST_ID,
+                    estado_verificacion: 'verificado',
+                  },
+                  error: null,
+                }),
+              })),
+            })),
+          }
+        }
+        if (table === 'proyectos') {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                single: vi.fn().mockResolvedValue({
+                  data: {
+                    estado: 'abierto',
+                    fecha_cierre: null,
+                    is_active: true,
+                  },
+                  error: null,
+                }),
+              })),
+            })),
+          }
+        }
+        if (table === 'participaciones') {
+          return {
+            insert: vi
+              .fn()
+              .mockResolvedValue({ error: { message: 'boom', code: '08006' } }),
+          }
+        }
+        return {}
+      }),
+      storage: {
+        from: vi.fn(() => ({
+          upload: vi
+            .fn()
+            .mockResolvedValue({ data: { path: 'subido' }, error: null }),
+          remove: removeMock,
+        })),
+      },
+    } as never)
+
+    const result = await postularse(buildFormData())
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('database_error')
+    // El huérfano se limpia: remove() recibe el path recién subido.
+    expect(removeMock).toHaveBeenCalledTimes(1)
+    expect(removeMock).toHaveBeenCalledWith([
+      expect.stringContaining(PROJ_UUID),
+    ])
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// getSignedUrlDocumentacionTecnica
+// ─────────────────────────────────────────────────────────────────────────────
+
+const EMP_ID = 'emp-1'
+
+function serverConEmpresario(empresario: unknown) {
+  return {
+    auth: {
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: 'usr-emp-1' } },
+        error: null,
+      }),
+    },
+    from: vi.fn((table: string) => {
+      if (table === 'empresarios') {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: empresario, error: null }),
+            })),
+          })),
+        }
+      }
+      return {}
+    }),
+  }
+}
+
+function adminParaDoc(opts: {
+  part: unknown
+  proyecto: unknown
+  signed?: { data: { signedUrl: string } | null; error: unknown }
+}) {
+  const createSignedUrl = vi.fn().mockResolvedValue(
+    opts.signed ?? {
+      data: { signedUrl: 'https://signed.example/doc?token=abc' },
+      error: null,
+    },
+  )
+  const client = {
+    from: vi.fn((table: string) => {
+      if (table === 'participaciones') {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: opts.part, error: null }),
+            })),
+          })),
+        }
+      }
+      if (table === 'proyectos') {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              maybeSingle: vi
+                .fn()
+                .mockResolvedValue({ data: opts.proyecto, error: null }),
+            })),
+          })),
+        }
+      }
+      return {}
+    }),
+    storage: { from: vi.fn(() => ({ createSignedUrl })) },
+  }
+  return { client, createSignedUrl }
+}
+
+describe('getSignedUrlDocumentacionTecnica', () => {
+  it('retorna invalid_input si el id no es UUID', async () => {
+    const result = await getSignedUrlDocumentacionTecnica('no-es-uuid')
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('invalid_input')
+  })
+
+  it('retorna unauthenticated si no hay sesión', async () => {
+    mockedServer.mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: null },
+          error: { message: 'no auth' },
+        }),
+      },
+      from: vi.fn(),
+    } as never)
+    const result = await getSignedUrlDocumentacionTecnica(PART_UUID)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('unauthenticated')
+  })
+
+  it('retorna unauthorized si el usuario no es empresario', async () => {
+    mockedServer.mockResolvedValue(serverConEmpresario(null) as never)
+    const result = await getSignedUrlDocumentacionTecnica(PART_UUID)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('unauthorized')
+  })
+
+  it('retorna unauthorized si el empresario NO es dueño del proyecto', async () => {
+    mockedServer.mockResolvedValue(
+      serverConEmpresario({ id_empresario: EMP_ID }) as never,
+    )
+    const { client, createSignedUrl } = adminParaDoc({
+      part: {
+        documentacion_tecnica: `${PROJ_UUID}/usr/x.pdf`,
+        id_proyecto: PROJ_UUID,
+      },
+      proyecto: { id_empresario: 'emp-OTRO' },
+    })
+    mockedAdmin.mockReturnValue(client as never)
+
+    const result = await getSignedUrlDocumentacionTecnica(PART_UUID)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error).toBe('unauthorized')
+    expect(createSignedUrl).not.toHaveBeenCalled()
+  })
+
+  it('devuelve la URL legacy externa tal cual, sin firmar', async () => {
+    mockedServer.mockResolvedValue(
+      serverConEmpresario({ id_empresario: EMP_ID }) as never,
+    )
+    const legacyUrl = 'https://drive.google.com/file/d/abc/view'
+    const { client, createSignedUrl } = adminParaDoc({
+      part: { documentacion_tecnica: legacyUrl, id_proyecto: PROJ_UUID },
+      proyecto: { id_empresario: EMP_ID },
+    })
+    mockedAdmin.mockReturnValue(client as never)
+
+    const result = await getSignedUrlDocumentacionTecnica(PART_UUID)
+    expect(result.ok).toBe(true)
+    if (result.ok) expect(result.data.url).toBe(legacyUrl)
+    expect(createSignedUrl).not.toHaveBeenCalled()
+  })
+
+  it('firma el path del bucket privado y devuelve la signed URL', async () => {
+    mockedServer.mockResolvedValue(
+      serverConEmpresario({ id_empresario: EMP_ID }) as never,
+    )
+    const path = `${PROJ_UUID}/usr/123-x.pdf`
+    const { client, createSignedUrl } = adminParaDoc({
+      part: { documentacion_tecnica: path, id_proyecto: PROJ_UUID },
+      proyecto: { id_empresario: EMP_ID },
+    })
+    mockedAdmin.mockReturnValue(client as never)
+
+    const result = await getSignedUrlDocumentacionTecnica(PART_UUID)
+    expect(result.ok).toBe(true)
+    if (result.ok)
+      expect(result.data.url).toBe('https://signed.example/doc?token=abc')
+    expect(createSignedUrl).toHaveBeenCalledWith(path, 3600)
   })
 })
 

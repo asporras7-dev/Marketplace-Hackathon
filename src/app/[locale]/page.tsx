@@ -1,9 +1,20 @@
 import { getTranslations } from 'next-intl/server'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { CheckCircle2, Users, Award, Sparkles } from 'lucide-react'
+import {
+  CheckCircle2,
+  Sparkles,
+  Building2,
+  GraduationCap,
+  Code2,
+  Database,
+  Cloud,
+  Palette,
+  PlayCircle,
+} from 'lucide-react'
 import { HeroBgCarousel } from '@/components/ui/HeroBgCarousel'
 import { LandingHeroCtas } from '@/components/features/landing/LandingHeroCtas'
+import Image from 'next/image'
 
 const CAROUSEL_SLIDES = [
   { src: '/images/carousel/carousel-1.jpg', alt: 'Equipo FWD trabajando' },
@@ -130,67 +141,314 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* Benefits */}
-        <section className="py-20 lg:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div className="space-y-8 bg-card/40 border border-border/80 p-8 rounded-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-[4px] bg-primary" />
-              <div className="space-y-2">
-                <div className="p-3 bg-primary/10 text-primary w-fit rounded-xl">
-                  <Award className="w-6 h-6" />
-                </div>
-                <h3 className="text-2xl font-bold tracking-tight font-heading">
-                  {tLanding('egresadoTitle')}
-                  <span className="text-primary">.</span>
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {tLanding('egresadoDesc')}
-                </p>
-              </div>
-              <ul className="space-y-4">
-                {[
-                  tLanding('egresadoBenefit1'),
-                  tLanding('egresadoBenefit2'),
-                  tLanding('egresadoBenefit3'),
-                ].map((benefit, i) => (
-                  <li key={i} className="flex gap-3 items-start">
-                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground leading-relaxed">
-                      {benefit}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+        {/* How It Works Section */}
+        <section className="py-20 lg:py-32 bg-surface">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading text-ink-strong">
+                {tLanding('howItWorksTitle')}
+              </h2>
+              <p className="text-lg text-ink-muted leading-relaxed">
+                {tLanding('howItWorksSubtitle')}
+              </p>
             </div>
 
-            <div className="space-y-8 bg-card/40 border border-border/80 p-8 rounded-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-[4px] bg-secondary" />
-              <div className="space-y-2">
-                <div className="p-3 bg-secondary/10 text-secondary w-fit rounded-xl">
-                  <Users className="w-6 h-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {/* For Companies Card */}
+              <div className="bg-secondary text-secondary-foreground p-8 sm:p-10 rounded-3xl shadow-lg flex flex-col justify-between transition-transform duration-300 hover:scale-[1.01]">
+                <div className="space-y-6">
+                  <div className="p-3 bg-white/10 text-white w-fit rounded-2xl">
+                    <Building2 className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-heading text-white">
+                    {tLanding('howItWorksCompanyTitle')}
+                  </h3>
+                  <ul className="space-y-4">
+                    {[
+                      tLanding('howItWorksCompanyBenefit1'),
+                      tLanding('howItWorksCompanyBenefit2'),
+                      tLanding('howItWorksCompanyBenefit3'),
+                    ].map((benefit, i) => (
+                      <li key={i} className="flex gap-3 items-start">
+                        <CheckCircle2 className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                        <span className="text-sm sm:text-base text-white/90 leading-relaxed">
+                          {benefit}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <h3 className="text-2xl font-bold tracking-tight font-heading">
-                  {tLanding('companyTitle')}
-                  <span className="text-secondary">.</span>
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {tLanding('companyDesc')}
+                <div className="mt-10">
+                  <button className="w-fit px-6 py-3 bg-white text-secondary font-bold rounded-2xl transition-colors hover:bg-white/90 shadow-md">
+                    {tLanding('howItWorksCompanyCta')}
+                  </button>
+                </div>
+              </div>
+
+              {/* For Graduates Card */}
+              <div className="bg-accent text-white p-8 sm:p-10 rounded-3xl shadow-lg flex flex-col justify-between transition-transform duration-300 hover:scale-[1.01] hover:shadow-md">
+                <div className="space-y-6">
+                  <div className="p-3 bg-white/20 text-white w-fit rounded-2xl">
+                    <GraduationCap className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-heading text-white">
+                    {tLanding('howItWorksGraduateTitle')}
+                  </h3>
+                  <p className="text-sm sm:text-base text-white/90 leading-relaxed">
+                    {tLanding('howItWorksGraduateDesc')}
+                  </p>
+                  <ul className="space-y-4">
+                    {[
+                      tLanding('egresadoBenefit1'),
+                      tLanding('egresadoBenefit2'),
+                      tLanding('egresadoBenefit3'),
+                    ].map((benefit, i) => (
+                      <li key={i} className="flex gap-3 items-start">
+                        <CheckCircle2 className="w-5 h-5 text-white shrink-0 mt-0.5" />
+                        <span className="text-sm sm:text-base text-white/95 leading-relaxed">
+                          {benefit}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-10">
+                  <button className="w-fit px-6 py-3 bg-white text-accent font-bold rounded-2xl transition-colors hover:bg-white/90 shadow-md">
+                    {tLanding('howItWorksGraduateCta')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Vanguard Domain Section */}
+        <section className="py-20 lg:py-32 bg-surface-sunken">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+              <div className="space-y-4 max-w-2xl">
+                <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading text-ink-strong">
+                  {tLanding('vanguardTitle')}
+                </h2>
+                <p className="text-lg text-ink-muted leading-relaxed">
+                  {tLanding('vanguardSubtitle')}
                 </p>
               </div>
-              <ul className="space-y-4">
-                {[
-                  tLanding('companyBenefit1'),
-                  tLanding('companyBenefit2'),
-                  tLanding('companyBenefit3'),
-                ].map((benefit, i) => (
-                  <li key={i} className="flex gap-3 items-start">
-                    <CheckCircle2 className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground leading-relaxed">
-                      {benefit}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-secondary/10 text-secondary tracking-wider font-heading">
+                  {tLanding('vanguardTagFrontend')}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-primary/10 text-primary tracking-wider font-heading">
+                  {tLanding('vanguardTagBackend')}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-accent/20 text-accent-foreground tracking-wider font-heading">
+                  {tLanding('vanguardTagCloud')}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Card 1 */}
+              <div className="bg-surface p-8 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center transition-all hover:shadow-md hover:scale-[1.02]">
+                <div className="p-4 bg-primary/10 text-primary rounded-2xl mb-6">
+                  <Code2 className="w-6 h-6" />
+                </div>
+                <h4 className="text-lg font-bold font-heading text-ink-strong mb-2">
+                  {tLanding('vanguardCard1Title')}
+                </h4>
+                <p className="text-xs text-ink-muted">
+                  {tLanding('vanguardCard1Desc')}
+                </p>
+              </div>
+              {/* Card 2 */}
+              <div className="bg-surface p-8 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center transition-all hover:shadow-md hover:scale-[1.02]">
+                <div className="p-4 bg-warning/10 text-warning rounded-2xl mb-6">
+                  <Database className="w-6 h-6" />
+                </div>
+                <h4 className="text-lg font-bold font-heading text-ink-strong mb-2">
+                  {tLanding('vanguardCard2Title')}
+                </h4>
+                <p className="text-xs text-ink-muted">
+                  {tLanding('vanguardCard2Desc')}
+                </p>
+              </div>
+              {/* Card 3 */}
+              <div className="bg-surface p-8 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center transition-all hover:shadow-md hover:scale-[1.02]">
+                <div className="p-4 bg-accent/10 text-accent rounded-2xl mb-6">
+                  <Cloud className="w-6 h-6" />
+                </div>
+                <h4 className="text-lg font-bold font-heading text-ink-strong mb-2">
+                  {tLanding('vanguardCard3Title')}
+                </h4>
+                <p className="text-xs text-ink-muted">
+                  {tLanding('vanguardCard3Desc')}
+                </p>
+              </div>
+              {/* Card 4 */}
+              <div className="bg-surface p-8 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center transition-all hover:shadow-md hover:scale-[1.02]">
+                <div className="p-4 bg-magenta/10 text-magenta rounded-2xl mb-6">
+                  <Palette className="w-6 h-6" />
+                </div>
+                <h4 className="text-lg font-bold font-heading text-ink-strong mb-2">
+                  {tLanding('vanguardCard4Title')}
+                </h4>
+                <p className="text-xs text-ink-muted">
+                  {tLanding('vanguardCard4Desc')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Success Stories Section */}
+        <section className="py-20 lg:py-32 bg-surface">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading text-ink-strong">
+                {tLanding('successStoriesTitle')}
+              </h2>
+              <p className="text-lg text-ink-muted leading-relaxed">
+                {tLanding('successStoriesSubtitle')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Card 1 */}
+              <div className="space-y-4">
+                <div className="relative group overflow-hidden rounded-2xl aspect-[16/10] bg-surface-sunken shadow-sm border border-border">
+                  <Image
+                    src="/images/valeria.png"
+                    alt={tLanding('successStory1Tag')}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                    <PlayCircle className="w-16 h-16 text-white/90 drop-shadow-md transition-transform duration-300 hover:scale-110 cursor-pointer" />
+                  </div>
+                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold text-ink-strong shadow-sm">
+                    {tLanding('successStory1Tag')}
+                  </div>
+                </div>
+                <p className="text-sm sm:text-base italic text-ink leading-relaxed">
+                  {tLanding('successStory1Quote')}
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="space-y-4">
+                <div className="relative group overflow-hidden rounded-2xl aspect-[16/10] bg-surface-sunken shadow-sm border border-border">
+                  <Image
+                    src="/images/ricardo.png"
+                    alt={tLanding('successStory2Tag')}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                    <PlayCircle className="w-16 h-16 text-white/90 drop-shadow-md transition-transform duration-300 hover:scale-110 cursor-pointer" />
+                  </div>
+                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold text-ink-strong shadow-sm">
+                    {tLanding('successStory2Tag')}
+                  </div>
+                </div>
+                <p className="text-sm sm:text-base italic text-ink leading-relaxed">
+                  {tLanding('successStory2Quote')}
+                </p>
+              </div>
+
+              {/* Card 3 */}
+              <div className="space-y-4">
+                <div className="relative group overflow-hidden rounded-2xl aspect-[16/10] bg-surface-sunken shadow-sm border border-border">
+                  <Image
+                    src="/images/clara.png"
+                    alt={tLanding('successStory3Tag')}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                    <PlayCircle className="w-16 h-16 text-white/90 drop-shadow-md transition-transform duration-300 hover:scale-110 cursor-pointer" />
+                  </div>
+                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold text-ink-strong shadow-sm">
+                    {tLanding('successStory3Tag')}
+                  </div>
+                </div>
+                <p className="text-sm sm:text-base italic text-ink leading-relaxed">
+                  {tLanding('successStory3Quote')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Join Section */}
+        <section className="py-20 lg:py-32 px-4 sm:px-6 lg:px-8 bg-surface-sunken">
+          <div className="max-w-7xl mx-auto">
+            <div className="relative overflow-hidden rounded-3xl bg-secondary text-secondary-foreground shadow-xl">
+              {/* Background accent */}
+              <div className="absolute top-0 right-0 w-[50%] h-full opacity-10 bg-radial-gradient from-accent to-transparent pointer-events-none" />
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center p-8 sm:p-12 lg:p-16">
+                {/* Content Column */}
+                <div className="lg:col-span-7 space-y-6 text-left">
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight font-heading text-white leading-tight">
+                    {tLanding('joinTitle')}
+                  </h2>
+                  <p className="text-base sm:text-lg text-white/80 max-w-xl leading-relaxed">
+                    {tLanding('joinSubtitle')}
+                  </p>
+                  {/* Buttons removed */}
+                </div>
+
+                {/* Code Window Mockup Column */}
+                <div className="lg:col-span-5 hidden lg:block">
+                  <div className="bg-ink-strong/95 border border-white/10 rounded-2xl shadow-elevated overflow-hidden font-mono text-xs text-white/70 select-none">
+                    {/* Window Header */}
+                    <div className="bg-ink-strong/80 px-4 py-3 border-b border-white/5 flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-destructive/80" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-warning/80" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-success/80" />
+                    </div>
+                    {/* Window Body */}
+                    <div className="p-6 space-y-2 leading-relaxed text-white/60">
+                      <div>
+                        <span className="text-accent">const</span>{' '}
+                        <span className="text-white">talent</span> ={' '}
+                        <span className="text-accent">await</span>{' '}
+                        <span className="text-highlight">FWD</span>.
+                        <span className="text-primary-foreground">
+                          findCandidate
+                        </span>
+                        (&#123;
+                      </div>
+                      <div className="pl-4">
+                        <span className="text-magenta">skills</span>: [
+                        <span className="text-warning">&apos;React&apos;</span>,{' '}
+                        <span className="text-warning">&apos;Node&apos;</span>],
+                      </div>
+                      <div className="pl-4">
+                        <span className="text-magenta">location</span>:{' '}
+                        <span className="text-warning">
+                          &apos;Costa Rica&apos;
+                        </span>
+                      </div>
+                      <div>&#125;);</div>
+                      <div className="pt-2">
+                        <span className="text-accent">if</span> (talent) &#123;
+                      </div>
+                      <div className="pl-4">
+                        <span className="text-highlight">hiringMode</span>.
+                        <span className="text-primary-foreground">
+                          activate
+                        </span>
+                        ();
+                      </div>
+                      <div>&#125;</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

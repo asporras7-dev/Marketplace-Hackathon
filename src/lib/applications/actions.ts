@@ -152,9 +152,14 @@ export async function postularse(formData: FormData): Promise<Result<void>> {
   const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
   const archivoPath = `${parsed.data.id_proyecto}/${userData.user.id}/${uniqueSuffix}.${ext}`
 
+  // `contentType` explícito y derivado de la extensión ya validada: el bucket
+  // exige un MIME del allowlist (pdf/zip) y supabase-js, para un File, usa el
+  // `file.type` del browser, que en Windows puede llegar vacío u 'octet-stream'
+  // y el bucket lo rechazaría con un storage_error no accionable.
+  const contentType = ext === 'pdf' ? 'application/pdf' : 'application/zip'
   const { error: uploadError } = await supabase.storage
     .from(DOC_TECNICA_BUCKET)
-    .upload(archivoPath, file)
+    .upload(archivoPath, file, { contentType })
   if (uploadError) {
     logger.error('postularse: fallo al subir la documentación técnica', {
       error: uploadError.message,

@@ -309,3 +309,84 @@ export async function getContratacionConRatingByParticipacion(
     existingRating: rating ?? null,
   })
 }
+
+export interface CalificacionRecibida {
+  id_evaluacion: string
+  puntuacion: number
+  comentario: string | null
+  evaluado_at: string
+  nombreEmpresa: string
+  tituloProyecto: string
+}
+
+export async function getMisCalificacionesRecibidas(): Promise<
+  Result<CalificacionRecibida[]>
+> {
+  const roleResult = await requireRole('egresado')
+  if (!roleResult.ok) return err('forbidden')
+
+  const supabase = await createSupabaseServerClient()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+  if (authError || !user) return err('unauthenticated')
+
+  const { data: estudiante, error: estError } = await supabase
+    .from('estudiantes')
+    .select('id_estudiante')
+    .eq('id_usuario', user.id)
+    .maybeSingle()
+
+  if (estError || !estudiante) return err('unauthorized')
+
+  const { data, error } = await supabase
+    .from('evaluaciones')
+    .select(
+      `
+      id_evaluacion,
+      puntuacion,
+      comentario,
+      evaluado_at,
+      empresarios!inner(
+        nombre_empresa,
+        usuarios!empresarios_id_usuario_fkey(nombre, apellido_1)
+      ),
+      contrataciones!inner(
+        participaciones!inner(
+          proyectos!inner(titulo)
+        )
+      )
+    `,
+    )
+    .eq('id_estudiante', estudiante.id_estudiante)
+    .order('evaluado_at', { ascending: false })
+
+  if (error) {
+    logger.error('getMisCalificacionesRecibidas: fallo en consulta', {
+      error: error.message,
+    })
+    return err('database_error')
+  }
+
+  const items: CalificacionRecibida[] = (data ?? []).map((row) => {
+    const emp = row.empresarios
+    const nombreEmpresa =
+      emp.nombre_empresa ||
+      [emp.usuarios?.nombre, emp.usuarios?.apellido_1].filter(Boolean).join(' ')
+
+    const tituloProyecto =
+      row.contrataciones?.participaciones?.proyectos?.titulo ?? ''
+
+    return {
+      id_evaluacion: row.id_evaluacion,
+      puntuacion: row.puntuacion,
+      comentario: row.comentario,
+      evaluado_at: row.evaluado_at,
+      nombreEmpresa,
+      tituloProyecto,
+    }
+  })
+
+  return ok(items)
+}

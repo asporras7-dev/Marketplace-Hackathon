@@ -313,13 +313,16 @@ export function EntregablesClient({
           </CardContent>
         </Card>
 
-        {/* Layout de dos columnas: upload sidebar izquierdo + contenido principal derecho.
-            Sin items-start → stretch por defecto: ambas columnas igualan altura del contenido más alto. */}
-        <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[300px_1fr] lg:gap-6">
-          {/* Columna izquierda: panel de carga, se extiende hasta donde llegue la columna derecha */}
-          <div className="lg:h-full">
-            {contratacion.estado_periodo === 'vigente' ? (
-              <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative lg:h-full">
+        {/* Grid de dos columnas:
+            - vigente    → izq: panel de carga   | der: entregables
+            - finalizado → izq: calificaciones   | der: entregables
+            - pausado/cancelado → izq: aviso     | der: entregables */}
+        <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start">
+          {/* ── Columna izquierda ── */}
+          <div className="space-y-6">
+            {/* ESTADO: vigente → panel de carga */}
+            {contratacion.estado_periodo === 'vigente' && (
+              <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-primary via-secondary to-accent" />
                 <CardContent className="p-6 pt-8 space-y-6">
                   <SectionHeading>
@@ -607,252 +610,255 @@ export function EntregablesClient({
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                {tEgresado('uploadDisabledNotVigente')}
-              </div>
             )}
-          </div>
 
-          {/* Columna derecha: calificación y lista de entregables */}
-          <div className="space-y-6">
-            {/* Calificación de la Empresa: solo con la contratación finalizada,
-                que es lo que exige la RLS evaluaciones_empresarios_insert_estudiante. */}
+            {/* ESTADO: finalizado → cards de calificación */}
             {contratacion.estado_periodo === 'finalizado' && (
-              <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-warning to-highlight" />
-                <CardContent className="p-6 pt-8 space-y-6">
-                  <div className="space-y-1 text-left">
-                    <h3 className="text-base font-extrabold font-heading text-foreground">
-                      {tEgresado('rateCompanyTitle')}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {tEgresado('rateCompanyDesc')}
-                    </p>
-                  </div>
-
-                  {hasRated ? (
-                    <div className="space-y-4 text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-muted-foreground mr-2">
-                          {tEgresado('ratingLabel')}:
-                        </span>
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`w-4 h-4 ${
-                                star <= ratingScore
-                                  ? 'text-highlight fill-highlight'
-                                  : 'text-muted-foreground/25'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      {ratingComment && (
-                        <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2 text-xs text-foreground/90">
-                          <span className="font-bold block mb-1 text-muted-foreground uppercase text-[10px]">
-                            {tEgresado('commentLabel')}
-                          </span>
-                          {ratingComment}
-                        </div>
-                      )}
-                      <p className="text-xs text-accent font-semibold">
-                        {tEgresado('alreadyRated')}
+              <>
+                {/* Calificación de la Empresa */}
+                <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative">
+                  <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-warning to-highlight" />
+                  <CardContent className="p-6 pt-8 space-y-6">
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-base font-extrabold font-heading text-foreground">
+                        {tEgresado('rateCompanyTitle')}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {tEgresado('rateCompanyDesc')}
                       </p>
                     </div>
-                  ) : (
-                    <div className="space-y-4 text-left">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-muted-foreground">
-                          {tEgresado('ratingLabel')} *
-                        </span>
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              disabled={submittingRating}
-                              onMouseEnter={() => setHoverScore(star)}
-                              onMouseLeave={() => setHoverScore(0)}
-                              onClick={() => setRatingScore(star)}
-                              className="focus:outline-none transition-transform hover:scale-110 cursor-pointer"
-                            >
+
+                    {hasRated ? (
+                      <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-muted-foreground mr-2">
+                            {tEgresado('ratingLabel')}:
+                          </span>
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
                               <Star
-                                className={`w-5 h-5 ${
-                                  star <= (hoverScore || ratingScore)
+                                key={star}
+                                className={`w-4 h-4 ${
+                                  star <= ratingScore
                                     ? 'text-highlight fill-highlight'
-                                    : 'text-muted-foreground/30'
+                                    : 'text-muted-foreground/25'
                                 }`}
                               />
-                            </button>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="rating-comment"
-                          className="block text-xs font-bold text-muted-foreground"
-                        >
-                          {tEgresado('commentLabel')}
-                        </label>
-                        <textarea
-                          id="rating-comment"
-                          value={ratingComment}
-                          onChange={(e) => setRatingComment(e.target.value)}
-                          placeholder={tEgresado('rateCompanyDesc')}
-                          disabled={submittingRating}
-                          rows={3}
-                          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          maxLength={1000}
-                        />
-                      </div>
-
-                      <Button
-                        type="button"
-                        disabled={submittingRating || ratingScore === 0}
-                        onClick={async () => {
-                          if (ratingScore === 0) return
-                          setSubmittingRating(true)
-                          const res = await rateCompany({
-                            idEmpresario: companyId,
-                            idContratacion: contratacion.id_contratacion,
-                            puntuacion: ratingScore,
-                            comentario: ratingComment.trim() || undefined,
-                          })
-                          setSubmittingRating(false)
-                          if (res.ok) {
-                            toast.success(tEgresado('rateCompanySuccess'))
-                            setHasRated(true)
-                            router.refresh()
-                          } else {
-                            toast.error(res.error)
-                          }
-                        }}
-                        className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs flex items-center gap-1.5"
-                      >
-                        {submittingRating && (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        {ratingComment && (
+                          <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2 text-xs text-foreground/90">
+                            <span className="font-bold block mb-1 text-muted-foreground uppercase text-[10px]">
+                              {tEgresado('commentLabel')}
+                            </span>
+                            {ratingComment}
+                          </div>
                         )}
-                        {tEgresado('submitRating')}
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Calificación recibida del empresario (RF-49 vista egresado + RF-53 réplica) */}
-            {contratacion.estado_periodo === 'finalizado' && (
-              <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-accent to-primary" />
-                <CardContent className="p-6 pt-8 space-y-6">
-                  <div className="space-y-1 text-left">
-                    <h3 className="text-base font-extrabold font-heading text-foreground">
-                      {tEgresado('receivedRatingTitle')}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {tEgresado('receivedRatingDesc')}
-                    </p>
-                  </div>
-
-                  {receivedRating ? (
-                    <div className="space-y-4 text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-muted-foreground mr-2">
-                          {tEgresado('ratingLabel')}:
-                        </span>
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`w-4 h-4 ${
-                                star <= receivedRating.puntuacion
-                                  ? 'text-highlight fill-highlight'
-                                  : 'text-muted-foreground/25'
-                              }`}
-                            />
-                          ))}
-                        </div>
+                        <p className="text-xs text-accent font-semibold">
+                          {tEgresado('alreadyRated')}
+                        </p>
                       </div>
-                      {receivedRating.comentario && (
-                        <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2 text-xs text-foreground/90">
-                          <span className="font-bold block mb-1 text-muted-foreground uppercase text-[10px]">
-                            {tEgresado('commentLabel')}
+                    ) : (
+                      <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-bold text-muted-foreground">
+                            {tEgresado('ratingLabel')} *
                           </span>
-                          {receivedRating.comentario}
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                type="button"
+                                disabled={submittingRating}
+                                onMouseEnter={() => setHoverScore(star)}
+                                onMouseLeave={() => setHoverScore(0)}
+                                onClick={() => setRatingScore(star)}
+                                className="focus:outline-none transition-transform hover:scale-110 cursor-pointer"
+                              >
+                                <Star
+                                  className={`w-5 h-5 ${
+                                    star <= (hoverScore || ratingScore)
+                                      ? 'text-highlight fill-highlight'
+                                      : 'text-muted-foreground/30'
+                                  }`}
+                                />
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      )}
-                      {receivedRating.respuesta_evaluado ? (
-                        <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2 text-xs text-foreground/90">
-                          <span className="font-bold block mb-1 text-primary uppercase text-[10px]">
-                            {tEgresado('alreadyReplied')}
-                          </span>
-                          {receivedRating.respuesta_evaluado}
-                        </div>
-                      ) : (
+
                         <div className="space-y-2">
                           <label
-                            htmlFor="reply-comment"
+                            htmlFor="rating-comment"
                             className="block text-xs font-bold text-muted-foreground"
                           >
-                            {tEgresado('replyLabel')}
+                            {tEgresado('commentLabel')}
                           </label>
                           <textarea
-                            id="reply-comment"
-                            value={replyText}
-                            onChange={(e) => setReplyText(e.target.value)}
-                            placeholder={tEgresado('replyPlaceholder')}
-                            disabled={submittingReply}
+                            id="rating-comment"
+                            value={ratingComment}
+                            onChange={(e) => setRatingComment(e.target.value)}
+                            placeholder={tEgresado('rateCompanyDesc')}
+                            disabled={submittingRating}
                             rows={3}
                             className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             maxLength={1000}
                           />
-                          <Button
-                            type="button"
-                            disabled={
-                              submittingReply || replyText.trim() === ''
-                            }
-                            onClick={async () => {
-                              if (replyText.trim() === '') return
-                              setSubmittingReply(true)
-                              const res = await addRespuestaEvaluacion({
-                                idEvaluacion: receivedRating.id_evaluacion,
-                                respuesta: replyText.trim(),
-                              })
-                              setSubmittingReply(false)
-                              if (res.ok) {
-                                toast.success(tEgresado('replySuccess'))
-                                router.refresh()
-                              } else {
-                                toast.error(tEgresado('replyError'))
-                              }
-                            }}
-                            className="text-xs font-semibold flex items-center gap-1.5"
-                          >
-                            {submittingReply && (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            )}
-                            {submittingReply
-                              ? tEgresado('replySubmitting')
-                              : tEgresado('replySubmit')}
-                          </Button>
                         </div>
-                      )}
+
+                        <Button
+                          type="button"
+                          disabled={submittingRating || ratingScore === 0}
+                          onClick={async () => {
+                            if (ratingScore === 0) return
+                            setSubmittingRating(true)
+                            const res = await rateCompany({
+                              idEmpresario: companyId,
+                              idContratacion: contratacion.id_contratacion,
+                              puntuacion: ratingScore,
+                              comentario: ratingComment.trim() || undefined,
+                            })
+                            setSubmittingRating(false)
+                            if (res.ok) {
+                              toast.success(tEgresado('rateCompanySuccess'))
+                              setHasRated(true)
+                              router.refresh()
+                            } else {
+                              toast.error(res.error)
+                            }
+                          }}
+                          className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs flex items-center gap-1.5"
+                        >
+                          {submittingRating && (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          )}
+                          {tEgresado('submitRating')}
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Calificación recibida del empresario (RF-49 + RF-53 réplica) */}
+                <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative">
+                  <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-accent to-primary" />
+                  <CardContent className="p-6 pt-8 space-y-6">
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-base font-extrabold font-heading text-foreground">
+                        {tEgresado('receivedRatingTitle')}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {tEgresado('receivedRatingDesc')}
+                      </p>
                     </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">
-                      {tEgresado('receivedRatingNone')}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+
+                    {receivedRating ? (
+                      <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-muted-foreground mr-2">
+                            {tEgresado('ratingLabel')}:
+                          </span>
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-4 h-4 ${
+                                  star <= receivedRating.puntuacion
+                                    ? 'text-highlight fill-highlight'
+                                    : 'text-muted-foreground/25'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        {receivedRating.comentario && (
+                          <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2 text-xs text-foreground/90">
+                            <span className="font-bold block mb-1 text-muted-foreground uppercase text-[10px]">
+                              {tEgresado('commentLabel')}
+                            </span>
+                            {receivedRating.comentario}
+                          </div>
+                        )}
+                        {receivedRating.respuesta_evaluado ? (
+                          <div className="rounded-lg bg-primary/5 border border-primary/20 px-3 py-2 text-xs text-foreground/90">
+                            <span className="font-bold block mb-1 text-primary uppercase text-[10px]">
+                              {tEgresado('alreadyReplied')}
+                            </span>
+                            {receivedRating.respuesta_evaluado}
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <label
+                              htmlFor="reply-comment"
+                              className="block text-xs font-bold text-muted-foreground"
+                            >
+                              {tEgresado('replyLabel')}
+                            </label>
+                            <textarea
+                              id="reply-comment"
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder={tEgresado('replyPlaceholder')}
+                              disabled={submittingReply}
+                              rows={3}
+                              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                              maxLength={1000}
+                            />
+                            <Button
+                              type="button"
+                              disabled={
+                                submittingReply || replyText.trim() === ''
+                              }
+                              onClick={async () => {
+                                if (replyText.trim() === '') return
+                                setSubmittingReply(true)
+                                const res = await addRespuestaEvaluacion({
+                                  idEvaluacion: receivedRating.id_evaluacion,
+                                  respuesta: replyText.trim(),
+                                })
+                                setSubmittingReply(false)
+                                if (res.ok) {
+                                  toast.success(tEgresado('replySuccess'))
+                                  router.refresh()
+                                } else {
+                                  toast.error(tEgresado('replyError'))
+                                }
+                              }}
+                              className="text-xs font-semibold flex items-center gap-1.5"
+                            >
+                              {submittingReply && (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              )}
+                              {submittingReply
+                                ? tEgresado('replySubmitting')
+                                : tEgresado('replySubmit')}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground italic">
+                        {tEgresado('receivedRatingNone')}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
             )}
 
-            {/* Lista de entregables */}
+            {/* ESTADO: pausado / cancelado → aviso sin panel de carga */}
+            {contratacion.estado_periodo !== 'vigente' &&
+              contratacion.estado_periodo !== 'finalizado' && (
+                <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {tEgresado('uploadDisabledNotVigente')}
+                </div>
+              )}
+          </div>
+
+          {/* ── Columna derecha: lista de entregables (siempre visible) ── */}
+          <div>
             <Card className="border border-border/80 bg-card/40">
               <CardContent className="p-6 space-y-4">
                 <SectionHeading>
