@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
-import { ArrowRight, Database } from 'lucide-react'
+import { ArrowRight, Database, LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -125,14 +125,31 @@ export function EgresadoConsentScreen() {
           </label>
         </div>
 
-        <Button
-          onClick={handleContinue}
-          disabled={loading}
-          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all duration-[var(--duration-base)] ease-[var(--ease-out)] cursor-pointer"
-        >
-          {loading ? tO('loading') : tO('saveProfile')}
-          {!loading && <ArrowRight className="w-4 h-4" />}
-        </Button>
+        <div className="space-y-3">
+          <Button
+            onClick={handleContinue}
+            disabled={loading}
+            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all duration-[var(--duration-base)] ease-[var(--ease-out)] cursor-pointer"
+          >
+            {loading ? tO('loading') : tO('saveProfile')}
+            {!loading && <ArrowRight className="w-4 h-4" />}
+          </Button>
+
+          <div className="flex justify-center pt-1">
+            <button
+              type="button"
+              onClick={async () => {
+                const { signOut } = await import('@/lib/auth/actions')
+                await signOut()
+                router.push('/login')
+              }}
+              className="inline-flex items-center gap-2 text-xs font-bold text-ink-subtle hover:text-primary transition-all duration-200 cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              {tO('logout')}
+            </button>
+          </div>
+        </div>
       </div>
     </AuthCard>
   )

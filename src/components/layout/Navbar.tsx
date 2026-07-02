@@ -73,16 +73,45 @@ export function Navbar({
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up')
   const [logoutOpen, setLogoutOpen] = useState(false)
 
   // isHero = true solo en la landing page cuando está arriba
   const isHero = heroMode && !scrolled
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
+    let lastScrollY = window.scrollY
+    let ticking = false
+
+    const updateScroll = () => {
+      const currentScrollY = window.scrollY
+      const shouldBeScrolled = currentScrollY > 20
+
+      setScrolled((prev) => {
+        if (prev !== shouldBeScrolled) {
+          return shouldBeScrolled
+        }
+        return prev
+      })
+
+      if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setScrollDirection('down')
+      } else if (currentScrollY < lastScrollY) {
+        setScrollDirection('up')
+      }
+
+      lastScrollY = currentScrollY
+      ticking = false
     }
-    window.addEventListener('scroll', handleScroll)
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScroll)
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -190,15 +219,24 @@ export function Navbar({
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full animate-slide-down-fade transition-all duration-[var(--duration-base)] ease-[var(--ease-out)] ${
-        isHero
-          ? 'border-b border-transparent bg-transparent py-3.5'
-          : 'border-b border-border/80 bg-background/95 backdrop-blur-xl shadow-md py-2'
-      }`}
+      data-scroll-direction={scrollDirection}
+      className={cn(
+        'sticky top-0 z-50 w-full animate-slide-down-fade transition-all duration-300 ease-in-out',
+        scrolled
+          ? 'border-b border-transparent bg-transparent py-1.5 shadow-none backdrop-blur-none'
+          : heroMode
+            ? 'border-b border-transparent bg-transparent py-4 shadow-none backdrop-blur-none'
+            : 'border-b border-border/50 bg-background/95 backdrop-blur-md shadow-none py-3',
+      )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Main row: Logo + Inline links + Right actions */}
-        <div className="flex justify-between h-16 items-center">
+        <div
+          className={cn(
+            'flex justify-between items-center transition-all duration-300 ease-in-out',
+            scrolled ? 'h-12' : 'h-16',
+          )}
+        >
           {/* Logo */}
           <div
             className={cn(
@@ -219,13 +257,14 @@ export function Navbar({
             </Link>
           </div>
 
-          {/* Desktop Navigation Links — INLINE when scrolled or not on landing/hero */}
+          {/* Desktop Navigation Links — INLINE when at the top */}
           <div
-            className={`hidden md:flex items-center space-x-1 lg:space-x-2 transition-all duration-300 ${
-              isHero
+            className={cn(
+              'hidden md:flex items-center space-x-1 lg:space-x-2 transition-all duration-300',
+              scrolled
                 ? 'opacity-0 invisible absolute pointer-events-none'
-                : 'opacity-100 visible'
-            }`}
+                : 'opacity-100 visible',
+            )}
           >
             {navLinks.map((link) => {
               const isActive = pathname === link.href
@@ -233,11 +272,12 @@ export function Navbar({
                 <Link
                   key={`inline-${link.href}`}
                   href={link.href}
-                  className={`relative px-3.5 py-2 rounded-full text-sm font-semibold transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5 ${
+                  className={cn(
+                    'relative px-3.5 py-2 rounded-full text-sm font-semibold transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5',
                     isActive
                       ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
                     {renderIcon(link.icon, 'w-4 h-4')}
@@ -378,26 +418,27 @@ export function Navbar({
           </div>
         </div>
 
-        {/* Desktop Navigation Links — FLOATING CAPSULE PROTRUDING FROM THE BOTTOM */}
         <div
-          className={`hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 transition-all duration-300 ${
-            isHero
+          className={cn(
+            'hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 transition-all duration-300',
+            scrolled
               ? 'opacity-100 visible scale-100'
-              : 'opacity-0 invisible pointer-events-none scale-95 translate-y-0'
-          }`}
+              : 'opacity-0 invisible pointer-events-none scale-95 translate-y-0',
+          )}
         >
-          <div className="flex items-center space-x-1 lg:space-x-2 bg-surface/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-full py-2.5 px-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <div className="flex items-center space-x-1 lg:space-x-2 bg-zinc-900/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-800/80 rounded-full py-2 px-5 shadow-[0_8px_30px_rgb(0,0,0,0.15)]">
             {navLinks.map((link) => {
               const isActive = pathname === link.href
               return (
                 <Link
                   key={`float-${link.href}`}
                   href={link.href}
-                  className={`relative px-4 py-2 rounded-full text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5 ${
+                  className={cn(
+                    'relative px-4 py-2 rounded-full text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] flex items-center gap-1.5',
                     isActive
-                      ? 'text-ink-strong bg-primary/10'
-                      : 'text-ink hover:text-ink-strong hover:bg-muted/40'
-                  }`}
+                      ? 'text-white bg-primary'
+                      : 'text-white/70 hover:text-white hover:bg-white/10',
+                  )}
                 >
                   <span className="relative z-10 flex items-center gap-1.5">
                     {renderIcon(link.icon, 'w-4 h-4')}
