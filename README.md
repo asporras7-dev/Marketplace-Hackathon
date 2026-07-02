@@ -136,7 +136,6 @@ Opcionales (features 2.0):
 
 - `ANTHROPIC_API_KEY` — Claude API, para features de IA del 2.0.
 - `GEMINI_API_KEY` — Gemini API, para matching algorítmico del 2.0.
-- `RESEND_API_KEY` — envío de correos transaccionales.
 
 ## Scripts npm
 

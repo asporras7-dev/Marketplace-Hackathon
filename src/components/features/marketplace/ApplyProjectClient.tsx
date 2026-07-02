@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Link } from '@/i18n/routing'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useAccountStatus } from '@/components/features/auth/AccountStatusContext'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -117,37 +116,23 @@ export function ApplyProjectClient({
 
     try {
       const file = data.documentacionTecnica[0] as File
-      const supabase = createSupabaseBrowserClient()
-      const { data: userData } = await supabase.auth.getUser()
-      if (!userData.user) throw new Error(tEgresado('applyErrorSesion'))
-
-      const filePath = `${projectId}/${userData.user.id}/${Date.now()}_${file.name}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('documentacion_tecnica')
-        .upload(filePath, file)
-
-      if (uploadError)
-        throw new Error('Error al subir el documento: ' + uploadError.message)
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('documentacion_tecnica').getPublicUrl(filePath)
-
-      const docUrl = publicUrl.replace('/public/', '/authenticated/')
 
       const extras = data.enlacesExtra
         .map((enlace) => enlace.value.trim())
         .filter((value) => value.length > 0)
       const prototipoEnlaces = [data.prototipoUrl.trim(), ...extras]
 
-      const result = await postularse({
-        id_proyecto: projectId,
-        planteamiento_solucion: data.planteamientoSolucion,
-        prototipo_enlaces: prototipoEnlaces,
-        carta_postulacion: data.coverLetter.trim(),
-        documentacion_tecnica: docUrl,
-      })
+      // El documento se sube en el SERVIDOR (la postulación recibe FormData): el
+      // cliente browser de Supabase cuelga storage.upload(). El bucket es privado;
+      // la action guarda el path y lo firma al leerlo.
+      const formData = new FormData()
+      formData.append('id_proyecto', projectId)
+      formData.append('planteamiento_solucion', data.planteamientoSolucion)
+      formData.append('carta_postulacion', data.coverLetter.trim())
+      formData.append('prototipo_enlaces', JSON.stringify(prototipoEnlaces))
+      formData.append('file', file)
+
+      const result = await postularse(formData)
 
       if (!result.ok) {
         if (
@@ -166,6 +151,10 @@ export function ApplyProjectClient({
             estudiante_not_found: tEgresado('applyErrorPerfil'),
             unauthenticated: tEgresado('applyErrorSesion'),
             database_error: tEgresado('applyErrorDatabase'),
+            archivo_requerido: tEgresado('applyErrorArchivoRequerido'),
+            archivo_muy_grande: tEgresado('applyErrorArchivoGrande'),
+            tipo_archivo_invalido: tEgresado('applyErrorArchivoTipo'),
+            storage_error: tEgresado('applyErrorArchivoSubida'),
           }
           toast.error(errorMessages[result.error] ?? tEgresado('applyError'))
         }
@@ -357,7 +346,7 @@ export function ApplyProjectClient({
                 <Input
                   id="documentacionTecnica"
                   type="file"
-                  accept=".pdf,.zip,.rar"
+                  accept=".pdf,.zip"
                   className={`bg-card/50 border-border ${errors.documentacionTecnica ? 'border-destructive' : 'focus-visible:ring-primary'}`}
                   {...register('documentacionTecnica')}
                 />

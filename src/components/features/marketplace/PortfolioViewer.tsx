@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -12,18 +12,24 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog'
-import { ExternalLink, GitBranch, Globe, Lock } from 'lucide-react'
+import { ExternalLink, GitBranch, Globe, Lock, Target } from 'lucide-react'
 import type { StudentProfileView } from '@/lib/portfolio/actions'
+import type { MatchDetail } from '@/lib/projects/match-logic'
 import { ReportButton } from '@/components/features/moderation/ReportButton'
 
 interface PortfolioViewerProps {
   profile: StudentProfileView
+  matchScore?: number
+  matchDetalles?: MatchDetail[]
 }
 
-export function PortfolioViewer({ profile }: PortfolioViewerProps) {
+export function PortfolioViewer({
+  profile,
+  matchScore,
+  matchDetalles,
+}: PortfolioViewerProps) {
   const t = useTranslations('Portfolio')
-
-  const locale = useLocale()
+  const tEgresado = useTranslations('Egresado')
 
   const {
     firstName,
@@ -33,8 +39,6 @@ export function PortfolioViewer({ profile }: PortfolioViewerProps) {
     profilePhoto,
     portafolio_visible_publicamente: visibilityPublic,
     descripcion: portfolioBio,
-    paisIsoResidencia,
-    regionResidencia,
     paisNombre,
     regionNombre,
     skills,
@@ -91,6 +95,55 @@ export function PortfolioViewer({ profile }: PortfolioViewerProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-6 font-sans">
+        {/* === Match Score === */}
+        {matchScore !== undefined && matchDetalles !== undefined && (
+          <div className="space-y-2 bg-primary/5 p-4 rounded-lg border border-primary/20">
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="w-5 h-5 text-primary" />
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-bold text-primary font-display">
+                  {tEgresado('matchWithStudent', {
+                    firstName,
+                    lastName: lastName1,
+                    score: matchScore,
+                  })}
+                </h3>
+              </div>
+            </div>
+
+            {matchDetalles.length > 0 ? (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  {t('commonTechnologies')}:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {matchDetalles.map((det) => (
+                    <Badge
+                      key={det.id_tecnologia}
+                      variant="outline"
+                      className="bg-background border-border flex items-center gap-2 py-1 px-3"
+                    >
+                      <span className="font-semibold text-highlight">
+                        {det.nombre_tecnologia || det.id_tecnologia}
+                      </span>
+                      <span className="text-primary text-[10px] ml-1 uppercase">
+                        ({det.nivel})
+                      </span>
+                      <span className="text-primary font-bold ml-1">
+                        +{det.puntos}
+                      </span>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No hay tecnologías en común.
+              </p>
+            )}
+          </div>
+        )}
+
         {/* === Biografía === */}
         <div className="space-y-2">
           <div className="flex items-center gap-4">

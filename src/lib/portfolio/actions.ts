@@ -27,6 +27,7 @@ export interface StudentProfileView {
   lastName2: string
   profilePhoto: string
   tituloFwd: string
+  reputacion: number | null
   paisIsoResidencia?: string | null
   regionResidencia?: string | null
   paisNombre?: string | null
@@ -66,11 +67,12 @@ export async function getStudentProfile(): Promise<
       .from('estudiantes')
       .select(
         `
-        id_estudiante, 
-        id_usuario, 
-        descripcion, 
-        portafolio_visible_publicamente, 
+        id_estudiante,
+        id_usuario,
+        descripcion,
+        portafolio_visible_publicamente,
         titulo_fwd,
+        reputacion,
         pais_iso_residencia,
         region_residencia,
         usuarios!estudiantes_id_usuario_fkey(nombre, apellido_1, apellido_2, foto_perfil),
@@ -132,6 +134,7 @@ export async function getStudentProfile(): Promise<
       lastName2: userInfo?.apellido_2 ?? '',
       profilePhoto: userInfo?.foto_perfil ?? '',
       tituloFwd: estudiante.titulo_fwd ?? '',
+      reputacion: estudiante.reputacion ?? null,
       paisIsoResidencia: estudiante.pais_iso_residencia,
       regionResidencia: estudiante.region_residencia,
       paisNombre: estudiante.pais_iso_residencia
@@ -511,32 +514,33 @@ export async function getPublicStudentProfile(
   id_estudiante: string,
 ): Promise<Result<StudentProfileView | null>> {
   try {
-    const supabaseUser = await createSupabaseServerClient()
+    const supabase = await createSupabaseServerClient()
     const {
       data: { user },
       error: authError,
-    } = await supabaseUser.auth.getUser()
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
       return err('unauthorized')
     }
 
-    const supabaseAdmin = createSupabaseAdminClient()
-    const { data: estudiante, error } = await supabaseAdmin
+    const adminClient = await createSupabaseAdminClient()
+    const { data: estudiante, error } = await adminClient
       .from('estudiantes')
       .select(
         `
-        id_estudiante, 
-        id_usuario, 
-        descripcion, 
-        portafolio_visible_publicamente, 
-        titulo_fwd, 
+        id_estudiante,
+        id_usuario,
+        descripcion,
+        portafolio_visible_publicamente,
+        titulo_fwd,
+        reputacion,
         pais_iso_residencia,
         region_residencia,
         usuarios!estudiantes_id_usuario_fkey(nombre, apellido_1, apellido_2, foto_perfil),
         habilidades_tecnicas(nivel, id_tecnologia, tecnologias(nombre)),
         proyectos_portafolio(id_portafolio, titulo, descripcion, url_repositorio, url_demo, fecha, portafolio_tecnologias(tecnologias(nombre)))
-        `,
+`,
       )
       .eq('id_estudiante', id_estudiante)
       .maybeSingle()
@@ -554,7 +558,7 @@ export async function getPublicStudentProfile(
 
     // Verificar permisos RF-12
     if (!estudiante.portafolio_visible_publicamente) {
-      const { data: empresario } = await supabaseAdmin
+      const { data: empresario } = await supabase
         .from('empresarios')
         .select('id_empresario')
         .eq('id_usuario', user.id)
@@ -562,7 +566,7 @@ export async function getPublicStudentProfile(
 
       if (!empresario) return err('unauthorized_private_portfolio')
 
-      const { data: participacion } = await supabaseAdmin
+      const { data: participacion } = await supabase
         .from('participaciones')
         .select('id_participacion, proyectos!inner(id_empresario)')
         .eq('id_estudiante', id_estudiante)
@@ -611,6 +615,7 @@ export async function getPublicStudentProfile(
       lastName2: userInfo?.apellido_2 ?? '',
       profilePhoto: userInfo?.foto_perfil ?? '',
       tituloFwd: estudiante.titulo_fwd ?? '',
+      reputacion: estudiante.reputacion ?? null,
       paisIsoResidencia: estudiante.pais_iso_residencia,
       regionResidencia: estudiante.region_residencia,
       paisNombre: estudiante.pais_iso_residencia

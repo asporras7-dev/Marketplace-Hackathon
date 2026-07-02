@@ -451,6 +451,17 @@ export async function adjudicarParticipacion(
     return err('adjudicacion_fallida')
   }
 
+  const { error: advanceError } = await supabase
+    .from('proyectos')
+    .update({ estado: 'en_desarrollo' })
+    .eq('id_proyecto', parsed.data.idProyecto)
+
+  if (advanceError) {
+    logger.error('adjudicarParticipacion: fallo al avanzar a en_desarrollo', {
+      error: advanceError.message,
+    })
+  }
+
   await notificarAdjudicacion(parsed.data.idProyecto)
 
   return ok(undefined)

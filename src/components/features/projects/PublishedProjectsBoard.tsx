@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Eye } from 'lucide-react'
+import { Eye, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Link } from '@/i18n/routing'
@@ -127,8 +127,19 @@ export function PublishedProjectsBoard({
                     size="sm"
                     className="text-muted-foreground hover:text-primary"
                   >
+                    <Link href={`/empresario/proyectos/${project.id}/matches`}>
+                      <Target className="w-4 h-4 mr-2" />
+                      Ver matchs con egresados
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-primary"
+                  >
                     <Link href={`/empresario/proyecto/${project.id}`}>
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-4 h-4 mr-2" />
                       {t('viewDetails')}
                     </Link>
                   </Button>

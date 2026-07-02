@@ -3,9 +3,8 @@ import {
   getMarketplaceProjectById,
   checkIfApplied,
 } from '@/lib/projects/marketplace'
-import { getMiContratacion } from '@/lib/deliverables/queries'
-import { getCompanyRatingForStudent } from '@/lib/company/ratings'
 import { ProjectDetailClient } from '@/components/features/marketplace/ProjectDetailClient'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>
@@ -20,25 +19,32 @@ export default async function ProjectDetailsPage({ params }: PageProps) {
     notFound()
   }
 
-  const [appliedResult, contratacionResult] = await Promise.all([
-    checkIfApplied(id),
-    getMiContratacion(id),
-  ])
-
+  const appliedResult = await checkIfApplied(id)
   const alreadyApplied = appliedResult.ok ? appliedResult.data : false
-  const contratacion = contratacionResult.ok ? contratacionResult.data : null
 
-  const ratingResult = await getCompanyRatingForStudent(
-    projectResult.data.companyId,
-  )
-  const existingRating = ratingResult.ok ? ratingResult.data : null
+  const supabase = await createSupabaseServerClient()
+  const { data: userData } = await supabase.auth.getUser()
+  let studentCountry: string | null = null
+  let studentRegion: string | null = null
+
+  if (userData?.user) {
+    const { data: estData } = await supabase
+      .from('estudiantes')
+      .select('pais_iso_residencia, region_residencia')
+      .eq('id_usuario', userData.user.id)
+      .maybeSingle()
+    if (estData) {
+      studentCountry = estData.pais_iso_residencia
+      studentRegion = estData.region_residencia
+    }
+  }
 
   return (
     <ProjectDetailClient
       project={projectResult.data}
       alreadyApplied={alreadyApplied}
-      contratacion={contratacion}
-      existingRating={existingRating}
+      studentCountry={studentCountry}
+      studentRegion={studentRegion}
     />
   )
 }

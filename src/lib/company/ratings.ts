@@ -189,6 +189,79 @@ export async function getCompanyRatingForStudent(
   return ok(data || null)
 }
 
+/**
+ * Busca el contrato finalizado más reciente entre el egresado autenticado y una empresa.
+ * Devuelve null si no existe ningún contrato finalizado con esa empresa.
+ */
+export async function getFinalizedContractWithCompany(
+  idEmpresario: string,
+): Promise<
+  Result<{
+    idContratacion: string
+    tituloProyecto: string
+    existingRating: { puntuacion: number; comentario: string | null } | null
+  } | null>
+> {
+  const supabase = await createSupabaseServerClient()
+  const { data: userData } = await supabase.auth.getUser()
+  if (!userData?.user) return ok(null)
+
+  const { data: estudiante } = await supabase
+    .from('estudiantes')
+    .select('id_estudiante')
+    .eq('id_usuario', userData.user.id)
+    .maybeSingle()
+
+  if (!estudiante) return ok(null)
+
+  const { data: contratacion, error: contError } = await supabase
+    .from('contrataciones')
+    .select(
+      `
+      id_contratacion,
+      participaciones!inner(
+        id_estudiante,
+        proyectos!inner(
+          titulo,
+          id_empresario
+        )
+      )
+    `,
+    )
+    .eq('estado_periodo', 'finalizado')
+    .eq('participaciones.id_estudiante', estudiante.id_estudiante)
+    .eq('participaciones.proyectos.id_empresario', idEmpresario)
+    .limit(1)
+    .maybeSingle()
+
+  if (contError) {
+    logger.error('getFinalizedContractWithCompany: error al consultar', {
+      error: contError.message,
+    })
+    return err('database_error')
+  }
+
+  if (!contratacion) return ok(null)
+
+  const part = contratacion.participaciones as unknown as {
+    id_estudiante: string
+    proyectos: { titulo: string; id_empresario: string }
+  }
+
+  const { data: rating } = await supabase
+    .from('evaluaciones_empresarios')
+    .select('puntuacion, comentario')
+    .eq('id_contratacion', contratacion.id_contratacion)
+    .eq('id_estudiante', estudiante.id_estudiante)
+    .maybeSingle()
+
+  return ok({
+    idContratacion: contratacion.id_contratacion,
+    tituloProyecto: part.proyectos.titulo,
+    existingRating: rating ?? null,
+  })
+}
+
 export interface AdminRatingItem {
   idEvaluacion: string
   idContratacion: string

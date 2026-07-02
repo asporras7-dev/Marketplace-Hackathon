@@ -1,9 +1,9 @@
 import { PortfolioManager } from '@/components/features/marketplace/PortfolioManager'
 import { getTranslations } from 'next-intl/server'
 import { getStudentProfile } from '@/lib/portfolio/actions'
+import { getMisCalificacionesRecibidas } from '@/lib/evaluaciones/actions'
 import { EgresadoShell } from '@/components/layout/EgresadoShell'
 import { PageTitle } from '@/components/features/brand/PageTitle'
-
 import { getCountryOptions, getSubdivisions } from '@/lib/geo/catalog'
 
 export default async function PortfolioPage({
@@ -13,12 +13,17 @@ export default async function PortfolioPage({
 }) {
   const t = await getTranslations('Portfolio')
 
-  const profileResult = await getStudentProfile()
-  const initialProfile = profileResult.ok ? profileResult.data : null
-
-  // Resolve locale instead of using params directly because Next.js 15 requires awaiting params
-  // Or we can just use getLocale() from next-intl/server
   const locale = await params.locale
+
+  const [profileResult, calificacionesResult] = await Promise.all([
+    getStudentProfile(),
+    getMisCalificacionesRecibidas(),
+  ])
+
+  const initialProfile = profileResult.ok ? profileResult.data : null
+  const calificaciones = calificacionesResult.ok
+    ? calificacionesResult.data
+    : []
 
   const countries = getCountryOptions(locale).map((country) => ({
     value: country.code,
@@ -46,6 +51,7 @@ export default async function PortfolioPage({
               initialProfile={initialProfile}
               countries={countries}
               initialRegions={initialRegions}
+              calificaciones={calificaciones}
             />
           </div>
         </main>

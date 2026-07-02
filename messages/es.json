@@ -294,6 +294,13 @@
   },
   "Egresado": {
     "dashboard": "Panel Egresado",
+    "matchWithProject": "Match con el Proyecto",
+    "matchingTechs": "Habilidades en común",
+    "matchingLocation": "Ubicación en común",
+    "matchWithStudent": "Match de {firstName} {lastName} con el Proyecto: {score} pts",
+    "matchTitle": "Match de {firstName} {lastName}",
+    "sameCountryAndRegion": "Mismo país y región",
+    "sameCountry": "Mismo país",
     "rateCompanyTitle": "Calificar a la Empresa",
     "rateCompanyDesc": "Compartí tu experiencia trabajando con esta empresa",
     "rateCompanySuccess": "¡Calificación enviada con éxito!",
@@ -317,6 +324,8 @@
     "myContractsDesc": "Proyectos en los que fuiste seleccionado. Accedé a tus entregables desde aquí.",
     "emptyContracts": "Todavía no tenés contrataciones activas.",
     "emptyContractsDesc": "Cuando una empresa te seleccione para un proyecto, aparecerá aquí.",
+    "contractFilterAll": "Todos",
+    "contractFilterEmpty": "No hay contrataciones en este estado.",
     "contractActive": "Vigente",
     "contractFinished": "Finalizado",
     "contractPaused": "Pausado",
@@ -378,6 +387,10 @@
     "applyErrorPerfil": "No encontramos tu perfil de egresado. Cerrá sesión y volvé a entrar.",
     "applyErrorSesion": "Tu sesión expiró. Iniciá sesión de nuevo.",
     "applyErrorDatabase": "No pudimos guardar la postulación (error de base de datos). Avisá al equipo.",
+    "applyErrorArchivoRequerido": "Adjuntá el documento de tu propuesta.",
+    "applyErrorArchivoGrande": "El documento supera el tamaño máximo de 5 MB.",
+    "applyErrorArchivoTipo": "Formato no permitido. Subí un PDF o un ZIP.",
+    "applyErrorArchivoSubida": "No pudimos subir el documento. Intentá de nuevo.",
     "emptyApplications": "Aún no te has postulado a ningún proyecto. ¡Explora el marketplace!",
     "emptyApplicationsDesc": "Navega por nuestro catálogo de proyectos, encuentra el que mejor se adapte a tu stack y envíale tu propuesta a la empresa.",
     "exploreMarketplace": "Explorar Marketplace",
@@ -390,11 +403,12 @@
     "prototypeExtraHelp": "Opcional: repositorio, demo en vivo, documentación visual… hasta 3 enlaces.",
     "addLink": "Agregar enlace",
     "removeLinkAria": "Quitar enlace",
-    "technicalDocUrlLabel": "Documentación técnica (URL)",
-    "technicalDocUrlHelp": "Opcional: enlace a tu documentación o material técnico del prototipo.",
+    "technicalDocUrlLabel": "Documentación técnica (PDF o ZIP)",
+    "technicalDocUrlHelp": "Requerido: subí un PDF o ZIP (máx. 5 MB) con la documentación de tu propuesta.",
     "unexpectedError": "Ocurrió un error inesperado",
     "withdrawOffer": "Retirar Oferta",
-    "confirmWithdraw": "¿Estás seguro de que deseas retirar tu postulación?",
+    "withdrawDialogTitle": "Retirar postulación",
+    "confirmWithdraw": "¿Estás seguro de que deseas retirar tu postulación? Esta acción no se puede deshacer.",
     "withdrawSuccess": "Postulación retirada con éxito.",
     "withdrawError": "Error al retirar la postulación.",
     "deliverables": "Entregables del Proyecto",
@@ -414,6 +428,10 @@
     "uploadClickToSelect": "Haz clic para adjuntar",
     "uploadMaxSize": "Máx. 50 MB",
     "uploadRemoveFile": "Quitar archivo",
+    "uploadConfirmTitle": "Confirmar subida",
+    "uploadConfirmDescHito": "¿Confirmás que querés subir este hito? Una vez enviado, no se puede eliminar.",
+    "uploadConfirmDescFinal": "¿Confirmás que querés subir el entregable final? Esta acción no se puede revertir.",
+    "uploadConfirmBtn": "Subir",
     "tipoParcial": "Hito parcial",
     "tipoFinal": "Entregable final",
     "versionLabel": "v{n}",
@@ -804,6 +822,7 @@
     "solutionLabel": "Planteamiento de solución",
     "prototypeLabel": "Prototipo",
     "techDocLabel": "Documentación técnica",
+    "techDocOpenError": "No se pudo abrir la documentación técnica. Intentá de nuevo.",
     "repoLabel": "Repositorio",
     "appliedOnLabel": "Postuló el",
     "deliveredOnLabel": "Entregó prototipo el",
@@ -915,7 +934,13 @@
     "rateEgresadoCommentLabel": "Comentario (opcional)",
     "rateEgresadoCommentPlaceholder": "Compartí tu experiencia trabajando con este egresado...",
     "rateEgresadoSubmit": "Enviar calificacion",
-    "rateEgresadoAlreadyRated": "Ya calificaste a este egresado"
+    "rateEgresadoAlreadyRated": "Ya calificaste a este egresado",
+    "contratacionInicio": "Fecha de inicio",
+    "contratacionFinEstimada": "Fin estimado",
+    "periodoVigente": "Contrato vigente",
+    "periodoPausado": "Pausado",
+    "periodoFinalizado": "Finalizado",
+    "periodoCancelado": "Cancelado"
   },
   "Admin": {
     "dashboard": "Panel Administrador",
@@ -1477,6 +1502,8 @@
     "subtitle": "Revisá las postulaciones de todos tus proyectos en un solo lugar."
   },
   "Portfolio": {
+    "commonTechnologies": "Tecnologías en común",
+    "projectDemo": "Ver demo",
     "title": "Mi Portafolio Profesional",
     "description": "Gestiona los proyectos de tu portafolio para mostrar tu experiencia, habilidades y proyectos completados a las empresas reclutadoras.",
     "managerTitle": "Proyectos del Portafolio",
@@ -1547,7 +1574,12 @@
     "errorSkillExists": "Esta habilidad ya existe",
     "cropImageTitle": "Recortar imagen",
     "cropImageDesc": "Ajustá tu imagen para que se vea perfecta.",
-    "cropAndUpload": "Recortar y Subir"
+    "cropAndUpload": "Recortar y Subir",
+    "defaultRole": "Egresado FWD",
+    "ratingsSection": "Calificaciones recibidas",
+    "noRatings": "Aún no tenés calificaciones de empresas.",
+    "ratingAverage": "Promedio",
+    "ratingFrom": "Empresa"
   },
   "EgresadoMensajes": {
     "title": "Mis Mensajes",
@@ -1567,7 +1599,9 @@
     "errorEnvio": "No se pudo enviar el mensaje. Intentá de nuevo.",
     "proyectoLabel": "Proyecto",
     "empresaLabel": "Empresa",
-    "relativeDateYesterday": "Ayer"
+    "relativeDateYesterday": "Ayer",
+    "msgLeido": "Visto",
+    "msgNoLeido": "Enviado"
   },
   "Ranking": {
     "snippetTitle": "Ranking de Talento",
@@ -1606,7 +1640,9 @@
     "errorCarga": "No se pudieron cargar los mensajes. Intentá de nuevo.",
     "errorEnvio": "No se pudo enviar el mensaje. Intentá de nuevo.",
     "proyectoLabel": "Proyecto",
-    "egresadoLabel": "Egresado"
+    "egresadoLabel": "Egresado",
+    "msgLeido": "Visto",
+    "msgNoLeido": "Enviado"
   },
   "EgresadoEmpresa": {
     "pageTitle": "Perfil de la Empresa",
@@ -1615,6 +1651,15 @@
     "noDesc": "Sin descripción disponible.",
     "backToContracts": "Volver a mis contrataciones",
     "tipoEmpresa": "Empresa formal",
-    "tipoEmprendedor": "Emprendedor individual"
+    "tipoEmprendedor": "Emprendedor individual",
+    "rateTitle": "Calificar experiencia",
+    "rateDesc": "Dejá tu opinión sobre trabajar con esta empresa.",
+    "rateProjectLabel": "Proyecto",
+    "ratingLabel": "Puntuación",
+    "commentLabel": "Comentario (opcional)",
+    "commentPlaceholder": "¿Cómo fue la experiencia?",
+    "submitRating": "Enviar calificación",
+    "alreadyRated": "Ya calificaste tu experiencia con esta empresa.",
+    "rateSuccess": "Calificación enviada con éxito."
   }
 }

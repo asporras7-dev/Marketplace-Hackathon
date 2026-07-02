@@ -59,9 +59,25 @@ const INPUT_VALIDO = {
   id_proyecto: ID_PROYECTO,
   planteamiento_solucion:
     'Desarrollaré la plataforma usando Next.js y Supabase, integrando pagos con Stripe.',
-  prototipo_enlaces: ['https://figma.com/mi-prototipo'],
+  prototipo_enlaces: ['https://figma.com/mi-prototipo'] as string[],
   carta_postulacion: 'Tengo experiencia en proyectos similares de e-commerce.',
-  documentacion_tecnica: `https://supabase.co/storage/v1/object/public/documentacion_tecnica/${ID_PROYECTO}/usr-xyz/file.pdf`,
+}
+
+// postularse recibe FormData: el documento técnico viaja como File y los enlaces
+// como JSON. Convierte el objeto de prueba al FormData que espera la action.
+function buildFormData(input: typeof INPUT_VALIDO = INPUT_VALIDO): FormData {
+  const fd = new FormData()
+  fd.append('id_proyecto', input.id_proyecto)
+  fd.append('planteamiento_solucion', input.planteamiento_solucion)
+  fd.append('carta_postulacion', input.carta_postulacion)
+  fd.append('prototipo_enlaces', JSON.stringify(input.prototipo_enlaces))
+  fd.append(
+    'file',
+    new File(['contenido del documento'], 'propuesta.pdf', {
+      type: 'application/pdf',
+    }),
+  )
+  return fd
 }
 
 const PROYECTO_ABIERTO = {
@@ -104,6 +120,14 @@ function buildSupabaseMock(
         error: null,
       }),
     },
+    storage: {
+      from: vi.fn(() => ({
+        upload: vi
+          .fn()
+          .mockResolvedValue({ data: { path: 'subido' }, error: null }),
+        remove: vi.fn().mockResolvedValue({ data: [], error: null }),
+      })),
+    },
     from: vi.fn().mockImplementation((table: string) => {
       if (table === 'estudiantes') {
         return {
@@ -141,12 +165,14 @@ describe('postularse — server action de postulaciones', () => {
   })
 
   it('retorna invalid_input si los parámetros no pasan la validación de Zod', async () => {
-    // @ts-expect-error Intentional invalid input to test Zod validation
-    const res = await postularse({
-      id_proyecto: 'no-es-uuid',
-      planteamiento_solucion: 'corto',
-      prototipo_enlaces: [],
-    })
+    const res = await postularse(
+      buildFormData({
+        ...INPUT_VALIDO,
+        id_proyecto: 'no-es-uuid',
+        planteamiento_solucion: 'corto',
+        prototipo_enlaces: [],
+      }),
+    )
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -157,7 +183,7 @@ describe('postularse — server action de postulaciones', () => {
   it('retorna forbidden si el usuario no tiene rol egresado', async () => {
     vi.mocked(requireRole).mockResolvedValue(err('forbidden'))
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -179,7 +205,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -197,7 +223,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -221,7 +247,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -246,7 +272,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -270,7 +296,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -292,7 +318,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -311,7 +337,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -332,7 +358,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(false)
     if (!res.ok) {
@@ -348,7 +374,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    const res = await postularse(INPUT_VALIDO)
+    const res = await postularse(buildFormData())
 
     expect(res.ok).toBe(true)
     expect(validateApplicationWithAI).toHaveBeenCalledOnce()
@@ -362,7 +388,7 @@ describe('postularse — server action de postulaciones', () => {
       >,
     )
 
-    await postularse(INPUT_VALIDO)
+    await postularse(buildFormData())
 
     expect(validateApplicationWithAI).toHaveBeenCalledWith(
       expect.objectContaining({

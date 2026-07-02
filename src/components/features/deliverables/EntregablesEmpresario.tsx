@@ -5,8 +5,10 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/routing'
 import { toast } from 'sonner'
 import {
+  CalendarDays,
   CheckCircle2,
   Download,
+  ExternalLink,
   Loader2,
   Package,
   RotateCcw,
@@ -39,6 +41,20 @@ const ESTADO_STYLE: Record<string, string> = {
   en_revision: 'bg-primary/10 text-primary border-primary/20',
   aprobado: 'bg-accent/10 text-accent border-accent/20',
   con_cambios: 'bg-destructive/10 text-destructive border-destructive/20',
+}
+
+const PERIODO_STYLE: Record<string, string> = {
+  vigente: 'text-accent border-accent/40 bg-accent/10',
+  pausado: 'text-warning border-warning/40 bg-warning/10',
+  finalizado: 'text-primary border-primary/40 bg-primary/10',
+  cancelado: 'text-magenta border-magenta/40 bg-magenta/10',
+}
+
+const PERIODO_LABEL_KEY: Record<string, string> = {
+  vigente: 'periodoVigente',
+  pausado: 'periodoPausado',
+  finalizado: 'periodoFinalizado',
+  cancelado: 'periodoCancelado',
 }
 
 function ComentariosList({
@@ -145,6 +161,14 @@ export function EntregablesEmpresario({
   const isFinalizado = contratacionData?.estado_periodo === 'finalizado'
   const entregables = entregablesResult.ok ? entregablesResult.data : []
 
+  const periodoKey = contratacionData
+    ? PERIODO_LABEL_KEY[contratacionData.estado_periodo]
+    : null
+  const periodoStyle = contratacionData
+    ? (PERIODO_STYLE[contratacionData.estado_periodo] ??
+      'text-muted-foreground border-border bg-muted/20')
+    : null
+
   return (
     <>
       {isFinalizado && contratacionData && (
@@ -153,6 +177,53 @@ export function EntregablesEmpresario({
           idContratacion={contratacionData.id_contratacion}
           existingRating={existingRating ?? null}
         />
+      )}
+
+      {contratacionData && (
+        <div className="rounded-xl border border-border/60 bg-card/30 px-5 py-3">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {periodoKey && periodoStyle && (
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0 ${periodoStyle}`}
+              >
+                {t(periodoKey as Parameters<typeof t>[0])}
+              </span>
+            )}
+            {contratacionData.fecha_inicio && (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <CalendarDays className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="font-medium">{t('contratacionInicio')}:</span>
+                <span className="font-semibold text-foreground">
+                  {contratacionData.fecha_inicio.slice(0, 10)}
+                </span>
+              </span>
+            )}
+            {contratacionData.fecha_fin_estimada && (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <CalendarDays className="w-3.5 h-3.5 text-secondary shrink-0" />
+                <span className="font-medium">
+                  {t('contratacionFinEstimada')}:
+                </span>
+                <span className="font-semibold text-foreground">
+                  {contratacionData.fecha_fin_estimada.slice(0, 10)}
+                </span>
+              </span>
+            )}
+            {contratacionData.url_repositorio_proyecto && (
+              <a
+                href={contratacionData.url_repositorio_proyecto}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] max-w-[280px]"
+              >
+                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">
+                  {contratacionData.url_repositorio_proyecto}
+                </span>
+              </a>
+            )}
+          </div>
+        </div>
       )}
 
       {!entregablesResult.ok ? (

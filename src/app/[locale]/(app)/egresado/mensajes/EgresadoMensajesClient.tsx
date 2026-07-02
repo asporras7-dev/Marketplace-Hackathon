@@ -3,7 +3,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { MessageSquare, Send, Lock, CheckCircle2 } from 'lucide-react'
+import {
+  MessageSquare,
+  Send,
+  Lock,
+  CheckCircle2,
+  Check,
+  CheckCheck,
+} from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { EgresadoShell } from '@/components/layout/EgresadoShell'
 import { PageTitle } from '@/components/features/brand/PageTitle'
@@ -25,11 +32,60 @@ interface Props {
   currentUserId: string
 }
 
+const AVATAR_COLORS = [
+  'bg-primary/20 text-primary',
+  'bg-secondary/20 text-secondary',
+  'bg-accent/20 text-accent',
+  'bg-warning/20 text-warning',
+  'bg-magenta/20 text-magenta',
+  'bg-highlight/20 text-foreground',
+]
+
+const FALLBACK_AVATAR_COLOR = 'bg-primary/20 text-primary'
+
+function getAvatarColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash + name.charCodeAt(i)) % AVATAR_COLORS.length
+  }
+  return AVATAR_COLORS[hash] ?? FALLBACK_AVATAR_COLOR
+}
+
+function getInitials(name: string): string {
+  const parts = name
+    .trim()
+    .split(' ')
+    .filter((p) => p.length > 0)
+  const first = parts[0]?.[0] ?? ''
+  const second = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : ''
+  return (first + second).toUpperCase()
+}
+
 function formatHora(fechaEnvio: string): string {
   return new Date(fechaEnvio).toLocaleTimeString(undefined, {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+function ContactAvatar({
+  name,
+  size = 'sm',
+}: {
+  name: string
+  size?: 'sm' | 'md'
+}) {
+  return (
+    <div
+      className={cn(
+        'rounded-full flex items-center justify-center font-bold shrink-0',
+        getAvatarColor(name),
+        size === 'sm' ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm',
+      )}
+    >
+      {getInitials(name)}
+    </div>
+  )
 }
 
 function EstadoBadge({ estado }: { estado: 'contratada' | 'finalizada' }) {
@@ -38,14 +94,16 @@ function EstadoBadge({ estado }: { estado: 'contratada' | 'finalizada' }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider',
-        isActivo ? 'text-success' : 'text-muted-foreground',
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold',
+        isActivo
+          ? 'bg-accent/15 text-accent'
+          : 'bg-muted text-muted-foreground',
       )}
     >
       <span
         className={cn(
           'w-1.5 h-1.5 rounded-full',
-          isActivo ? 'bg-success' : 'bg-muted-foreground/50',
+          isActivo ? 'bg-accent animate-pulse' : 'bg-muted-foreground/50',
         )}
       />
       {isActivo ? t('estadoActivo') : t('estadoFinalizado')}
@@ -62,47 +120,36 @@ function ConversacionRow({
   isActive: boolean
   onSelect: () => void
 }) {
-  const t = useTranslations('EgresadoMensajes')
-  const initials = conv.nombreContraparte.substring(0, 2).toUpperCase()
   return (
     <button
       type="button"
       onClick={onSelect}
       className={cn(
-        'w-full text-left px-4 py-4 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] flex gap-3 items-center',
+        'w-full text-left px-3 py-3 border-l-4 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)]',
         isActive
-          ? 'border-l-[6px] border-primary bg-white shadow-sm'
-          : 'border-l-[6px] border-transparent hover:bg-muted/40 bg-transparent',
+          ? 'border-l-accent bg-accent/10 text-foreground'
+          : 'border-l-transparent hover:bg-muted/40 text-foreground',
       )}
     >
-      <div className="flex-shrink-0 w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
-        {initials}
-      </div>
-      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <div className="flex items-center justify-between">
-          <p
-            className={cn(
-              'text-sm font-bold truncate',
-              isActive ? 'text-primary' : 'text-ink-strong',
+      <div className="flex items-start gap-2.5">
+        <ContactAvatar name={conv.nombreContraparte} size="sm" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-1.5 mb-0.5">
+            <p className="text-sm font-semibold leading-snug line-clamp-1 flex-1">
+              {conv.nombreContraparte}
+            </p>
+            {conv.noLeidos > 0 && (
+              <span className="flex min-w-5 h-5 px-1.5 bg-magenta text-primary-foreground rounded-full items-center justify-center text-[10px] font-bold shrink-0">
+                {conv.noLeidos}
+              </span>
             )}
-          >
-            {conv.nombreContraparte}
-          </p>
-          <span className="text-[10px] text-ink-muted">
-            {t('relativeDateYesterday')}
-          </span>
-        </div>
-        <p className="text-sm font-semibold text-ink-strong leading-tight line-clamp-2">
-          {conv.tituloProyecto}
-        </p>
-        <div className="mt-1 flex items-center justify-between">
-          <EstadoBadge estado={conv.estado} />
-          {/* Badge de mensajes no leídos */}
-          {conv.noLeidos > 0 && (
-            <span className="flex min-w-5 h-5 px-1.5 bg-primary text-white rounded-full items-center justify-center text-[10px] font-bold">
-              {conv.noLeidos}
-            </span>
-          )}
+          </div>
+          <div className="flex items-center justify-between gap-1">
+            <p className="text-xs text-muted-foreground truncate">
+              {conv.tituloProyecto}
+            </p>
+            <EstadoBadge estado={conv.estado} />
+          </div>
         </div>
       </div>
     </button>
@@ -112,40 +159,55 @@ function ConversacionRow({
 function ChatBubble({
   mensaje,
   isMine,
-  initials,
 }: {
   mensaje: Mensaje
   isMine: boolean
-  initials: string
 }) {
-  const avatarText = isMine ? 'Me' : initials
+  const t = useTranslations('EgresadoMensajes')
+
   return (
     <div
       className={cn(
-        'flex gap-3 max-w-[75%]',
+        'flex gap-2 max-w-[78%]',
         isMine ? 'ml-auto flex-row-reverse' : 'mr-auto',
       )}
     >
-      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs mt-auto">
-        {avatarText}
-      </div>
       <div
         className={cn(
-          'px-4 py-3 rounded-2xl text-sm leading-relaxed break-words shadow-sm',
+          'px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words',
           isMine
-            ? 'bg-accent text-white rounded-br-sm'
-            : 'bg-white border border-border/60 text-ink-strong rounded-bl-sm',
+            ? 'bg-accent text-primary-foreground rounded-br-sm'
+            : 'bg-secondary/10 text-foreground rounded-bl-sm border border-secondary/15',
         )}
       >
         <p>{mensaje.contenido}</p>
-        <p
+        <div
           className={cn(
-            'text-[10px] mt-1 text-right',
-            isMine ? 'text-white/80' : 'text-ink-muted',
+            'flex items-center gap-1 mt-1',
+            isMine ? 'justify-end' : 'justify-start',
           )}
         >
-          {formatHora(mensaje.fechaEnvio)} {isMine && '✓'}
-        </p>
+          <p
+            className={cn(
+              'text-[10px]',
+              isMine ? 'text-primary-foreground/60' : 'text-muted-foreground',
+            )}
+          >
+            {formatHora(mensaje.fechaEnvio)}
+          </p>
+          {isMine &&
+            (mensaje.leido ? (
+              <CheckCheck
+                className="w-3.5 h-3.5 text-highlight shrink-0"
+                aria-label={t('msgLeido')}
+              />
+            ) : (
+              <Check
+                className="w-3.5 h-3.5 text-primary-foreground/50 shrink-0"
+                aria-label={t('msgNoLeido')}
+              />
+            ))}
+        </div>
       </div>
       {!isMine && (
         <div className="flex items-center">
@@ -163,7 +225,7 @@ function ChatEmptyState() {
   const t = useTranslations('EgresadoMensajes')
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-      <div className="p-4 bg-primary/8 rounded-full text-primary">
+      <div className="p-4 bg-gradient-to-br from-accent/15 to-primary/10 rounded-full text-accent">
         <CheckCircle2 className="w-8 h-8" />
       </div>
       <p className="font-semibold text-foreground">{t('mensajesEmpty')}</p>
@@ -277,7 +339,7 @@ export function EgresadoMensajesClient({
 
           {conversaciones.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-20">
-              <div className="p-5 bg-primary/8 rounded-full text-primary">
+              <div className="p-5 bg-gradient-to-br from-accent/15 to-primary/10 rounded-full text-accent">
                 <MessageSquare className="w-10 h-10" />
               </div>
               <p className="font-semibold text-lg text-foreground">
@@ -289,20 +351,20 @@ export function EgresadoMensajesClient({
             </div>
           ) : (
             <div
-              className="flex border-t border-border mt-2 bg-canvas/30"
+              className="flex border border-border/60 rounded-2xl overflow-hidden bg-card/20 shadow-sm mt-2"
               style={{ height: 'calc(100vh - 220px)', minHeight: '560px' }}
             >
               {/* Panel izquierdo — lista de conversaciones */}
-              <div className="w-[320px] shrink-0 border-r border-border flex flex-col bg-canvas/50">
-                <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between">
-                  <p className="text-xs font-bold uppercase tracking-wider text-primary">
+              <div className="w-[320px] shrink-0 border-r border-border/60 flex flex-col bg-gradient-to-b from-accent/5 to-card/20">
+                <div className="px-4 py-3.5 border-b border-border/40 bg-gradient-to-r from-accent/10 to-primary/5 flex items-center justify-between">
+                  <p className="text-xs font-bold uppercase tracking-wide text-accent">
                     {t('proyectoLabel')}
                   </p>
-                  <span className="bg-sky-100 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
+                  <span className="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
                     {conversaciones.length}
                   </span>
                 </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-transparent">
+                <div className="flex-1 overflow-y-auto divide-y divide-border/40">
                   {convs.map((conv) => (
                     <ConversacionRow
                       key={conv.idProyecto}
@@ -317,7 +379,7 @@ export function EgresadoMensajesClient({
               {/* Panel derecho — hilo de mensajes */}
               {selectedConv === null ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-                  <div className="p-4 bg-muted rounded-full text-muted-foreground">
+                  <div className="p-4 bg-gradient-to-br from-accent/10 to-primary/8 rounded-full text-accent">
                     <MessageSquare className="w-8 h-8" />
                   </div>
                   <p className="font-semibold text-foreground">
@@ -330,21 +392,20 @@ export function EgresadoMensajesClient({
               ) : (
                 <div className="flex-1 flex flex-col min-w-0">
                   {/* Header del chat */}
-                  <div className="px-6 py-4 border-b border-border flex items-center gap-4 bg-white/50 backdrop-blur-md sticky top-0 z-10">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
-                      {selectedConv.nombreContraparte
-                        .substring(0, 2)
-                        .toUpperCase()}
-                    </div>
+                  <div className="px-5 py-3.5 border-b border-border/40 flex items-center gap-3 bg-gradient-to-r from-accent/8 to-primary/5">
+                    <ContactAvatar
+                      name={selectedConv.nombreContraparte}
+                      size="md"
+                    />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3">
-                        <p className="font-bold text-lg text-ink-strong truncate">
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <p className="font-semibold text-sm text-foreground truncate">
                           {selectedConv.nombreContraparte}
                         </p>
                         <EstadoBadge estado={selectedConv.estado} />
                       </div>
-                      <p className="text-sm text-ink-muted truncate">
-                        {selectedConv.tituloProyecto}
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                        {t('empresaLabel')}: {selectedConv.tituloProyecto}
                       </p>
                     </div>
                   </div>
@@ -353,7 +414,7 @@ export function EgresadoMensajesClient({
                   <div className="flex-1 overflow-y-auto p-4 space-y-3">
                     {isLoadingMensajes ? (
                       <div className="flex-1 flex items-center justify-center py-16">
-                        <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                        <div className="w-6 h-6 rounded-full border-2 border-accent border-t-transparent animate-spin" />
                       </div>
                     ) : mensajes.length === 0 ? (
                       <ChatEmptyState />
@@ -363,9 +424,6 @@ export function EgresadoMensajesClient({
                           key={msg.idMensaje}
                           mensaje={msg}
                           isMine={msg.idRemitente === currentUserId}
-                          initials={selectedConv.nombreContraparte
-                            .substring(0, 2)
-                            .toUpperCase()}
                         />
                       ))
                     )}
@@ -399,7 +457,7 @@ export function EgresadoMensajesClient({
                         disabled={
                           !puedeEnviar || isSending || input.trim().length === 0
                         }
-                        className="rounded-xl shrink-0 h-10 w-10"
+                        className="rounded-xl shrink-0 h-10 w-10 bg-accent hover:bg-accent/90"
                         aria-label={t('sendBtn')}
                       >
                         {isSending ? (

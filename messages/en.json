@@ -295,6 +295,13 @@
   },
   "Egresado": {
     "dashboard": "Graduate Dashboard",
+    "matchWithProject": "Project Match",
+    "matchingTechs": "Skills in common",
+    "matchingLocation": "Location in common",
+    "matchWithStudent": "Match of {firstName} {lastName} with Project: {score} pts",
+    "matchTitle": "Match of {firstName} {lastName}",
+    "sameCountryAndRegion": "Same country and region",
+    "sameCountry": "Same country",
     "rateCompanyTitle": "Rate the Company",
     "rateCompanyDesc": "Share your experience working with this employer",
     "rateCompanySuccess": "Rating submitted successfully!",
@@ -318,6 +325,8 @@
     "myContractsDesc": "Projects you were selected for. Access your deliverables from here.",
     "emptyContracts": "You have no active contracts yet.",
     "emptyContractsDesc": "When a company selects you for a project, it will appear here.",
+    "contractFilterAll": "All",
+    "contractFilterEmpty": "No contracts match this filter.",
     "contractActive": "Active",
     "contractFinished": "Finished",
     "contractPaused": "Paused",
@@ -379,6 +388,10 @@
     "applyErrorPerfil": "We couldn't find your graduate profile. Sign out and back in.",
     "applyErrorSesion": "Your session expired. Sign in again.",
     "applyErrorDatabase": "We couldn't save your application (database error). Contact the team.",
+    "applyErrorArchivoRequerido": "Attach your proposal document.",
+    "applyErrorArchivoGrande": "The document exceeds the 5 MB maximum size.",
+    "applyErrorArchivoTipo": "Format not allowed. Upload a PDF or ZIP.",
+    "applyErrorArchivoSubida": "We couldn't upload the document. Try again.",
     "emptyApplications": "You haven't applied to any projects yet. Go explore the marketplace!",
     "emptyApplicationsDesc": "Browse our project catalog, find the one that best fits your stack, and send your proposal.",
     "exploreMarketplace": "Explore Marketplace",
@@ -391,11 +404,12 @@
     "prototypeExtraHelp": "Optional: repository, live demo, visual documentation… up to 3 links.",
     "addLink": "Add link",
     "removeLinkAria": "Remove link",
-    "technicalDocUrlLabel": "Technical documentation (URL)",
-    "technicalDocUrlHelp": "Optional: link to your documentation or technical material for the prototype.",
+    "technicalDocUrlLabel": "Technical documentation (PDF or ZIP)",
+    "technicalDocUrlHelp": "Required: upload a PDF or ZIP (max 5 MB) with your proposal's documentation.",
     "unexpectedError": "An unexpected error occurred",
     "withdrawOffer": "Withdraw Offer",
-    "confirmWithdraw": "Are you sure you want to withdraw your application?",
+    "withdrawDialogTitle": "Withdraw application",
+    "confirmWithdraw": "Are you sure you want to withdraw your application? This action cannot be undone.",
     "withdrawSuccess": "Application withdrawn successfully.",
     "withdrawError": "Failed to withdraw the application.",
     "deliverables": "Project Deliverables",
@@ -415,6 +429,10 @@
     "uploadClickToSelect": "Click to attach a file",
     "uploadMaxSize": "Max. 50 MB",
     "uploadRemoveFile": "Remove file",
+    "uploadConfirmTitle": "Confirm upload",
+    "uploadConfirmDescHito": "Are you sure you want to upload this milestone? Once submitted, it cannot be deleted.",
+    "uploadConfirmDescFinal": "Are you sure you want to upload the final deliverable? This action cannot be undone.",
+    "uploadConfirmBtn": "Upload",
     "tipoParcial": "Partial milestone",
     "tipoFinal": "Final deliverable",
     "versionLabel": "v{n}",
@@ -804,6 +822,7 @@
     "solutionLabel": "Solution approach",
     "prototypeLabel": "Prototype",
     "techDocLabel": "Technical documentation",
+    "techDocOpenError": "Couldn't open the technical documentation. Try again.",
     "repoLabel": "Repository",
     "appliedOnLabel": "Applied on",
     "deliveredOnLabel": "Prototype delivered on",
@@ -915,7 +934,13 @@
     "rateEgresadoCommentLabel": "Comment (optional)",
     "rateEgresadoCommentPlaceholder": "Share your experience working with this graduate...",
     "rateEgresadoSubmit": "Submit rating",
-    "rateEgresadoAlreadyRated": "You have already rated this graduate"
+    "rateEgresadoAlreadyRated": "You have already rated this graduate",
+    "contratacionInicio": "Start date",
+    "contratacionFinEstimada": "Estimated end",
+    "periodoVigente": "Active contract",
+    "periodoPausado": "Paused",
+    "periodoFinalizado": "Finished",
+    "periodoCancelado": "Cancelled"
   },
   "Admin": {
     "dashboard": "Admin Dashboard",
@@ -1477,6 +1502,8 @@
     "subtitle": "Review the applications across all your projects in one place."
   },
   "Portfolio": {
+    "commonTechnologies": "Technologies in common",
+    "projectDemo": "View demo",
     "title": "My Professional Portfolio",
     "description": "Manage your portfolio projects to showcase your experience, skills, and completed projects to recruiting companies.",
     "managerTitle": "Portfolio Projects",
@@ -1547,7 +1574,12 @@
     "errorSkillExists": "This skill already exists",
     "cropImageTitle": "Crop image",
     "cropImageDesc": "Adjust your image to look perfect.",
-    "cropAndUpload": "Crop and Upload"
+    "cropAndUpload": "Crop and Upload",
+    "defaultRole": "FWD Graduate",
+    "ratingsSection": "Received ratings",
+    "noRatings": "You have no ratings from companies yet.",
+    "ratingAverage": "Average",
+    "ratingFrom": "Company"
   },
   "EgresadoMensajes": {
     "title": "My Messages",
@@ -1567,7 +1599,9 @@
     "errorEnvio": "Could not send the message. Please try again.",
     "proyectoLabel": "Project",
     "empresaLabel": "Company",
-    "relativeDateYesterday": "Yesterday"
+    "relativeDateYesterday": "Yesterday",
+    "msgLeido": "Seen",
+    "msgNoLeido": "Sent"
   },
   "Ranking": {
     "snippetTitle": "Talent Ranking",
@@ -1606,7 +1640,9 @@
     "errorCarga": "Could not load messages. Please try again.",
     "errorEnvio": "Could not send the message. Please try again.",
     "proyectoLabel": "Project",
-    "egresadoLabel": "Graduate"
+    "egresadoLabel": "Graduate",
+    "msgLeido": "Seen",
+    "msgNoLeido": "Sent"
   },
   "EgresadoEmpresa": {
     "pageTitle": "Company Profile",
@@ -1615,6 +1651,15 @@
     "noDesc": "No description available.",
     "backToContracts": "Back to my contracts",
     "tipoEmpresa": "Formal company",
-    "tipoEmprendedor": "Individual entrepreneur"
+    "tipoEmprendedor": "Individual entrepreneur",
+    "rateTitle": "Rate your experience",
+    "rateDesc": "Share your opinion about working with this company.",
+    "rateProjectLabel": "Project",
+    "ratingLabel": "Score",
+    "commentLabel": "Comment (optional)",
+    "commentPlaceholder": "How was the experience?",
+    "submitRating": "Submit rating",
+    "alreadyRated": "You already rated your experience with this company.",
+    "rateSuccess": "Rating submitted successfully."
   }
 }

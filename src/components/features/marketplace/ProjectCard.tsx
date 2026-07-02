@@ -9,7 +9,14 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Link } from '@/i18n/routing'
-import { Calendar, DollarSign, Clock, MapPin, ArrowRight } from 'lucide-react'
+import {
+  Calendar,
+  DollarSign,
+  Clock,
+  MapPin,
+  ArrowRight,
+  Target,
+} from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface ProjectCardProps {
@@ -52,10 +59,21 @@ export function ProjectCard({
             <MapPin className="w-3 h-3 mr-1 shrink-0" />
             {tCommon(project.mode)}
           </Badge>
-          <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5" />
-            {project.startDate}
-          </span>
+          <div className="flex items-center gap-3">
+            {project.matchScore !== undefined && (
+              <Badge
+                variant="outline"
+                className="px-2 py-0.5 rounded-full text-xs font-bold border-primary text-primary bg-primary/5"
+              >
+                <Target className="w-3 h-3 mr-1" />
+                Match: {project.matchScore} pts
+              </Badge>
+            )}
+            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" />
+              {project.startDate}
+            </span>
+          </div>
         </div>
         <CardTitle className="text-xl font-bold tracking-tight text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
           {project.title}

@@ -8,6 +8,11 @@ import type { Project } from '@/types'
 import { logger } from '@/lib/logger'
 import { estadoToStatus } from './status'
 import { durationInDays } from './duration'
+import {
+  calculateMatchScore,
+  type MatchProjectTech,
+  type MatchStudentSkill,
+} from './match-logic'
 
 type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>
 
@@ -15,6 +20,7 @@ const PROYECTO_SELECT = `
   *,
   empresarios (nombre_empresa),
   proyecto_tecnologias (
+    id_tecnologia,
     tecnologias (nombre)
   )
 ` as const
@@ -26,10 +32,28 @@ function selectProyectos(supabase: ServerClient) {
 type ProyectoRow = QueryData<ReturnType<typeof selectProyectos>>[number]
 
 /** Mapea una fila de Supabase (tipo inferido del `.select`) a la interfaz `Project`. */
-function mapProject(row: ProyectoRow): Project {
+function mapProject(
+  row: ProyectoRow,
+  studentSkills?: MatchStudentSkill[],
+): Project {
   const stack: string[] = []
+  const projectTechs: MatchProjectTech[] = []
+
   for (const pt of row.proyecto_tecnologias) {
     if (pt.tecnologias?.nombre) stack.push(pt.tecnologias.nombre)
+    projectTechs.push({
+      id_tecnologia: pt.id_tecnologia,
+      nombre_tecnologia: pt.tecnologias?.nombre,
+    })
+  }
+
+  let matchScore: number | undefined
+  let matchDetalles: import('./match-logic').MatchDetail[] | undefined
+
+  if (studentSkills && projectTechs.length > 0) {
+    const match = calculateMatchScore(studentSkills, projectTechs)
+    matchScore = match.score
+    matchDetalles = match.detalles
   }
 
   return {
@@ -44,9 +68,15 @@ function mapProject(row: ProyectoRow): Project {
     durationDays: durationInDays(row.fecha_publicacion, row.fecha_cierre),
     budget: row.presupuesto_max ?? row.presupuesto_min ?? 0,
     mode: row.modalidad,
-    startDate: row.fecha_publicacion ?? row.created_at,
+    countryIso: row.pais_iso_proyecto,
+    region: row.region_proyecto,
+    startDate: row.fecha_publicacion
+      ? new Date(row.fecha_publicacion).toISOString()
+      : row.created_at,
     status: estadoToStatus(row.estado),
     createdAt: row.created_at,
+    matchScore,
+    matchDetalles,
   }
 }
 
@@ -71,7 +101,32 @@ export async function getMarketplaceProjects(): Promise<
       return err('database_error')
     }
 
-    return ok(data.map(mapProject))
+    // Attempt to fetch student skills if user is an egresado
+    let studentSkills: MatchStudentSkill[] = []
+    try {
+      const { data: userData } = await supabase.auth.getUser()
+      if (userData?.user) {
+        const { data: estData } = await supabase
+          .from('estudiantes')
+          .select('id_estudiante')
+          .eq('id_usuario', userData.user.id)
+          .maybeSingle()
+
+        if (estData) {
+          const { data: skillsData } = await supabase
+            .from('habilidades_tecnicas')
+            .select('id_tecnologia, nivel')
+            .eq('id_estudiante', estData.id_estudiante)
+          if (skillsData) {
+            studentSkills = skillsData as MatchStudentSkill[]
+          }
+        }
+      }
+    } catch {
+      // Ignorar errores de auth para usuarios anónimos o no egresados
+    }
+
+    return ok(data.map((row) => mapProject(row, studentSkills)))
   } catch (error) {
     unstable_rethrow(error)
     logger.error('Unexpected error fetching marketplace projects', { error })
@@ -97,7 +152,31 @@ export async function getMarketplaceProjectById(
       return err(error.code === 'PGRST116' ? 'not_found' : 'database_error')
     }
 
-    return ok(mapProject(data))
+    let studentSkills: MatchStudentSkill[] = []
+    try {
+      const { data: userData } = await supabase.auth.getUser()
+      if (userData?.user) {
+        const { data: estData } = await supabase
+          .from('estudiantes')
+          .select('id_estudiante')
+          .eq('id_usuario', userData.user.id)
+          .maybeSingle()
+
+        if (estData) {
+          const { data: skillsData } = await supabase
+            .from('habilidades_tecnicas')
+            .select('id_tecnologia, nivel')
+            .eq('id_estudiante', estData.id_estudiante)
+          if (skillsData) {
+            studentSkills = skillsData as MatchStudentSkill[]
+          }
+        }
+      }
+    } catch {
+      // Ignore auth errors
+    }
+
+    return ok(mapProject(data, studentSkills))
   } catch (error) {
     unstable_rethrow(error)
     logger.error('Unexpected error fetching project by id', { error })

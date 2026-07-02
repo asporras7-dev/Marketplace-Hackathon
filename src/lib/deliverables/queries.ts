@@ -402,6 +402,9 @@ export interface ContratacionParaCalificacion {
   id_participacion: string
   estado_periodo: string
   id_estudiante: string
+  fecha_inicio: string | null
+  fecha_fin_estimada: string | null
+  url_repositorio_proyecto: string | null
 }
 
 /**
@@ -435,7 +438,7 @@ export async function getContratacionDelProyecto(
 
   const { data: part, error: partError } = await supabase
     .from('participaciones')
-    .select('id_participacion, id_estudiante')
+    .select('id_participacion, id_estudiante, url_repositorio_proyecto')
     .eq('id_proyecto', idProyecto)
     .in('estado', ['contratada', 'finalizada'])
     .maybeSingle()
@@ -450,7 +453,7 @@ export async function getContratacionDelProyecto(
 
   const { data: contratacion, error: contError } = await supabase
     .from('contrataciones')
-    .select('id_contratacion, estado_periodo')
+    .select('id_contratacion, estado_periodo, fecha_inicio, fecha_fin_estimada')
     .eq('id_participacion', part.id_participacion)
     .maybeSingle()
 
@@ -467,6 +470,9 @@ export async function getContratacionDelProyecto(
     id_participacion: part.id_participacion,
     estado_periodo: contratacion.estado_periodo,
     id_estudiante: part.id_estudiante,
+    fecha_inicio: contratacion.fecha_inicio,
+    fecha_fin_estimada: contratacion.fecha_fin_estimada,
+    url_repositorio_proyecto: part.url_repositorio_proyecto,
   })
 }
 

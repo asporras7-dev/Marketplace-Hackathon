@@ -70,7 +70,7 @@ Luego llená `.env.local` con las llaves reales (las comparte el equipo, **nunca
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` → públicas, van al cliente.
 - `SUPABASE_SERVICE_ROLE_KEY` → **solo servidor**, jamás exponer al cliente (§13 FAQ).
-- `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `RESEND_API_KEY` → según la feature en la que trabajés.
+- `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` → según la feature en la que trabajés.
 
 Arrancar en local:
 

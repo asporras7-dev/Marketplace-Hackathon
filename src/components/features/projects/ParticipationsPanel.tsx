@@ -54,6 +54,7 @@ import {
   setParticipacionEstado,
 } from '@/lib/projects/project-detail'
 import type { ParticipacionEmpresario } from '@/lib/projects/project-detail'
+import { getSignedUrlDocumentacionTecnica } from '@/lib/applications/actions'
 import type { Result } from '@/lib/result'
 import {
   canOpenParticipacion,
@@ -611,9 +612,19 @@ function ParticipationCard({
                     href={participacion.documentacionTecnica}
                     label={t('techDocLabel')}
                     icon={<FileText className="w-3.5 h-3.5" />}
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault()
-                      onOpenIframe(participacion.documentacionTecnica!)
+                      // El doc vive en un bucket privado: se resuelve a una URL
+                      // firmada (1h) antes de abrirlo. Las URLs legacy externas
+                      // la action las devuelve tal cual.
+                      const signed = await getSignedUrlDocumentacionTecnica(
+                        participacion.idParticipacion,
+                      )
+                      if (signed.ok) {
+                        onOpenIframe(signed.data.url)
+                      } else {
+                        toast.error(t('techDocOpenError'))
+                      }
                     }}
                   />
                 )}

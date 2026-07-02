@@ -1,6 +1,5 @@
 'use client'
 
-import React, { useState } from 'react'
 import { Link } from '@/i18n/routing'
 import { Project } from '@/types'
 import { useAccountStatus } from '@/components/features/auth/AccountStatusContext'
@@ -19,42 +18,26 @@ import {
   CheckCircle,
   FileText,
   Star,
-  Loader2,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { rateCompany } from '@/lib/company/ratings'
-import type { MiContratacion } from '@/lib/deliverables/queries'
 import { ReportButton } from '@/components/features/moderation/ReportButton'
 
 interface ProjectDetailClientProps {
   project: Project
   alreadyApplied: boolean
-  contratacion: MiContratacion | null
-  existingRating: { puntuacion: number; comentario: string | null } | null
+  studentCountry?: string | null
+  studentRegion?: string | null
 }
 
 export function ProjectDetailClient({
   project,
   alreadyApplied,
-  contratacion,
-  existingRating,
+  studentCountry,
+  studentRegion,
 }: ProjectDetailClientProps) {
   const tCommon = useTranslations('Common')
   const tEgresado = useTranslations('Egresado')
   const tAccount = useTranslations('Account')
-  const router = useRouter()
-
-  const [ratingScore, setRatingScore] = useState(
-    existingRating?.puntuacion ?? 0,
-  )
-  const [ratingComment, setRatingComment] = useState(
-    existingRating?.comentario ?? '',
-  )
-  const [hoverScore, setHoverScore] = useState(0)
-  const [submittingRating, setSubmittingRating] = useState(false)
-  const [hasRated, setHasRated] = useState(existingRating !== null)
 
   const { isPending } = useAccountStatus()
 
@@ -109,7 +92,7 @@ export function ProjectDetailClient({
                       <Badge
                         key={tech}
                         variant="secondary"
-                        className="text-sm bg-secondary/10 text-secondary-foreground border border-border"
+                        className="text-sm bg-accent/15 text-accent border border-accent/40"
                       >
                         {tech}
                       </Badge>
@@ -118,136 +101,6 @@ export function ProjectDetailClient({
                 </div>
               </CardContent>
             </Card>
-
-            {contratacion !== null && (
-              <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-warning to-highlight" />
-                <CardContent className="p-6 pt-8 space-y-6">
-                  <div className="space-y-1 text-left">
-                    <h3 className="text-base font-extrabold font-heading text-foreground">
-                      {tEgresado('rateCompanyTitle')}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {tEgresado('rateCompanyDesc')}
-                    </p>
-                  </div>
-
-                  {hasRated ? (
-                    <div className="space-y-4 text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-muted-foreground mr-2">
-                          {tEgresado('ratingLabel')}:
-                        </span>
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`w-4 h-4 ${
-                                star <= ratingScore
-                                  ? 'text-highlight fill-highlight'
-                                  : 'text-muted-foreground/25'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      {ratingComment && (
-                        <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2 text-xs text-foreground/90">
-                          <span className="font-bold block mb-1 text-muted-foreground uppercase text-[10px]">
-                            {tEgresado('commentLabel')}
-                          </span>
-                          {ratingComment}
-                        </div>
-                      )}
-                      <p className="text-xs text-accent font-semibold">
-                        {tEgresado('alreadyRated')}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4 text-left">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-muted-foreground">
-                          {tEgresado('ratingLabel')} *
-                        </span>
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              disabled={submittingRating}
-                              onMouseEnter={() => setHoverScore(star)}
-                              onMouseLeave={() => setHoverScore(0)}
-                              onClick={() => setRatingScore(star)}
-                              className="focus:outline-none transition-transform hover:scale-110 cursor-pointer bg-transparent border-0 p-0"
-                            >
-                              <Star
-                                className={`w-5 h-5 ${
-                                  star <= (hoverScore || ratingScore)
-                                    ? 'text-highlight fill-highlight'
-                                    : 'text-muted-foreground/30'
-                                }`}
-                              />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="rating-comment"
-                          className="block text-xs font-bold text-muted-foreground"
-                        >
-                          {tEgresado('commentLabel')}
-                        </label>
-                        <textarea
-                          id="rating-comment"
-                          value={ratingComment}
-                          onChange={(e) => setRatingComment(e.target.value)}
-                          placeholder={tEgresado('rateCompanyDesc')}
-                          disabled={submittingRating}
-                          rows={3}
-                          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          maxLength={1000}
-                        />
-                      </div>
-
-                      <Button
-                        type="button"
-                        disabled={submittingRating || ratingScore === 0}
-                        onClick={async () => {
-                          if (ratingScore === 0) return
-                          setSubmittingRating(true)
-                          const res = await rateCompany({
-                            idEmpresario: project.companyId,
-                            idContratacion: contratacion.id_contratacion,
-                            puntuacion: ratingScore,
-                            comentario: ratingComment.trim() || undefined,
-                          })
-                          setSubmittingRating(false)
-                          if (res.ok) {
-                            toast.success(tEgresado('rateCompanySuccess'))
-                            setHasRated(true)
-                            router.refresh()
-                          } else {
-                            toast.error(
-                              tEgresado(
-                                res.error as Parameters<typeof tEgresado>[0],
-                              ),
-                            )
-                          }
-                        }}
-                        className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs flex items-center gap-1.5"
-                      >
-                        {submittingRating && (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        )}
-                        {tEgresado('submitRating')}
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           <div className="lg:col-span-4 space-y-6">
@@ -349,6 +202,77 @@ export function ProjectDetailClient({
                 </div>
               </CardContent>
             </Card>
+
+            {/* Match Information Card */}
+            {project.matchScore !== undefined && project.matchScore > 0 && (
+              <Card className="border border-border/80 bg-card/60 backdrop-blur-sm overflow-hidden mt-6">
+                <CardContent className="p-6 space-y-4">
+                  <h3 className="text-sm font-bold text-primary flex items-center gap-2">
+                    <Star className="w-4 h-4" />
+                    {tEgresado('matchWithProject') || 'Match con el Proyecto'}
+                  </h3>
+
+                  {project.matchDetalles &&
+                    project.matchDetalles.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wide">
+                          {tEgresado('matchingTechs') || 'Habilidades en común'}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {project.matchDetalles.map((det) => (
+                            <div
+                              key={det.id_tecnologia}
+                              className="text-xs flex items-center justify-between border-b border-border/40 pb-1"
+                            >
+                              <span>
+                                <span className="font-semibold text-highlight">
+                                  {det.nombre_tecnologia || det.id_tecnologia}
+                                </span>{' '}
+                                (
+                                <span className="text-primary uppercase text-[10px]">
+                                  {det.nivel}
+                                </span>
+                                )
+                              </span>
+                              <span className="font-bold text-primary">
+                                +{det.puntos} pts
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {project.countryIso === studentCountry &&
+                    studentCountry != null && (
+                      <div className="pt-2">
+                        <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wide">
+                          {tEgresado('matchingLocation') ||
+                            'Ubicación en común'}
+                        </p>
+                        <div className="text-xs flex items-center gap-2 mt-1">
+                          <MapPin className="w-3 h-3 text-primary" />
+                          <span>
+                            {project.region === studentRegion &&
+                            studentRegion != null
+                              ? tEgresado('sameCountryAndRegion')
+                              : tEgresado('sameCountry')}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                  <div className="pt-3 border-t border-border/60 flex justify-between items-center">
+                    <span className="text-xs font-bold text-muted-foreground">
+                      Puntaje Total
+                    </span>
+                    <span className="text-lg font-extrabold text-primary">
+                      {project.matchScore} pts
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>

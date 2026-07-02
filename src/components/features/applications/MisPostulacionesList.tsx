@@ -1,10 +1,20 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Briefcase } from 'lucide-react'
+import { Briefcase, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Link } from '@/i18n/routing'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { EmptyState } from '@/components/features/shared/EmptyState'
 import { retirarPostulacion } from '@/lib/applications/actions'
 import {
@@ -16,32 +26,27 @@ interface MisPostulacionesListProps {
   postulaciones: PostulacionPropia[]
 }
 
-/**
- * Render interactivo de "mis postulaciones". Recibe los datos ya resueltos
- * desde el Server Component (no hace fetch ni maneja estado de carga: por eso
- * no puede quedarse en "cargando"). Solo conserva el retiro de la oferta, que
- * sí necesita el cliente (confirm + toast).
- */
 export function MisPostulacionesList({
   postulaciones,
 }: MisPostulacionesListProps) {
   const router = useRouter()
   const tEgresado = useTranslations('Egresado')
+  const tCommon = useTranslations('Common')
 
-  const handleWithdraw = async (idParticipacion: string) => {
-    const confirmed = window.confirm(tEgresado('confirmWithdraw'))
-    if (!confirmed) return
+  const [pendingId, setPendingId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const result = await retirarPostulacion({
-      id_participacion: idParticipacion,
-    })
+  const handleWithdrawConfirm = async () => {
+    if (!pendingId) return
+    setIsSubmitting(true)
+    const result = await retirarPostulacion({ id_participacion: pendingId })
+    setIsSubmitting(false)
     if (!result.ok) {
       toast.error(tEgresado('withdrawError'))
       return
     }
-
+    setPendingId(null)
     toast.success(tEgresado('withdrawSuccess'))
-    // El action ya hace revalidatePath; refrescamos para reflejarlo en el acto.
     router.refresh()
   }
 
@@ -66,7 +71,7 @@ export function MisPostulacionesList({
           <PostulacionCard
             key={postulacion.id_participacion}
             postulacion={postulacion}
-            onWithdraw={() => handleWithdraw(postulacion.id_participacion)}
+            onWithdraw={() => setPendingId(postulacion.id_participacion)}
           />
         ))}
       </div>
@@ -79,6 +84,51 @@ export function MisPostulacionesList({
           {tEgresado('exploreMoreProjects')}
         </Link>
       </div>
+
+      <Dialog
+        open={pendingId !== null}
+        onOpenChange={(open) => {
+          if (!open && !isSubmitting) setPendingId(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{tEgresado('withdrawDialogTitle')}</DialogTitle>
+            <DialogDescription>
+              {tEgresado('confirmWithdraw')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={isSubmitting}
+              onClick={() => setPendingId(null)}
+              className="font-semibold"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="magenta"
+              disabled={isSubmitting}
+              onClick={() => void handleWithdrawConfirm()}
+              className="font-semibold"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {tCommon('loading')}
+                </span>
+              ) : (
+                tEgresado('withdrawOffer')
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

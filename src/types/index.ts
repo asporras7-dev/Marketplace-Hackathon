@@ -26,8 +26,12 @@ export interface Project {
   startDate: string // ISO date string
   status: ProjectStatus
   createdAt: string
-  category?: string
-  area?: string
+  category?: string | undefined
+  area?: string | undefined
+  countryIso?: string | null
+  region?: string | null
+  matchScore?: number | undefined
+  matchDetalles?: import('@/lib/projects/match-logic').MatchDetail[] | undefined
 }
 
 export interface Application {
