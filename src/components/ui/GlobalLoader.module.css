@@ -1,0 +1,82 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  background-color: oklch(1 0.003 245 / 0.75);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-in-out;
+}
+
+.overlayHome {
+  background-color: oklch(1 0.003 245 / 0.40); /* Más transparente solo para el inicio */
+}
+
+.overlayActive {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0s; /* Aparece instantáneamente, sin delay */
+}
+
+.loaderImage {
+  /* Posicionamiento exacto */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+
+  /* Tamaño Mobile (Mobile-first, aprox 8% más grande que 72px) */
+  width: 78px;
+  height: 78px;
+  object-fit: cover;
+  
+  /* Ajuste de color para que resalten más: más saturación, más brillo y un poco de contraste */
+  filter: saturate(1.3) brightness(1.15) contrast(1.1);
+
+  /* Animación requerida */
+  transform-origin: center center;
+  animation-name: rotateLoader;
+  animation-duration: 1.8s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Tablet (aprox 8% más grande que 80px) */
+@media (min-width: 768px) {
+  .loaderImage {
+    width: 86px;
+    height: 86px;
+  }
+}
+
+/* Desktop (aprox 8% más grande que 96px) */
+@media (min-width: 1024px) {
+  .loaderImage {
+    width: 104px;
+    height: 104px;
+  }
+}
+
+@keyframes rotateLoader {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+
+/* Accesibilidad: reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .loaderImage {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

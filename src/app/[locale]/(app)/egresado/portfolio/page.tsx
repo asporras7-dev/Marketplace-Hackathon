@@ -9,11 +9,11 @@ import { getCountryOptions, getSubdivisions } from '@/lib/geo/catalog'
 export default async function PortfolioPage({
   params,
 }: {
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
   const t = await getTranslations('Portfolio')
 
-  const locale = await params.locale
+  const { locale } = await params
 
   const [profileResult, calificacionesResult] = await Promise.all([
     getStudentProfile(),
