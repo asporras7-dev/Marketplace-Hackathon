@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { User, Upload, ArrowRight } from 'lucide-react'
+import { User, Upload, ArrowRight, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -485,14 +485,31 @@ export function EmpresarioOnboardingForm({
             )}
           </div>
 
-          <Button
-            type="submit"
-            disabled={loading || photoUploading}
-            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all duration-[var(--duration-base)] ease-[var(--ease-out)] cursor-pointer"
-          >
-            {loading ? tO('saving') : tO('saveProfile')}
-            {!loading && <ArrowRight className="w-4 h-4" />}
-          </Button>
+          <div className="space-y-3">
+            <Button
+              type="submit"
+              disabled={loading || photoUploading}
+              className="w-full h-12 rounded-xl bg-primary hover:bg-primary/95 text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all duration-[var(--duration-base)] ease-[var(--ease-out)] cursor-pointer"
+            >
+              {loading ? tO('saving') : tO('saveProfile')}
+              {!loading && <ArrowRight className="w-4 h-4" />}
+            </Button>
+
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={async () => {
+                  const { signOut } = await import('@/lib/auth/actions')
+                  await signOut()
+                  router.push('/login')
+                }}
+                className="inline-flex items-center gap-2 text-xs font-bold text-ink-subtle hover:text-primary transition-all duration-200 cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                {tO('logout')}
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </AuthCard>

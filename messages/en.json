@@ -1347,7 +1347,9 @@
     "labelSitioWeb": "Website (optional)",
     "errorCedula": "Enter a valid ID number.",
     "errorSitioWeb": "Enter a valid URL (e.g. https://...).",
-    "emailNotAllowed": "Your email is not enabled as an FWD graduate. Contact Forward Costa Rica."
+    "emailNotAllowed": "Your email is not enabled as an FWD graduate. Contact Forward Costa Rica.",
+    "backToLogin": "Return to login",
+    "logout": "Log out"
   },
   "Account": {
     "pendingBanner": "Your account is pending activation. Please verify your email.",
