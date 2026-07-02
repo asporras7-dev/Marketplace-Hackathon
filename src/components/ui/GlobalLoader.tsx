@@ -5,14 +5,22 @@ import styles from './GlobalLoader.module.css'
 
 interface GlobalLoaderProps {
   isLoading?: boolean
+  isHome?: boolean
 }
 
-export function GlobalLoader({ isLoading = true }: GlobalLoaderProps) {
+export function GlobalLoader({
+  isLoading = true,
+  isHome = false,
+}: GlobalLoaderProps) {
   const t = useTranslations('Common')
 
   return (
     <div
-      className={cn(styles.overlay, isLoading && styles.overlayActive)}
+      className={cn(
+        styles.overlay,
+        isLoading && styles.overlayActive,
+        isHome && styles.overlayHome,
+      )}
       aria-hidden="true"
     >
       <img

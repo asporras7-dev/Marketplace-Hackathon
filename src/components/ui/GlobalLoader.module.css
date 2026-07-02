@@ -13,6 +13,10 @@
   transition: opacity 200ms ease-in-out;
 }
 
+.overlayHome {
+  background-color: oklch(1 0.003 245 / 0.40); /* Más transparente solo para el inicio */
+}
+
 .overlayActive {
   opacity: 1;
   pointer-events: all;

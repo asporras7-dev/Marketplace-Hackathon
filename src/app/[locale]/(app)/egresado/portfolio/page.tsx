@@ -9,7 +9,7 @@ import { getCountryOptions, getSubdivisions } from '@/lib/geo/catalog'
 export default async function PortfolioPage({
   params,
 }: {
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
   const t = await getTranslations('Portfolio')
 
@@ -18,7 +18,7 @@ export default async function PortfolioPage({
 
   // Resolve locale instead of using params directly because Next.js 15 requires awaiting params
   // Or we can just use getLocale() from next-intl/server
-  const locale = await params.locale
+  const { locale } = await params
 
   const countries = getCountryOptions(locale).map((country) => ({
     value: country.code,

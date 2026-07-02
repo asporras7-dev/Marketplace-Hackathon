@@ -270,13 +270,13 @@ export function Navbar({
 
             {/* User Profile Avatar / Logout Dropdown */}
             <div className="relative group shrink-0">
-              <Link
-                href="/empresario/perfil"
-                className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 cursor-pointer ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+              <button
+                type="button"
+                className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 cursor-default ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
                 aria-label={t('profile')}
               >
-                <User className="w-5 h-5" />
-              </Link>
+                <User className="w-5 h-5 pointer-events-none" />
+              </button>
               <div className="absolute right-0 top-full mt-2 w-36 bg-card border border-border rounded-xl shadow-xl p-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <button
                   type="button"

@@ -68,6 +68,9 @@ export function GlobalLoaderProvider({
         // Ignorar clicks si tienen teclas especiales (abren nueva pestaña)
         if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return
 
+        // Omitir por completo la aparición del loader si se va al módulo de login
+        if (url.pathname.includes('/login')) return
+
         loadStartTime.current = Date.now()
         setIsLoading(true)
       }
@@ -86,8 +89,20 @@ export function GlobalLoaderProvider({
 
     const originalPushState = window.history.pushState
     window.history.pushState = function (...args) {
-      loadStartTime.current = Date.now()
-      setIsLoading(true)
+      const href =
+        typeof args[2] === 'string'
+          ? args[2]
+          : args[2]
+            ? args[2].toString()
+            : ''
+
+      // Ignorar el loader si se está navegando hacia el módulo de login
+      const isGoingToLogin = href.includes('/login')
+
+      if (!isGoingToLogin) {
+        loadStartTime.current = Date.now()
+        setIsLoading(true)
+      }
       return originalPushState.apply(window.history, args)
     }
 
@@ -105,10 +120,13 @@ export function GlobalLoaderProvider({
     }
   }, [])
 
+  // Detectar si estamos en el inicio para aplicar más transparencia al fondo
+  const isHome = pathname === '/' || pathname === '/es' || pathname === '/en'
+
   return (
     <>
       {children}
-      <GlobalLoader isLoading={isLoading} />
+      <GlobalLoader isLoading={isLoading} isHome={isHome} />
     </>
   )
 }
