@@ -1,6 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils/cn'
 import { useTranslations } from 'next-intl'
+import { FwdLogo } from '@/components/features/brand/FwdLogo'
 import styles from './GlobalLoader.module.css'
 
 interface GlobalLoaderProps {
@@ -24,7 +25,7 @@ export function GlobalLoader({
       aria-hidden="true"
     >
       <img
-        src="/images/logo-loader-transparent.png"
+        src="/images/logo-fwd-icon.png"
         alt={t('loading')}
         className={cn(
           styles.loaderImage,

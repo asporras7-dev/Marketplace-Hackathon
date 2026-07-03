@@ -14,7 +14,7 @@
 }
 
 .overlayHome {
-  background-color: oklch(1 0.003 245 / 0.40); /* Más transparente solo para el inicio */
+  background-color: oklch(1 0.003 245 / 0.55); /* Más transparente solo para el inicio, pero un poco más blanco que antes */
 }
 
 .overlayActive {
@@ -36,9 +36,6 @@
   height: 78px;
   object-fit: cover;
   
-  /* Ajuste de color para que resalten más: más saturación, más brillo y un poco de contraste */
-  filter: saturate(1.3) brightness(1.15) contrast(1.1);
-
   /* Animación requerida */
   transform-origin: center center;
   animation-name: rotateLoader;

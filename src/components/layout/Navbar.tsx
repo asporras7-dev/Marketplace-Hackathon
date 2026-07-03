@@ -248,7 +248,11 @@ export function Navbar({
               href="/"
               className="flex items-center space-x-2.5 shrink-0 group"
             >
-              <FwdLogo className="w-8 h-8 group-hover:scale-105 transition-transform duration-[var(--duration-fast)] ease-[var(--ease-out)]" />
+              <img
+                src="/images/logo-fwd-icon.png"
+                alt="Logo FWD"
+                className="w-10 h-10 animate-spin-slow object-contain"
+              />
               <span
                 className={`font-heading text-xl font-bold tracking-tight block transition-colors duration-300 ${isHero ? 'text-white' : 'text-foreground'}`}
               >
