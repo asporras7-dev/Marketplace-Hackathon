@@ -1,4 +1,12 @@
 {
+  "ChatIA": {
+    "title": "Asistente FWD",
+    "placeholder": "Escribe tu pregunta...",
+    "send": "Enviar",
+    "close": "Cerrar chat",
+    "error": "Ocurrió un error al procesar tu solicitud. Intenta de nuevo.",
+    "typing": "Escribiendo..."
+  },
   "Geo": {
     "selectCountry": "Seleccioná un país",
     "searchCountry": "Buscá un país...",

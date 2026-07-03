@@ -1,4 +1,12 @@
 {
+  "ChatIA": {
+    "title": "FWD Assistant",
+    "placeholder": "Type your question...",
+    "send": "Send",
+    "close": "Close chat",
+    "error": "An error occurred while processing your request. Please try again.",
+    "typing": "Typing..."
+  },
   "Geo": {
     "selectCountry": "Select a country",
     "searchCountry": "Search for a country...",
