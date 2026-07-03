@@ -10,6 +10,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { normalizeRole } from '@/lib/auth/roles'
 import type { UserRole } from '@/types'
 import { Toaster } from '@/components/ui/sonner'
+import { FloatingButterfly } from '@/components/ui/FloatingButterfly'
 import '../globals.css'
 
 const archivoNarrow = Archivo_Narrow({
@@ -72,6 +73,7 @@ export default async function LocaleLayout({
           <AuthProvider initialRole={initialRole}>
             <GlobalLoaderProvider>{children}</GlobalLoaderProvider>
             <Toaster richColors position="top-right" />
+            <FloatingButterfly />
           </AuthProvider>
         </NextIntlClientProvider>
       </body>
