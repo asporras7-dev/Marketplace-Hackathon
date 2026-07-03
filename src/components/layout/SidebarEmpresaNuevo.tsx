@@ -18,7 +18,6 @@ import { toast } from 'sonner'
 import { createSupportTicket } from '@/lib/company/actions'
 import {
   Loader2,
-  LayoutDashboard,
   Send,
   MessageSquare,
   HelpCircle,
@@ -78,16 +77,6 @@ export function SidebarEmpresaNuevo() {
   // El highlight sigue la SECCIÓN, no solo la URL exacta: las subrutas de
   // proyecto/new-project cuentan como Panel; formulario-empresa como Perfil.
   const navItems: NavItem[] = [
-    {
-      id: 'panel',
-      href: '/empresario',
-      label: t('menuPanel'),
-      icon: LayoutDashboard,
-      isActive: (path) =>
-        path === '/empresario' ||
-        path.startsWith('/empresario/proyecto') ||
-        path.startsWith('/empresario/new-project'),
-    },
     {
       id: 'postulaciones',
       href: '/empresario/postulaciones',

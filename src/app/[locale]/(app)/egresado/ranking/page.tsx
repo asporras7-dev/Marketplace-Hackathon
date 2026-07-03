@@ -17,6 +17,7 @@ export default async function EgresadoRankingPage({
 }: RankingPageProps) {
   const params = await searchParams
   const t = await getTranslations('Common')
+  const tRanking = await getTranslations('Ranking')
 
   const pageParam = typeof params.page === 'string' ? params.page : '1'
   const page = parseInt(pageParam || '1')
@@ -36,13 +37,32 @@ export default async function EgresadoRankingPage({
   const totalCount = rankingResult.ok ? rankingResult.data.totalCount : 0
   const tecnologiasDisponibles = techResult.ok ? techResult.data : []
 
+  // Strip trailing dot if present to append the signature blue dot manually
+  const pageTitleBase = tRanking('pageTitle').endsWith('.')
+    ? tRanking('pageTitle').slice(0, -1)
+    : tRanking('pageTitle')
+
   return (
     <EgresadoShell>
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <main className="flex-1 space-y-6">
-          <div className="mb-4">
-            <BackButton label={t('back')} />
+        <main className="flex-1 space-y-8">
+          <div className="flex flex-col gap-6">
+            <div>
+              <BackButton label={t('back')} />
+            </div>
+
+            {/* Page Header */}
+            <div className="text-center max-w-3xl mx-auto space-y-3 mb-6">
+              <h1 className="font-heading text-4xl sm:text-5xl font-extrabold tracking-tight text-ink-strong">
+                {pageTitleBase}
+                <span className="text-primary">.</span>
+              </h1>
+              <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
+                {tRanking('pageDescription')}
+              </p>
+            </div>
           </div>
+
           <RankingList
             topTalents={topTalents}
             totalCount={totalCount}
