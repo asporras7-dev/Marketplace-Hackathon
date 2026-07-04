@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ChangeEvent, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from '@/i18n/routing'
+import { useRouter, Link } from '@/i18n/routing'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -13,7 +13,9 @@ import {
   Loader2,
   User,
   Building2,
-  BadgeCheck,
+  ShieldCheck,
+  Lock,
+  Globe,
 } from 'lucide-react'
 import {
   createCompanyProfileSchema,
@@ -55,11 +57,6 @@ const VERIF_KEY: Record<VerificationStatus, string> = {
   pendiente: 'verifPendiente',
   verificado: 'verifVerificado',
   rechazado: 'verifRechazado',
-}
-const VERIF_STYLE: Record<VerificationStatus, string> = {
-  pendiente: 'bg-warning/10 text-warning border-warning/20',
-  verificado: 'bg-accent/10 text-accent border-accent/20',
-  rechazado: 'bg-destructive/10 text-destructive border-destructive/20',
 }
 
 export function CompanyProfileForm({
@@ -223,45 +220,46 @@ export function CompanyProfileForm({
   const verif = initialProfile.verificationStatus
 
   return (
-    <Card className="border border-border/80 bg-card/65 backdrop-blur-sm shadow-md overflow-hidden relative mt-6">
-      <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-primary via-secondary to-accent" />
-      <CardContent className="p-6 pt-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Estado de verificación (solo lectura) */}
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card/40 px-4 py-3">
-            <div className="flex items-center gap-2">
-              <BadgeCheck className="w-5 h-5 text-secondary shrink-0" />
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  {tEmpresa('verificationLabel')}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  {tEmpresa('verificationHint')}
-                </p>
-              </div>
-            </div>
-            {verif ? (
-              <span
-                className={cn(
-                  'text-[11px] font-semibold px-2.5 py-0.5 rounded-full border',
-                  VERIF_STYLE[verif],
-                )}
-              >
-                {tEmpresa(VERIF_KEY[verif])}
-              </span>
-            ) : (
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-border bg-muted text-muted-foreground">
-                {tEmpresa('verifNone')}
-              </span>
-            )}
+    <Card className="border border-border/85 bg-white rounded-3xl shadow-xl mt-6 overflow-hidden">
+      {/* Estado de verificación (solo lectura) */}
+      <div className="bg-[#f8fafd] px-6 py-5 border-b border-border/80 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-[#0a6cb9]/15 flex items-center justify-center text-[#0a6cb9]">
+            <ShieldCheck className="w-5.5 h-5.5" />
           </div>
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+              {tEmpresa('verificationLabel')}
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              {tEmpresa('verificationHint')}
+            </p>
+          </div>
+        </div>
+        {verif ? (
+          <span
+            className={cn(
+              'text-xs font-extrabold px-5 py-2 rounded-full text-white bg-[#0a6cb9] shadow-sm',
+            )}
+          >
+            {verif === 'verificado'
+              ? tEmpresa('selloConfianza')
+              : tEmpresa(VERIF_KEY[verif])}
+          </span>
+        ) : (
+          <span className="text-xs font-bold px-4 py-1.5 rounded-full border border-border bg-muted text-muted-foreground">
+            {tEmpresa('verifNone')}
+          </span>
+        )}
+      </div>
 
+      <CardContent className="p-6 sm:p-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Sección: datos personales */}
-          <section className="space-y-4">
+          <section className="space-y-6">
             <SectionHeading
-              icon={<User className="w-4 h-4" />}
+              icon={<User className="w-5 h-5" />}
               title={tEmpresa('sectionPersonalTitle')}
-              description={tEmpresa('sectionPersonalDesc')}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -274,7 +272,7 @@ export function CompanyProfileForm({
                   id="firstName"
                   type="text"
                   placeholder={tEmpresa('fieldFirstNamePlaceholder')}
-                  className="bg-card/50 border-border focus-visible:ring-primary"
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                   {...register('firstName')}
                 />
               </Field>
@@ -287,7 +285,7 @@ export function CompanyProfileForm({
                   id="lastName1"
                   type="text"
                   placeholder={tEmpresa('fieldLastName1Placeholder')}
-                  className="bg-card/50 border-border focus-visible:ring-primary"
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                   {...register('lastName1')}
                 />
               </Field>
@@ -301,7 +299,7 @@ export function CompanyProfileForm({
                   id="lastName2"
                   type="text"
                   placeholder={tEmpresa('fieldLastName2Placeholder')}
-                  className="bg-card/50 border-border focus-visible:ring-primary"
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                   {...register('lastName2')}
                 />
               </Field>
@@ -317,7 +315,7 @@ export function CompanyProfileForm({
                   id="birthDate"
                   type="date"
                   max={maxBirthDate}
-                  className="bg-card/50 border-border focus-visible:ring-primary"
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                   {...register('birthDate')}
                 />
               </Field>
@@ -334,17 +332,16 @@ export function CompanyProfileForm({
               preview={photoPreview}
               uploading={uploadingPhoto}
               disabled={loading}
-              rounded
+              variant="avatar"
               onSelect={handlePhotoChange}
             />
           </section>
 
           {/* Sección: datos de la empresa */}
-          <section className="space-y-4 pt-2 border-t border-border/40">
+          <section className="space-y-6 pt-6 border-t border-border/40">
             <SectionHeading
-              icon={<Building2 className="w-4 h-4" />}
+              icon={<Building2 className="w-5 h-5" />}
               title={tEmpresa('sectionCompanyTitle')}
-              description={tEmpresa('sectionCompanyDesc')}
             />
 
             <Field
@@ -356,7 +353,7 @@ export function CompanyProfileForm({
                 id="name"
                 type="text"
                 placeholder={tEmpresa('fieldNamePlaceholder')}
-                className="bg-card/50 border-border focus-visible:ring-primary"
+                className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                 {...register('name')}
               />
             </Field>
@@ -372,7 +369,7 @@ export function CompanyProfileForm({
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full bg-card/50 border-border focus:ring-primary">
+                      <SelectTrigger className="w-full bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
                         <SelectValue
                           placeholder={tEmpresa('selectTypePlaceholder')}
                         />
@@ -388,9 +385,6 @@ export function CompanyProfileForm({
                     </Select>
                   )}
                 />
-                <p className="text-[11px] text-muted-foreground">
-                  {tEmpresa('typeHint')}
-                </p>
               </Field>
               <Field
                 id="sector"
@@ -401,48 +395,31 @@ export function CompanyProfileForm({
                   id="sector"
                   type="text"
                   placeholder={tEmpresa('fieldSectorPlaceholder')}
-                  className="bg-card/50 border-border focus-visible:ring-primary"
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                   {...register('sector')}
                 />
               </Field>
             </div>
 
-            <Field
-              id="cedula"
-              label={
-                watchedType === 'emprendedor'
-                  ? tEmpresa('fieldCedulaIdentidad')
-                  : tEmpresa('fieldCedulaJuridica')
-              }
-              error={errors.cedula?.message}
-            >
-              <Input
-                id="cedula"
-                type="text"
-                placeholder={tEmpresa('fieldCedulaPlaceholder')}
-                className="bg-card/50 border-border focus-visible:ring-primary"
-                {...register('cedula')}
-              />
-            </Field>
-
-            <CountryRegionFields
-              countries={countries}
-              initialRegions={initialRegions}
-              countryValue={watch('country') ?? ''}
-              regionValue={watch('city') ?? ''}
-              onCountryChange={(code) =>
-                setValue('country', code, { shouldValidate: true })
-              }
-              onRegionChange={(code) =>
-                setValue('city', code, { shouldValidate: true })
-              }
-              countryLabel={tEmpresa('fieldCountry')}
-              countryId="country"
-              regionId="city"
-              countryInvalid={Boolean(errors.country)}
-            />
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Field
+                id="cedula"
+                label={
+                  watchedType === 'emprendedor'
+                    ? tEmpresa('fieldCedulaIdentidad')
+                    : tEmpresa('fieldCedulaJuridica')
+                }
+                error={errors.cedula?.message}
+              >
+                <Input
+                  id="cedula"
+                  type="text"
+                  placeholder={tEmpresa('fieldCedulaPlaceholder')}
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  {...register('cedula')}
+                />
+              </Field>
+
               <Field
                 id="operatingScope"
                 label={tEmpresa('fieldScope')}
@@ -456,7 +433,7 @@ export function CompanyProfileForm({
                       value={field.value ?? ''}
                       onValueChange={field.onChange}
                     >
-                      <SelectTrigger className="w-full bg-card/50 border-border focus:ring-primary">
+                      <SelectTrigger className="w-full bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
                         <SelectValue
                           placeholder={tEmpresa('selectScopePlaceholder')}
                         />
@@ -478,19 +455,42 @@ export function CompanyProfileForm({
               </Field>
             </div>
 
+            <CountryRegionFields
+              countries={countries}
+              initialRegions={initialRegions}
+              countryValue={watch('country') ?? ''}
+              regionValue={watch('city') ?? ''}
+              onCountryChange={(code) =>
+                setValue('country', code, { shouldValidate: true })
+              }
+              onRegionChange={(code) =>
+                setValue('city', code, { shouldValidate: true })
+              }
+              countryLabel={tEmpresa('fieldCountry')}
+              countryId="country"
+              regionId="city"
+              countryInvalid={Boolean(errors.country)}
+              comboboxClassName="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all"
+            />
+
             <Field
               id="website"
               label={tEmpresa('fieldWebsite')}
               optional={tEmpresa('optionalTag')}
               error={errors.website?.message}
             >
-              <Input
-                id="website"
-                type="url"
-                placeholder={tEmpresa('fieldWebsitePlaceholder')}
-                className="bg-card/50 border-border focus-visible:ring-primary"
-                {...register('website')}
-              />
+              <div className="relative">
+                <Input
+                  id="website"
+                  type="url"
+                  placeholder={tEmpresa('fieldWebsitePlaceholder')}
+                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 pl-10 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  {...register('website')}
+                />
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60">
+                  <Globe className="w-4 h-4" />
+                </div>
+              </div>
             </Field>
 
             <Field
@@ -504,7 +504,7 @@ export function CompanyProfileForm({
                 id="description"
                 rows={4}
                 placeholder={tEmpresa('fieldDescriptionPlaceholder')}
-                className="bg-card/50 border-border focus-visible:ring-primary"
+                className="bg-[#f1f3fd] border-transparent rounded-2xl focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
                 {...register('description')}
               />
             </Field>
@@ -516,6 +516,7 @@ export function CompanyProfileForm({
               preview={logoPreview}
               uploading={uploadingLogo}
               disabled={loading}
+              variant="logo"
               onSelect={handleLogoChange}
             />
             {errors.logo?.message && (
@@ -529,13 +530,26 @@ export function CompanyProfileForm({
           <input type="hidden" {...register('contactEmail')} />
           <input type="hidden" {...register('profilePhoto')} />
 
-          <div className="flex justify-end pt-4 border-t border-border/40">
+          <div className="flex items-center justify-between pt-6 border-t border-border/40">
+            <Link
+              href="/empresario"
+              className="text-muted-foreground hover:text-foreground font-extrabold text-xs tracking-wider uppercase px-4 py-2 transition-colors"
+            >
+              {tEmpresa('discardChanges')}
+            </Link>
+
             <Button
               type="submit"
               disabled={loading}
-              className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold flex items-center gap-1.5 shadow-sm px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-secondary hover:bg-secondary/95 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="w-4 h-4" />
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-white">
+                {loading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Save className="w-3.5 h-3.5" />
+                )}
+              </span>
               {loading ? tCommon('loading') : tEmpresa('saveProfile')}
             </Button>
           </div>
@@ -545,24 +559,15 @@ export function CompanyProfileForm({
   )
 }
 
-function SectionHeading({
-  icon,
-  title,
-  description,
-}: {
-  icon: ReactNode
-  title: string
-  description: string
-}) {
+function SectionHeading({ icon, title }: { icon: ReactNode; title: string }) {
   return (
-    <div className="flex items-start gap-2">
-      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary/15 text-secondary">
+    <div className="flex items-center gap-3 py-2">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-secondary text-white shadow-sm">
         {icon}
       </span>
-      <div>
-        <h3 className="text-sm font-bold text-foreground">{title}</h3>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
+      <h3 className="text-lg font-extrabold text-foreground tracking-tight">
+        {title}
+      </h3>
     </div>
   )
 }
@@ -583,21 +588,21 @@ function Field({
   children: ReactNode
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <Label
         htmlFor={id}
-        className="text-sm font-bold flex justify-between items-center gap-2"
+        className="text-xs font-extrabold tracking-wider uppercase text-foreground/80 flex justify-between items-center gap-2"
       >
         <span>
           {label}
           {optional && (
-            <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+            <span className="ml-1 text-xs font-normal text-muted-foreground/60 lowercase">
               ({optional})
             </span>
           )}
         </span>
         {hint && (
-          <span className="text-xs font-normal text-muted-foreground">
+          <span className="text-[10px] font-normal text-muted-foreground/50 lowercase">
             {hint}
           </span>
         )}
@@ -620,15 +625,22 @@ function ReadonlyField({
   hint: string
 }) {
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-bold block">{label}</Label>
-      <Input
-        type="text"
-        value={value}
-        readOnly
-        disabled
-        className="bg-muted/40 border-border text-muted-foreground"
-      />
+    <div className="space-y-1.5">
+      <Label className="text-xs font-extrabold tracking-wider uppercase text-foreground/80 block">
+        {label}
+      </Label>
+      <div className="relative">
+        <Input
+          type="text"
+          value={value}
+          readOnly
+          disabled
+          className="bg-[#f1f3fd] border-transparent text-foreground/60 rounded-2xl h-11 pr-10 cursor-not-allowed select-none"
+        />
+        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60">
+          <Lock className="w-4 h-4" />
+        </div>
+      </div>
       <p className="text-[11px] text-muted-foreground">{hint}</p>
     </div>
   )
@@ -640,7 +652,7 @@ function ImageUploadField({
   preview,
   uploading,
   disabled,
-  rounded,
+  variant,
   onSelect,
 }: {
   label: string
@@ -648,49 +660,89 @@ function ImageUploadField({
   preview: string | null
   uploading: boolean
   disabled: boolean
-  rounded?: boolean
+  variant: 'avatar' | 'logo'
   onSelect: (event: ChangeEvent<HTMLInputElement>) => void
 }) {
   const tEmpresa = useTranslations('Empresa')
+
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-bold block text-left">{label}</Label>
-      <div className="flex flex-col sm:flex-row gap-4 items-center p-4 bg-card/40 border border-dashed border-border rounded-xl hover:border-primary/50 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]">
-        <div
-          className={cn(
-            'w-20 h-20 bg-muted flex items-center justify-center shrink-0 border border-border overflow-hidden relative',
-            rounded ? 'rounded-full' : 'rounded-xl',
-          )}
-        >
+      <Label className="text-xs font-extrabold tracking-wider uppercase text-foreground/80 block text-left">
+        {label}
+      </Label>
+
+      {variant === 'avatar' ? (
+        <div className="flex flex-col sm:flex-row gap-5 items-center p-5 bg-[#f1f4fe]/45 border border-dashed border-[#0a6cb9]/20 rounded-3xl transition-colors duration-200">
+          <div className="w-20 h-20 bg-white flex items-center justify-center shrink-0 border border-[#0a6cb9]/15 rounded-full overflow-hidden relative shadow-sm">
+            {preview ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={preview}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+              </>
+            ) : (
+              <div className="w-full h-full bg-[#f1f3fd] flex items-center justify-center text-[#0a6cb9]">
+                <User className="w-9 h-9" />
+              </div>
+            )}
+            {uploading && (
+              <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
+                <Loader2 className="w-5 h-5 animate-spin text-[#0a6cb9]" />
+              </div>
+            )}
+          </div>
+          <div className="flex-1 text-center sm:text-left space-y-1">
+            <p className="text-sm font-extrabold text-foreground">{title}</p>
+            <p className="text-xs text-muted-foreground">
+              {tEmpresa('uploadFormats')}
+            </p>
+            <label className="inline-block mt-1">
+              <span className="cursor-pointer inline-flex items-center gap-1.5 px-5 py-2 bg-white hover:bg-[#eff3fd] border border-[#0a6cb9] text-[#0a6cb9] hover:border-[#0a6cb9]/80 text-xs font-extrabold rounded-full shadow-sm transition-all duration-200">
+                <Upload className="w-3.5 h-3.5" />
+                {tEmpresa('selectFile')}
+              </span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                disabled={disabled}
+                onChange={onSelect}
+              />
+            </label>
+          </div>
+        </div>
+      ) : (
+        <div className="border border-dashed border-[#0a6cb9]/30 rounded-3xl bg-white p-8 text-center hover:border-[#0a6cb9]/60 transition-colors duration-200">
           {preview ? (
-            // referrerPolicy="no-referrer": los avatares de Google
-            // (lh3.googleusercontent.com) bloquean el hotlink cuando la request
-            // manda `Referer`; sin referrer cargan igual que abiertos directo.
-            // Inofensivo para blobs de preview y URLs propias de Supabase.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={preview}
-              alt=""
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
-            />
+            <div className="w-24 h-24 mx-auto mb-4 bg-muted flex items-center justify-center border border-border rounded-2xl overflow-hidden relative shadow-sm">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={preview}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+              {uploading && (
+                <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                </div>
+              )}
+            </div>
           ) : (
-            <ImageIcon className="w-8 h-8 text-muted-foreground" />
-          )}
-          {uploading && (
-            <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
-              <Loader2 className="w-5 h-5 animate-spin text-primary" />
+            <div className="w-14 h-14 bg-[#f1f4fe] flex items-center justify-center rounded-2xl mx-auto mb-3 text-secondary shadow-sm">
+              <ImageIcon className="w-7 h-7 text-[#0a6cb9]" />
             </div>
           )}
-        </div>
-        <div className="flex-1 text-center sm:text-left space-y-1">
-          <p className="text-xs font-semibold text-foreground">{title}</p>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-sm font-extrabold text-foreground">{title}</p>
+          <p className="text-xs text-muted-foreground mb-4">
             {tEmpresa('uploadFormats')}
           </p>
           <label className="inline-block">
-            <span className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/15 text-primary hover:bg-primary/25 text-[11px] font-bold rounded-lg transition-all">
-              <Upload className="w-3.5 h-3.5" />
+            <span className="cursor-pointer inline-flex items-center gap-2 px-6 py-3 bg-secondary hover:bg-secondary/95 text-white text-xs font-extrabold tracking-wider uppercase rounded-full shadow-md transition-all duration-200">
+              <Upload className="w-4 h-4" />
               {tEmpresa('selectFile')}
             </span>
             <input
@@ -702,7 +754,7 @@ function ImageUploadField({
             />
           </label>
         </div>
-      </div>
+      )}
     </div>
   )
 }

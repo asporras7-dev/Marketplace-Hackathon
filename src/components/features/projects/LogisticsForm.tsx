@@ -107,33 +107,36 @@ export function LogisticsForm({
 
   return (
     <section className="space-y-6">
-      <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+      <h2 className="text-[10px] font-extrabold uppercase tracking-widest text-ink-muted text-left">
         {t('sectionLogistics')}
       </h2>
 
-      <div className="space-y-2">
+      <div className="space-y-2 text-left">
         <Label
           htmlFor="titulo"
-          className="text-sm font-bold flex justify-between gap-2"
+          className="text-xs font-extrabold uppercase tracking-wider text-foreground flex justify-between gap-2 items-center"
         >
           <span>{t('fieldTitle')}</span>
-          <span className="text-xs font-normal text-muted-foreground">
-            {t('fieldTitleOptional')}
+          <span className="text-[9px] font-extrabold bg-primary/10 text-primary border border-primary/20 rounded-full px-2 py-0.5 tracking-wider uppercase">
+            IA GENERATED · OPTIONAL
           </span>
         </Label>
         <Input
           id="titulo"
           type="text"
           disabled={disabled}
-          placeholder={t('fieldTitlePlaceholder')}
-          className="bg-card/50 border-border focus-visible:ring-primary"
+          placeholder="Ej. Arquitectura Microservicios Next.js"
+          className="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
           {...register('titulo')}
         />
         <FieldError code={errors.titulo?.message} />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="modalidad" className="text-sm font-bold">
+      <div className="space-y-2 text-left">
+        <Label
+          htmlFor="modalidad"
+          className="text-xs font-extrabold uppercase tracking-wider text-foreground"
+        >
           {t('fieldModality')}
         </Label>
         <Controller
@@ -147,7 +150,7 @@ export function LogisticsForm({
             >
               <SelectTrigger
                 id="modalidad"
-                className="w-full bg-card/50 border-border focus:ring-primary"
+                className="w-full bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
               >
                 <SelectValue placeholder={t('fieldModalityPlaceholder')} />
               </SelectTrigger>
@@ -165,7 +168,7 @@ export function LogisticsForm({
       </div>
 
       {requiereUbicacion && (
-        <div className="space-y-2">
+        <div className="space-y-2 text-left">
           <CountryRegionFields
             countries={countries}
             initialRegions={initialRegions}
@@ -182,14 +185,18 @@ export function LogisticsForm({
             regionId="region"
             disabled={disabled}
             countryInvalid={Boolean(errors.paisIso)}
+            comboboxClassName="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
           />
           <FieldError code={errors.paisIso?.message} />
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
         <div className="space-y-2">
-          <Label htmlFor="moneda" className="text-sm font-bold">
+          <Label
+            htmlFor="moneda"
+            className="text-xs font-extrabold uppercase tracking-wider text-foreground"
+          >
             {t('fieldCurrency')}
           </Label>
           <Controller
@@ -203,7 +210,7 @@ export function LogisticsForm({
               >
                 <SelectTrigger
                   id="moneda"
-                  className="w-full bg-card/50 border-border focus:ring-primary"
+                  className="w-full bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
                 >
                   <SelectValue />
                 </SelectTrigger>
@@ -219,7 +226,10 @@ export function LogisticsForm({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="presupuestoMin" className="text-sm font-bold">
+          <Label
+            htmlFor="presupuestoMin"
+            className="text-xs font-extrabold uppercase tracking-wider text-foreground"
+          >
             {t('fieldBudgetMin')}
           </Label>
           <Input
@@ -228,14 +238,17 @@ export function LogisticsForm({
             min={1}
             step={montoStep}
             disabled={disabled}
-            placeholder={t('fieldBudgetPlaceholder')}
-            className="bg-card/50 border-border focus-visible:ring-primary"
+            placeholder="0.00"
+            className="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
             {...register('presupuestoMin')}
           />
           <FieldError code={errors.presupuestoMin?.message} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="presupuestoMax" className="text-sm font-bold">
+          <Label
+            htmlFor="presupuestoMax"
+            className="text-xs font-extrabold uppercase tracking-wider text-foreground"
+          >
             {t('fieldBudgetMax')}
           </Label>
           <Input
@@ -244,16 +257,19 @@ export function LogisticsForm({
             min={1}
             step={montoStep}
             disabled={disabled}
-            placeholder={t('fieldBudgetPlaceholder')}
-            className="bg-card/50 border-border focus-visible:ring-primary"
+            placeholder="0.00"
+            className="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
             {...register('presupuestoMax')}
           />
           <FieldError code={errors.presupuestoMax?.message} />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="plazoDias" className="text-sm font-bold">
+      <div className="space-y-2 text-left">
+        <Label
+          htmlFor="plazoDias"
+          className="text-xs font-extrabold uppercase tracking-wider text-foreground"
+        >
           {t('fieldDeadline')}
         </Label>
         <Controller
@@ -267,9 +283,9 @@ export function LogisticsForm({
             >
               <SelectTrigger
                 id="plazoDias"
-                className="w-full bg-card/50 border-border focus:ring-primary"
+                className="w-full bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
               >
-                <SelectValue placeholder={t('deadlinePlaceholder')} />
+                <SelectValue placeholder="Definir ventana de tiempo" />
               </SelectTrigger>
               <SelectContent>
                 {PLAZO_OPCIONES.map((dias) => (
@@ -282,14 +298,13 @@ export function LogisticsForm({
           )}
         />
         <FieldError code={errors.plazoDias?.message} />
-        {cierreEstimado ? (
-          <p className="text-xs text-muted-foreground">
+        <p className="text-[9px] font-extrabold text-secondary tracking-widest uppercase mt-1.5">
+          RANGO SUGERIDO: {PLAZO_MIN_DIAS} - {PLAZO_MAX_DIAS} DÍAS
+        </p>
+        {cierreEstimado && (
+          <p className="text-xs text-muted-foreground mt-0.5">
             {t('deadlineEstimate', { fecha: cierreEstimado })}{' '}
             {t('deadlineEstimateHint')}
-          </p>
-        ) : (
-          <p className="text-xs text-muted-foreground">
-            {t('plazoHint', { min: PLAZO_MIN_DIAS, max: PLAZO_MAX_DIAS })}
           </p>
         )}
       </div>
