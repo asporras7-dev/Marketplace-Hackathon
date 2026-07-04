@@ -38,6 +38,7 @@ interface ComboboxProps {
   disabled?: boolean
   id?: string
   ariaInvalid?: boolean
+  className?: string | undefined
 }
 
 /**
@@ -55,6 +56,7 @@ export function Combobox({
   disabled = false,
   id,
   ariaInvalid = false,
+  className,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const selected = options.find((option) => option.value === value)
@@ -70,7 +72,10 @@ export function Combobox({
           aria-expanded={open}
           aria-invalid={ariaInvalid}
           disabled={disabled}
-          className="bg-card/50 border-border w-full justify-between font-normal"
+          className={cn(
+            'bg-card/50 border-border w-full justify-between font-normal',
+            className,
+          )}
         >
           <span
             className={cn('truncate', !selected && 'text-muted-foreground')}

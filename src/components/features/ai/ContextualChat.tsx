@@ -81,9 +81,12 @@ export function ContextualChat({ onClose }: { onClose: () => void }) {
           setMessages((prev) => {
             const newMessages = [...prev]
             const lastIndex = newMessages.length - 1
-            newMessages[lastIndex] = {
-              ...newMessages[lastIndex],
-              content: newMessages[lastIndex].content + chunkValue,
+            const prevMsg = newMessages[lastIndex]
+            if (prevMsg) {
+              newMessages[lastIndex] = {
+                role: prevMsg.role,
+                content: prevMsg.content + chunkValue,
+              }
             }
             return newMessages
           })

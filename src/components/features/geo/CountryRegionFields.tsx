@@ -28,6 +28,7 @@ interface CountryRegionFieldsProps {
   hideRegionOptional?: boolean
   disabled?: boolean
   countryInvalid?: boolean
+  comboboxClassName?: string | undefined
 }
 
 function toRegionOptions(subdivisions: Subdivision[]): ComboboxOption[] {
@@ -60,6 +61,7 @@ export function CountryRegionFields({
   hideRegionOptional = false,
   disabled = false,
   countryInvalid = false,
+  comboboxClassName,
 }: CountryRegionFieldsProps) {
   const t = useTranslations('Geo')
   const [regions, setRegions] = React.useState<ComboboxOption[]>(initialRegions)
@@ -122,6 +124,7 @@ export function CountryRegionFields({
           emptyText={t('noCountry')}
           disabled={disabled}
           ariaInvalid={countryInvalid}
+          className={comboboxClassName}
         />
       </div>
       <div className="space-y-2">
@@ -150,6 +153,7 @@ export function CountryRegionFields({
           searchPlaceholder={t('searchRegion')}
           emptyText={t('noRegion')}
           disabled={disabled || !countryValue || loading}
+          className={comboboxClassName}
         />
       </div>
     </div>

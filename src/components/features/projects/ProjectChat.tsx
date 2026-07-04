@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { Send, Sparkles, User, Wand2 } from 'lucide-react'
+import { Send, Sparkles, User, Wand2, Paperclip } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils/cn'
 import { sendChatMessage } from '@/lib/proposal-ai/chat'
 import type { HistorialEntry } from '@/lib/proposal-ai/types'
 
@@ -40,30 +39,31 @@ function ChatBubble({
   esEmpresario: boolean
   contenido: string
 }) {
-  return (
-    <div
-      className={cn(
-        'flex gap-2 max-w-[85%]',
-        esEmpresario ? 'ml-auto flex-row-reverse' : 'mr-auto',
-      )}
-    >
-      <div
-        className={cn(
-          'flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
-          esEmpresario
-            ? 'bg-primary/15 text-primary'
-            : 'bg-secondary/15 text-secondary',
-        )}
-      >
-        {esEmpresario ? (
-          <User className="h-4 w-4" />
-        ) : (
-          <Sparkles className="h-4 w-4" />
-        )}
+  if (!esEmpresario) {
+    return (
+      <div className="flex items-start gap-4 mr-12 mr-auto text-left w-full">
+        {/* Purple Sparkles icon container */}
+        <div className="w-9 h-9 flex items-center justify-center bg-secondary/10 text-secondary rounded-xl shrink-0 mt-1 shadow-sm">
+          <Sparkles className="h-4.5 w-4.5" />
+        </div>
+        {/* White message bubble with border */}
+        <div className="border border-border/80 bg-surface rounded-2xl rounded-tl-none p-4 text-sm text-ink-strong leading-relaxed max-w-[85%] shadow-sm">
+          <p className="whitespace-pre-wrap">{contenido}</p>
+        </div>
       </div>
-      <p className="rounded-lg bg-muted px-3 py-2 text-sm text-foreground whitespace-pre-wrap">
-        {contenido}
-      </p>
+    )
+  }
+
+  return (
+    <div className="flex items-start gap-3 ml-12 justify-end ml-auto text-right w-full">
+      {/* Purple message bubble */}
+      <div className="bg-secondary text-white rounded-2xl rounded-tr-none px-4 py-3 text-sm font-medium max-w-[85%] text-left shadow-sm">
+        <p className="whitespace-pre-wrap">{contenido}</p>
+      </div>
+      {/* Light blue/cyan user icon container */}
+      <div className="w-8 h-8 flex items-center justify-center bg-accent/20 text-accent rounded-xl shrink-0 mt-1 shadow-sm">
+        <User className="h-4.5 w-4.5" />
+      </div>
     </div>
   )
 }
@@ -113,8 +113,8 @@ export function ProjectChat({
   const mensajes = historial.filter((entrada) => entrada.tipo === 'mensaje')
 
   return (
-    <div className="space-y-4 text-left">
-      <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+    <div className="space-y-6 text-left flex flex-col w-full">
+      <div className="space-y-6 max-h-[460px] overflow-y-auto pr-1 flex flex-col w-full">
         <ChatBubble esEmpresario contenido={contextoInicial} />
         {mensajes.map((mensaje, indice) => (
           <ChatBubble
@@ -124,20 +124,33 @@ export function ProjectChat({
           />
         ))}
         {(loading || kickoffLoading) && (
-          <p className="text-xs text-muted-foreground pl-9">
-            {t('aiThinking')}
-          </p>
+          <div className="flex items-center gap-2 pl-12 text-xs text-muted-foreground">
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce"
+              style={{ animationDelay: '0ms' }}
+            />
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce"
+              style={{ animationDelay: '150ms' }}
+            />
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce"
+              style={{ animationDelay: '300ms' }}
+            />
+            <span>{t('aiThinking')}</span>
+          </div>
         )}
       </div>
 
-      <div className="flex gap-2 items-end">
+      <div className="flex gap-3 items-center border border-border/80 bg-surface rounded-2xl p-2 pl-4 shadow-sm w-full transition-all focus-within:border-secondary/40 focus-within:ring-2 focus-within:ring-secondary/10">
+        <Paperclip className="h-5 w-5 text-ink-muted shrink-0 cursor-pointer hover:text-ink transition-colors" />
         <Textarea
           value={text}
           onChange={(event) => setText(event.target.value)}
-          rows={2}
+          rows={1}
           disabled={ocupado}
           placeholder={t('chatPlaceholder')}
-          className="bg-card/50 border-border focus-visible:ring-primary resize-none"
+          className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:outline-none focus-visible:outline-none focus:border-0 shadow-none bg-transparent py-2 text-sm outline-none placeholder:text-ink-subtle min-h-[38px] max-h-[120px] resize-none scrollbar-none p-1"
           onKeyDown={(event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
               event.preventDefault()
@@ -149,32 +162,36 @@ export function ProjectChat({
           type="button"
           onClick={() => void onSend()}
           disabled={ocupado || text.trim().length === 0}
-          className="bg-primary hover:bg-primary/95 text-primary-foreground shrink-0"
+          className="bg-secondary hover:bg-secondary/90 text-white w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-md shrink-0 disabled:opacity-50"
           aria-label={t('chatSend')}
+          size="icon"
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-4.5 w-4.5" />
         </Button>
       </div>
 
-      <div className="flex flex-col gap-2 pt-1">
+      <div className="flex flex-col gap-2 pt-1 items-center w-full">
         {completo ? (
-          <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
-            <Sparkles className="h-3.5 w-3.5" />
-            {t('readyCue')}
-          </p>
+          <>
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent mb-2">
+              <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+              {t('readyCue')}
+            </p>
+            <Button
+              type="button"
+              onClick={onArmarPropuesta}
+              disabled={ocupado}
+              className="inline-flex items-center gap-1.5 bg-secondary hover:bg-secondary/95 text-white font-bold px-6 py-3 rounded-2xl shadow-md transition-all hover:scale-[1.01]"
+            >
+              <Wand2 className="h-4.5 w-4.5" />
+              {armando ? t('generating') : t('buildProposal')}
+            </Button>
+          </>
         ) : (
-          <p className="text-xs text-muted-foreground">{t('notReadyHint')}</p>
+          <p className="text-[10px] font-extrabold text-accent/60 tracking-widest uppercase my-2 text-center">
+            • {t('notReadyHint').toUpperCase().replace('.', '')} •
+          </p>
         )}
-        <Button
-          type="button"
-          variant={completo ? 'secondary' : 'outline'}
-          onClick={onArmarPropuesta}
-          disabled={ocupado || !completo}
-          className="inline-flex items-center gap-1.5 self-start"
-        >
-          <Wand2 className="h-4 w-4" />
-          {armando ? t('generating') : t('buildProposal')}
-        </Button>
       </div>
     </div>
   )

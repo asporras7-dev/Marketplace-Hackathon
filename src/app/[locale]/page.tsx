@@ -17,8 +17,8 @@ import { LandingHeroCtas } from '@/components/features/landing/LandingHeroCtas'
 import Image from 'next/image'
 
 const CAROUSEL_SLIDES = [
-  { src: '/images/carousel/carousel-1.jpg', alt: 'Equipo FWD trabajando' },
-  { src: '/images/carousel/carousel-2.jpg', alt: 'Espacio de trabajo FWD' },
+  { src: '/images/carousel/carousel-1.png', alt: 'Equipo FWD trabajando' },
+  { src: '/images/carousel/carousel-2.png', alt: 'Espacio de trabajo FWD' },
   { src: '/images/carousel/carousel-3.png', alt: 'Comunidad FWD' },
   { src: '/images/carousel/carousel-4.png', alt: 'Talento FWD' },
 ]
@@ -178,11 +178,6 @@ export default async function LandingPage() {
                     ))}
                   </ul>
                 </div>
-                <div className="mt-10">
-                  <button className="w-fit px-6 py-3 bg-white text-secondary font-bold rounded-2xl transition-colors hover:bg-white/90 shadow-md">
-                    {tLanding('howItWorksCompanyCta')}
-                  </button>
-                </div>
               </div>
 
               {/* For Graduates Card */}
@@ -211,11 +206,6 @@ export default async function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                </div>
-                <div className="mt-10">
-                  <button className="w-fit px-6 py-3 bg-white text-accent font-bold rounded-2xl transition-colors hover:bg-white/90 shadow-md">
-                    {tLanding('howItWorksGraduateCta')}
-                  </button>
                 </div>
               </div>
             </div>
