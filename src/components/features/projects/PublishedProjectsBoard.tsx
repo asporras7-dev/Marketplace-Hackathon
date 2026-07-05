@@ -71,7 +71,7 @@ export function PublishedProjectsBoard({
       {/* Segmented Filter Control */}
       <div className="flex justify-between items-center gap-4 flex-wrap bg-surface border border-border px-5 py-3 rounded-xl shadow-sm">
         <span className="text-xs text-ink-muted font-bold font-sans uppercase tracking-wider">
-          Filtrar Proyectos
+          {t('filterLabel')}
         </span>
         <div className="flex bg-muted/60 p-1 rounded-xl gap-0.5 border border-border/10">
           <FilterButton
@@ -139,7 +139,7 @@ export function PublishedProjectsBoard({
                   >
                     <Link href={`/empresario/proyectos/${project.id}/matches`}>
                       <Target className="w-4 h-4 text-primary" />
-                      Ver matchs con egresados
+                      {t('viewMatches')}
                     </Link>
                   </Button>
                   <Button
@@ -150,7 +150,7 @@ export function PublishedProjectsBoard({
                   >
                     <Link href={`/empresario/proyecto/${project.id}`}>
                       <Eye className="w-4 h-4 text-ink-muted" />
-                      Ver detalles
+                      {t('viewDetails')}
                     </Link>
                   </Button>
                 </div>

@@ -65,11 +65,10 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
 
               {/* Título y descripción */}
               <h3 className="font-heading text-xl font-bold text-ink-strong leading-tight">
-                ¿En qué podemos ayudarte?
+                {t('supportHowHelp')}
               </h3>
               <p className="text-xs text-ink/80 leading-relaxed mt-3 font-sans">
-                Describe tu problema técnico o necesidad de negocio. El equipo
-                de administración revisará tu reporte de inmediato.
+                {t('supportHowHelpDesc')}
               </p>
             </div>
 
@@ -81,10 +80,10 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-ink-strong leading-none">
-                    Respuesta rápida
+                    {t('supportFastResponse')}
                   </p>
                   <p className="text-[10px] text-ink-muted mt-1 leading-none">
-                    &lt; 15 minutos
+                    {t('supportFastResponseTime')}
                   </p>
                 </div>
               </div>
@@ -95,10 +94,10 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-ink-strong leading-none">
-                    Chat en vivo
+                    {t('supportLiveChat')}
                   </p>
                   <p className="text-[10px] text-ink-muted mt-1 leading-none">
-                    Lunes a Viernes
+                    {t('supportLiveChatTime')}
                   </p>
                 </div>
               </div>
@@ -115,17 +114,17 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                 {/* Header Solicitud */}
                 <div className="mb-6">
                   <span className="text-primary font-bold text-[10px] tracking-widest uppercase font-sans">
-                    NUEVA SOLICITUD
+                    {t('supportNewRequest')}
                   </span>
                   <h2 className="font-heading text-xl font-black text-ink-strong mt-1">
-                    Soporte Técnico y Necesidades
+                    {t('supportModalTitle')}
                   </h2>
                 </div>
 
                 {/* Selección de Tipo de Solicitud */}
                 <div className="mb-5">
                   <label className="block text-[10px] font-bold text-ink-muted tracking-wider uppercase mb-2 font-sans">
-                    TIPO DE SOLICITUD
+                    {t('supportRequestType')}
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
@@ -139,7 +138,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                       )}
                     >
                       <Settings className="w-4 h-4" />
-                      Técnico
+                      {t('supportTypeTech')}
                     </button>
                     <button
                       type="button"
@@ -152,7 +151,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                       )}
                     >
                       <Briefcase className="w-4 h-4" />
-                      Negocio
+                      {t('supportTypeBiz')}
                     </button>
                   </div>
                 </div>
@@ -160,13 +159,13 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                 {/* Descripción Detallada */}
                 <div className="mb-6">
                   <label className="block text-[10px] font-bold text-ink-muted tracking-wider uppercase mb-2 font-sans">
-                    DESCRIPCIÓN DETALLADA
+                    {t('supportFieldDesc').toUpperCase()}
                   </label>
                   <div className="relative">
                     <Textarea
                       id="description"
                       rows={5}
-                      placeholder="Describe detalladamente cuál es el problema o la necesidad técnica de tu negocio..."
+                      placeholder={t('supportPlaceholder')}
                       value={description}
                       onChange={(e) =>
                         setDescription(e.target.value.slice(0, 500))
@@ -174,7 +173,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                       className="w-full bg-surface border border-border focus-visible:ring-primary rounded-xl p-3 text-sm resize-none pb-8 font-sans"
                     />
                     <span className="absolute bottom-2.5 right-3.5 text-[10px] text-ink-muted font-sans font-medium">
-                      {description.length} /500 caracteres
+                      {t('supportChars', { count: description.length })}
                     </span>
                   </div>
                 </div>
@@ -187,7 +186,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                   onClick={() => setIsOpen(false)}
                   className="text-sm font-bold text-ink hover:text-ink-strong transition-colors cursor-pointer font-sans"
                 >
-                  Cancelar
+                  {t('cancelar')}
                 </button>
                 <Button
                   type="submit"
@@ -197,7 +196,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                   {isSubmitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <span>Enviar reporte</span>
+                    <span>{t('supportSubmit')}</span>
                   )}
                   <ArrowRight className="w-4 h-4 shrink-0" />
                 </Button>
