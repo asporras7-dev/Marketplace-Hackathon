@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Eye, Target } from 'lucide-react'
+import { Eye, Target, MapPin, Coins } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Link } from '@/i18n/routing'
@@ -15,12 +15,12 @@ interface PublishedProjectsBoardProps {
 
 const STATUS_STYLE: Record<EstadoEfectivo, string> = {
   abierto: 'bg-accent/10 text-accent border-accent/20',
-  en_evaluacion: 'bg-warning/10 text-warning border-warning/20',
-  adjudicado: 'bg-secondary/10 text-secondary border-secondary/20',
+  en_evaluacion: 'bg-warning/15 text-warning border-warning/30',
+  adjudicado: 'bg-primary/10 text-primary border-primary/20',
   en_desarrollo: 'bg-primary/10 text-primary border-primary/20',
-  finalizado: 'bg-muted text-foreground border-border',
-  cancelado: 'bg-destructive/10 text-destructive border-destructive/20',
-  borrador: 'bg-muted text-muted-foreground border-border',
+  finalizado: 'bg-muted text-ink-muted border-border',
+  cancelado: 'bg-magenta/10 text-magenta border-magenta/20',
+  borrador: 'bg-muted text-ink-muted border-border',
   en_recepcion: 'bg-primary/10 text-primary border-primary/20',
 }
 
@@ -67,23 +67,30 @@ export function PublishedProjectsBoard({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        <FilterButton
-          active={filter === 'all'}
-          onClick={() => setFilter('all')}
-          label={t('filterAll')}
-        />
-        {estadosPresentes.map((estado) => (
+    <div className="space-y-5">
+      {/* Segmented Filter Control */}
+      <div className="flex justify-between items-center gap-4 flex-wrap bg-surface border border-border px-5 py-3 rounded-xl shadow-sm">
+        <span className="text-xs text-ink-muted font-bold font-sans uppercase tracking-wider">
+          Filtrar Proyectos
+        </span>
+        <div className="flex bg-muted/60 p-1 rounded-xl gap-0.5 border border-border/10">
           <FilterButton
-            key={estado}
-            active={filter === estado}
-            onClick={() => setFilter(estado)}
-            label={t(`status_${estado}`)}
+            active={filter === 'all'}
+            onClick={() => setFilter('all')}
+            label={t('filterAll')}
           />
-        ))}
+          {estadosPresentes.map((estado) => (
+            <FilterButton
+              key={estado}
+              active={filter === estado}
+              onClick={() => setFilter(estado)}
+              label={t(`status_${estado}`)}
+            />
+          ))}
+        </div>
       </div>
 
+      {/* Card List */}
       <div className="space-y-4">
         {visibles.map((project) => {
           const budget = formatBudget(
@@ -95,12 +102,12 @@ export function PublishedProjectsBoard({
           return (
             <Card
               key={project.id}
-              className="border border-border/80 bg-card/40 backdrop-blur-sm overflow-hidden"
+              className="border border-border/80 bg-surface shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all duration-[var(--duration-fast)]"
             >
-              <CardContent className="p-5 flex justify-between items-start gap-4">
-                <div className="space-y-1.5 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-bold text-base truncate leading-snug">
+              <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-2.5 min-w-0 flex-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h4 className="font-extrabold text-lg text-ink-strong leading-snug break-words">
                       {project.titulo}
                     </h4>
                     <StatusPill
@@ -108,39 +115,42 @@ export function PublishedProjectsBoard({
                       label={t(`status_${project.estadoEfectivo}`)}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {tCommon(project.modalidad)}
+                  <div className="flex items-center gap-4 text-xs text-ink-muted font-sans flex-wrap">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-ink-muted" />
+                      <span>{tCommon(project.modalidad)}</span>
+                    </span>
                     {budget && (
-                      <>
-                        {' · '}
-                        <span className="font-semibold text-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <Coins className="w-3.5 h-3.5 text-ink-muted" />
+                        <span className="font-semibold text-ink-strong">
                           {budget}
                         </span>
-                      </>
+                      </span>
                     )}
-                  </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-3 shrink-0 md:self-center flex-wrap">
                   <Button
                     asChild
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-muted-foreground hover:text-primary"
+                    className="bg-muted/30 hover:bg-muted/60 border border-border text-ink-strong font-bold text-xs h-9 rounded-xl cursor-pointer px-4 flex items-center gap-1.5"
                   >
                     <Link href={`/empresario/proyectos/${project.id}/matches`}>
-                      <Target className="w-4 h-4 mr-2" />
+                      <Target className="w-4 h-4 text-primary" />
                       Ver matchs con egresados
                     </Link>
                   </Button>
                   <Button
                     asChild
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-muted-foreground hover:text-primary"
+                    className="bg-muted/30 hover:bg-muted/60 border border-border text-ink-strong font-bold text-xs h-9 rounded-xl cursor-pointer px-4 flex items-center gap-1.5"
                   >
                     <Link href={`/empresario/proyecto/${project.id}`}>
-                      <Eye className="w-4 h-4 mr-2" />
-                      {t('viewDetails')}
+                      <Eye className="w-4 h-4 text-ink-muted" />
+                      Ver detalles
                     </Link>
                   </Button>
                 </div>
@@ -168,10 +178,10 @@ function FilterButton({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'rounded-full border px-3 py-1 text-xs font-semibold transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]',
+        'rounded-lg px-3 py-1.5 text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer font-sans border-none select-none',
         active
-          ? 'border-primary bg-primary/10 text-primary'
-          : 'border-border bg-card/50 text-muted-foreground hover:border-primary/50',
+          ? 'bg-surface text-ink-strong shadow-sm'
+          : 'bg-transparent text-ink-muted hover:text-ink',
       )}
     >
       {label}
@@ -189,7 +199,7 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        'text-[10px] font-semibold px-2 py-0.5 rounded-full border',
+        'text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider font-sans shrink-0',
         STATUS_STYLE[estado],
       )}
     >

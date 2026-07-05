@@ -27,7 +27,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { createSupportTicket } from '@/lib/company/actions'
+import { SupportTicketDialog } from '@/components/features/shared/SupportTicketDialog'
 
 export function SidebarEgresado() {
   const t = useTranslations('Nav')
@@ -35,29 +35,7 @@ export function SidebarEgresado() {
   const pathname = usePathname()
   const { currentUser } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isSupportOpen, setIsSupportOpen] = useState(false)
-  const [supportDescription, setSupportDescription] = useState('')
-  const [isSubmittingSupport, setIsSubmittingSupport] = useState(false)
-
   const toggleSidebar = () => setIsCollapsed((prev) => !prev)
-
-  const handleSupportSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (supportDescription.length < 15) {
-      toast.error(tEmpresa('supportMinLength'))
-      return
-    }
-    setIsSubmittingSupport(true)
-    const res = await createSupportTicket(supportDescription)
-    setIsSubmittingSupport(false)
-    if (res.ok) {
-      toast.success(tEmpresa('supportSuccess'))
-      setSupportDescription('')
-      setIsSupportOpen(false)
-    } else {
-      toast.error(res.error)
-    }
-  }
 
   const studentName =
     (typeof currentUser?.user_metadata?.['full_name'] === 'string'
@@ -191,82 +169,23 @@ export function SidebarEgresado() {
             )}
             <nav className="space-y-1">
               {/* Ayuda / Soporte Técnico abre el Dialog */}
-              <Dialog open={isSupportOpen} onOpenChange={setIsSupportOpen}>
-                <DialogTrigger asChild>
-                  <button
-                    type="button"
-                    title={isCollapsed ? t('help') : undefined}
-                    className={cn(
-                      'w-full group flex items-center gap-3 px-6 py-2.5 font-semibold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] text-white/75 hover:bg-white/10 hover:text-white/90 cursor-pointer',
-                      isCollapsed ? 'justify-center px-0' : '',
-                    )}
-                  >
-                    <HelpCircle className="h-5 w-5 shrink-0 transition-colors text-white/60 group-hover:text-white/90" />
-                    {!isCollapsed && (
-                      <span className="truncate text-sm text-left">
-                        {t('help')}
-                      </span>
-                    )}
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] bg-card border-border">
-                  <DialogHeader>
-                    <DialogTitle className="text-foreground font-heading font-extrabold text-lg text-left">
-                      {tEmpresa('supportModalTitle')}
-                    </DialogTitle>
-                    <DialogDescription className="text-muted-foreground text-xs leading-relaxed pt-1 text-left">
-                      {tEmpresa('supportModalDesc')}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form
-                    onSubmit={handleSupportSubmit}
-                    className="space-y-4 pt-4"
-                  >
-                    <div className="space-y-2 text-left">
-                      <Label
-                        htmlFor="description"
-                        className="text-xs font-bold text-foreground"
-                      >
-                        {tEmpresa('supportFieldDesc')}
-                      </Label>
-                      <Textarea
-                        id="description"
-                        rows={4}
-                        placeholder={tEmpresa('supportPlaceholder')}
-                        value={supportDescription}
-                        onChange={(e) => setSupportDescription(e.target.value)}
-                        className="bg-card/50 border-border focus-visible:ring-primary text-sm"
-                      />
-                      <p className="text-[10px] text-muted-foreground text-right">
-                        {supportDescription.length}/15{' '}
-                        {tEmpresa('supportMinCharsInfo')}
-                      </p>
-                    </div>
-                    <div className="flex justify-end gap-3 pt-2 border-t border-border/40">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsSupportOpen(false)}
-                        className="text-xs font-semibold"
-                      >
-                        {tEmpresa('cancelar')}
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={isSubmittingSupport}
-                        size="sm"
-                        className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs flex items-center gap-1.5"
-                      >
-                        {isSubmittingSupport && (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        )}
-                        {tEmpresa('supportSubmit')}
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              <SupportTicketDialog>
+                <button
+                  type="button"
+                  title={isCollapsed ? t('help') : undefined}
+                  className={cn(
+                    'w-full group flex items-center gap-3 px-6 py-2.5 font-semibold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] text-white/75 hover:bg-white/10 hover:text-white/90 cursor-pointer',
+                    isCollapsed ? 'justify-center px-0' : '',
+                  )}
+                >
+                  <HelpCircle className="h-5 w-5 shrink-0 transition-colors text-white/60 group-hover:text-white/90" />
+                  {!isCollapsed && (
+                    <span className="truncate text-sm text-left">
+                      {t('help')}
+                    </span>
+                  )}
+                </button>
+              </SupportTicketDialog>
             </nav>
           </div>
         </div>
