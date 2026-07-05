@@ -5,6 +5,7 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import Image from 'next/image'
 import {
   ArrowRight,
   ArrowLeft,
@@ -349,11 +350,16 @@ export function ProjectWizard({
           {/* Card Header matching mockups */}
           <div className="px-6 py-4 border-b border-border/80 flex items-center justify-between bg-surface">
             <div className="flex items-center gap-3">
-              {/* Purple avatar icon */}
-              <div className="w-12 h-12 flex items-center justify-center bg-secondary rounded-2xl relative text-white shadow-sm">
-                <Bot className="w-6 h-6" />
+              <div className="relative w-11 h-11 shrink-0">
+                <Image
+                  src="/images/LogoMariposa.png"
+                  alt="Bot"
+                  fill
+                  sizes="44px"
+                  className="object-contain drop-shadow-md"
+                />
                 {/* Green online dot */}
-                <div className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-surface" />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-surface" />
               </div>
               <div className="flex flex-col text-left">
                 <span className="font-bold text-base text-ink-strong leading-tight">
@@ -427,8 +433,9 @@ export function ProjectWizard({
       {backLink}
       {pageHeader}
 
-      <Card className="border border-border/80 bg-gradient-to-br from-secondary/20 via-surface via-surface to-secondary/25 rounded-3xl shadow-sm overflow-hidden mt-6">
-        <CardContent className="p-6 pt-8 space-y-6">
+      <Card className="border border-border/80 bg-surface shadow-md overflow-hidden relative mt-6 rounded-3xl">
+        <div className="absolute top-0 left-0 w-full h-[4px] bg-gradient-to-r from-primary via-secondary to-accent" />
+        <CardContent className="p-6 pt-8 space-y-6 relative">
           {!isVerified && (
             <div className="flex gap-3 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
               <ShieldAlert className="w-5 h-5 text-warning shrink-0 mt-0.5" />

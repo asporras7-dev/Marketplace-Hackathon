@@ -37,12 +37,10 @@ export default async function PublishProjectPage() {
       style={{
         backgroundColor: '#f6f5fb',
         backgroundImage: `
-          linear-gradient(to right, rgba(102, 45, 145, 0.04) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(102, 45, 145, 0.04) 1px, transparent 1px),
           radial-gradient(circle at 0% 30%, rgba(32, 190, 198, 0.16) 0%, rgba(32, 190, 198, 0.04) 50%, transparent 70%),
           radial-gradient(circle at 100% 60%, rgba(102, 45, 145, 0.22) 0%, rgba(102, 45, 145, 0.06) 55%, transparent 75%)
         `,
-        backgroundSize: '48px 48px, 48px 48px, 100% 100%, 100% 100%',
+        backgroundSize: '100% 100%, 100% 100%',
         backgroundAttachment: 'fixed',
       }}
     >
