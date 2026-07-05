@@ -8,6 +8,8 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils/cn'
 import { toast } from 'sonner'
 import {
   saveStudentProfile,
@@ -28,7 +30,6 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -885,29 +886,36 @@ export function PortfolioManager({
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
-                    {skills.map((skill) => {
+                    {skills.map((skill, index) => {
+                      const colorClasses = [
+                        'bg-warning/10 text-warning border-warning/30', // Naranja/Ambar
+                        'bg-secondary/10 text-secondary border-secondary/20', // Morado
+                        'bg-primary/10 text-primary border-primary/20', // Azul
+                        'bg-magenta/10 text-magenta border-magenta/20', // Rosado
+                      ]
                       const levelClass =
-                        skill.level === 'avanzado'
-                          ? 'bg-accent/10 text-accent border-accent/20'
-                          : skill.level === 'intermedio'
-                            ? 'bg-primary/10 text-primary border-primary/20'
-                            : 'bg-muted text-muted-foreground border-border'
+                        colorClasses[index % colorClasses.length]
                       const levelLabel =
                         skill.level === 'avanzado'
                           ? t('levelAdvanced')
                           : skill.level === 'intermedio'
                             ? t('levelIntermediate')
                             : t('levelBasic')
+
                       return (
-                        <span
+                        <Badge
                           key={skill.id}
-                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${levelClass}`}
+                          variant="outline"
+                          className={cn(
+                            'px-2 py-0.5 text-xs font-semibold font-sans gap-1.5 transition-colors',
+                            levelClass,
+                          )}
                         >
-                          {skill.name}
-                          <span className="opacity-60 text-[10px]">
-                            · {levelLabel}
+                          <span className="font-bold">{skill.name}</span>
+                          <span className="opacity-60 text-[10px] uppercase font-display tracking-wider">
+                            • {levelLabel}
                           </span>
-                        </span>
+                        </Badge>
                       )
                     })}
                   </div>
@@ -967,15 +975,29 @@ export function PortfolioManager({
                           </p>
                         )}
                         {proj.technologies.length > 0 && (
-                          <div className="flex flex-wrap gap-1 pt-0.5">
-                            {proj.technologies.map((tech) => (
-                              <span
-                                key={tech}
-                                className="rounded-full bg-secondary/10 border border-secondary/20 px-2 py-0.5 text-[10px] font-medium text-secondary"
-                              >
-                                {tech}
-                              </span>
-                            ))}
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {proj.technologies.map((tech, index) => {
+                              const colorClasses = [
+                                'bg-warning/10 text-warning border-warning/30',
+                                'bg-secondary/10 text-secondary border-secondary/20',
+                                'bg-primary/10 text-primary border-primary/20',
+                                'bg-magenta/10 text-magenta border-magenta/20',
+                              ]
+                              const techClass =
+                                colorClasses[index % colorClasses.length]
+                              return (
+                                <Badge
+                                  key={tech}
+                                  variant="outline"
+                                  className={cn(
+                                    'px-2 py-0.5 text-[10px] font-semibold font-sans transition-colors',
+                                    techClass,
+                                  )}
+                                >
+                                  {tech}
+                                </Badge>
+                              )
+                            })}
                           </div>
                         )}
                         <div className="flex gap-2 pt-1 text-xs">
