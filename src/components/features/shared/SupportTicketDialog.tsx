@@ -56,7 +56,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
       <DialogContent className="p-0 overflow-hidden sm:max-w-[760px] gap-0 border-border bg-surface">
         <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full min-h-[480px]">
           {/* Columna Izquierda: Información de Soporte */}
-          <div className="bg-gradient-to-b from-[#e3eeff] to-[#f0f5ff] p-8 flex flex-col justify-between border-r border-border/40">
+          <div className="bg-gradient-to-b from-primary/10 to-primary/5 p-8 flex flex-col justify-between border-r border-border/40">
             <div>
               {/* Bot Icon */}
               <div className="w-12 h-12 rounded-xl bg-primary/15 text-primary flex items-center justify-center mb-6 shadow-sm/5">
