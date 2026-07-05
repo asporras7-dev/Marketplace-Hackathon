@@ -106,7 +106,7 @@ export function ContextualChat({ onClose }: { onClose: () => void }) {
   return (
     <Card
       id="contextual-chat-widget"
-      className="w-80 sm:w-96 h-[500px] flex flex-col shadow-elevated border-primary/20 bg-surface overflow-hidden"
+      className="w-80 sm:w-96 h-[500px] flex flex-col shadow-elevated border-primary/20 bg-surface overflow-hidden p-0"
     >
       <CardHeader className="flex flex-row items-center justify-between py-3 px-4 border-b bg-primary text-primary-foreground">
         <div className="flex items-center gap-2">

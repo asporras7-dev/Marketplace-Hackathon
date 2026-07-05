@@ -4,6 +4,7 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils/cn'
 import {
   Dialog,
   DialogContent,
@@ -176,17 +177,38 @@ export function PortfolioViewer({
               {t('noSkills')}
             </p>
           ) : (
-            <div className="space-y-1 pl-2 border-l-2 border-primary/20">
-              {skills.map((skill) => (
-                <div key={skill.id} className="text-sm text-foreground">
-                  {skill.name} <span className="opacity-50 mx-1">—</span>{' '}
-                  {skill.level === 'avanzado'
+            <div className="flex flex-wrap gap-1.5 pt-2">
+              {skills.map((skill, index) => {
+                const colorClasses = [
+                  'bg-warning/10 text-warning border-warning/30',
+                  'bg-secondary/10 text-secondary border-secondary/20',
+                  'bg-primary/10 text-primary border-primary/20',
+                  'bg-magenta/10 text-magenta border-magenta/20',
+                ]
+                const levelClass = colorClasses[index % colorClasses.length]
+                const levelLabel =
+                  skill.level === 'avanzado'
                     ? t('levelAdvanced')
                     : skill.level === 'intermedio'
                       ? t('levelIntermediate')
-                      : t('levelBasic')}
-                </div>
-              ))}
+                      : t('levelBasic')
+
+                return (
+                  <Badge
+                    key={skill.id}
+                    variant="outline"
+                    className={cn(
+                      'px-2 py-0.5 text-xs font-semibold font-sans gap-1.5 transition-colors',
+                      levelClass,
+                    )}
+                  >
+                    <span className="font-bold">{skill.name}</span>
+                    <span className="opacity-60 text-[10px] uppercase font-display tracking-wider">
+                      • {levelLabel}
+                    </span>
+                  </Badge>
+                )
+              })}
             </div>
           )}
         </div>
@@ -225,7 +247,7 @@ export function PortfolioViewer({
               {projects.map((proj) => (
                 <div
                   key={proj.id}
-                  className="space-y-1 pl-2 border-l-2 border-primary/20"
+                  className="space-y-1 pl-2 border-l-2 border-primary"
                 >
                   <div className="font-semibold text-sm text-foreground flex items-center justify-between gap-2">
                     <span>{proj.title}</span>
@@ -246,12 +268,37 @@ export function PortfolioViewer({
                       {proj.description}
                     </p>
                   )}
-                  <div className="text-xs text-muted-foreground font-semibold pt-1">
-                    {t('technologiesUsed')}:
-                  </div>
-                  <div className="text-xs text-foreground font-medium">
-                    {proj.technologies.join(', ')}
-                  </div>
+                  {proj.technologies.length > 0 && (
+                    <>
+                      <div className="text-xs text-muted-foreground font-semibold pt-1">
+                        {t('technologiesUsed')}:
+                      </div>
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {proj.technologies.map((tech, index) => {
+                          const colorClasses = [
+                            'bg-warning/10 text-warning border-warning/30',
+                            'bg-secondary/10 text-secondary border-secondary/20',
+                            'bg-primary/10 text-primary border-primary/20',
+                            'bg-magenta/10 text-magenta border-magenta/20',
+                          ]
+                          const techClass =
+                            colorClasses[index % colorClasses.length]
+                          return (
+                            <Badge
+                              key={tech}
+                              variant="outline"
+                              className={cn(
+                                'px-2 py-0.5 text-[10px] font-semibold font-sans transition-colors',
+                                techClass,
+                              )}
+                            >
+                              {tech}
+                            </Badge>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
                   <div className="flex gap-2 pt-1 text-xs">
                     {proj.repositoryUrl && (
                       <a
