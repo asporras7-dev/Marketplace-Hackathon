@@ -11,13 +11,16 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  Clock,
   ExternalLink,
   FileText,
   GitBranch,
+  Lightbulb,
   ListFilter,
   Lock,
   Mail,
   MessageSquare,
+  MoreVertical,
   Star,
   Users,
   XCircle,
@@ -94,13 +97,13 @@ interface ParticipationsPanelProps {
 }
 
 const ESTADO_STYLE: Record<EstadoParticipacion, string> = {
-  enviada: 'bg-primary/10 text-primary border-primary/20',
-  en_revision: 'bg-warning/10 text-warning border-warning/20',
-  contratada: 'bg-accent/10 text-accent border-accent/20',
-  no_seleccionada: 'bg-destructive/10 text-destructive border-destructive/20',
+  enviada: 'bg-accent/10 text-accent border-accent/20',
+  en_revision: 'bg-muted text-muted-foreground border-border',
+  contratada: 'bg-primary/10 text-primary border-primary/20',
+  no_seleccionada: 'bg-magenta/10 text-magenta border-magenta/20',
   retirada: 'bg-muted text-muted-foreground border-border',
   finalizada: 'bg-secondary/10 text-secondary border-secondary/20',
-  cancelada: 'bg-destructive/10 text-destructive border-destructive/20',
+  cancelada: 'bg-magenta/10 text-magenta border-magenta/20',
 }
 
 interface ConfirmState {
@@ -508,8 +511,8 @@ function ParticipationCard({
   const effectiveProjectId = participacion.proyecto?.id ?? projectId
 
   return (
-    <Card className="border border-border/80 bg-card/40">
-      <CardContent className="p-5 space-y-4">
+    <Card className="border border-border bg-surface shadow-sm rounded-xl">
+      <CardContent className="p-6 space-y-5">
         {participacion.proyecto && (
           <Link
             href={`/empresario/proyecto/${participacion.proyecto.id}`}
@@ -520,51 +523,89 @@ function ParticipationCard({
           </Link>
         )}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <InitialsAvatar
-              nombre={participacion.estudianteNombre}
-              apellidos={participacion.estudianteApellidos}
-            />
+          <div className="flex items-center gap-3.5 min-w-0">
+            {participacion.fotoPerfil ? (
+              <img
+                src={participacion.fotoPerfil}
+                alt={nombreCompleto}
+                className="w-14 h-14 shrink-0 rounded-xl object-cover border border-border/80 shadow-sm"
+              />
+            ) : (
+              <InitialsAvatar
+                nombre={participacion.estudianteNombre}
+                apellidos={participacion.estudianteApellidos}
+              />
+            )}
             <div className="min-w-0">
-              <p className="font-bold text-foreground leading-tight truncate">
-                {nombreCompleto}
-              </p>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {participacion.tituloFwd && (
-                  <span className="inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground">
-                    {t(`fwd_${participacion.tituloFwd}`)}
-                  </span>
-                )}
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <Star className="w-3.5 h-3.5 text-highlight" />
-                  {participacion.reputacion !== null
-                    ? participacion.reputacion.toFixed(1)
-                    : t('noReputation')}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-[17px] text-ink-strong leading-tight">
+                  {nombreCompleto}
+                </span>
+                <span
+                  className={cn(
+                    'text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider shrink-0',
+                    ESTADO_STYLE[participacion.estado],
+                  )}
+                >
+                  {t(`pstatus_${participacion.estado}`).toUpperCase()}
                 </span>
               </div>
+              <p className="text-xs text-ink-muted mt-1.5 font-medium font-sans">
+                {participacion.tituloFwd
+                  ? `${t(`fwd_${participacion.tituloFwd}`)} Developer`
+                  : 'Egresado FWD'}
+                {' • '}
+                {participacion.reputacion !== null
+                  ? `${participacion.reputacion.toFixed(1)} ★`
+                  : t('noReputation')}
+              </p>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2 shrink-0">
-            <span
-              className={cn(
-                'text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0',
-                ESTADO_STYLE[participacion.estado],
-              )}
-            >
-              {t(`pstatus_${participacion.estado}`)}
-            </span>
-            <Button
-              asChild
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs border-primary/20 text-primary hover:bg-primary/10"
-            >
+          <div className="flex items-center gap-1.5 shrink-0">
+            {effectiveProjectId ? (
               <Link
-                href={`/empresario/portafolio-egresado/${participacion.idParticipacion}`}
+                href={`/empresario/mensajes?proyecto=${effectiveProjectId}`}
+                title={t('contactarBtn')}
+                className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)]"
               >
-                {t('viewProfile', { defaultValue: 'Ver Perfil' })}
+                <Mail className="w-5 h-5" />
               </Link>
-            </Button>
+            ) : (
+              <button
+                type="button"
+                onClick={() =>
+                  toast.info('No hay un proyecto asignado para chatear')
+                }
+                className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)]"
+              >
+                <Mail className="w-5 h-5" />
+              </button>
+            )}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)]"
+                  aria-label="Acciones"
+                >
+                  <MoreVertical className="w-5 h-5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-40 p-1.5 bg-surface border border-border shadow-soft rounded-lg"
+              >
+                <div className="flex flex-col gap-0.5">
+                  <Link
+                    href={`/empresario/portafolio-egresado/${participacion.idParticipacion}`}
+                    className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-ink-strong hover:bg-muted transition-colors duration-[var(--duration-fast)]"
+                  >
+                    <Users className="w-4 h-4 text-ink-muted" />
+                    <span>Ver Perfil</span>
+                  </Link>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
@@ -579,82 +620,95 @@ function ParticipationCard({
           />
         ) : (
           <>
-            <div className="space-y-3 text-sm">
-              {participacion.cartaPostulacion && (
-                <Field label={t('coverLetterLabel')}>
-                  <p className="text-foreground whitespace-pre-wrap">
-                    {participacion.cartaPostulacion}
-                  </p>
-                </Field>
-              )}
-              {participacion.planteamientoSolucion && (
-                <Field label={t('solutionLabel')}>
-                  <p className="text-foreground whitespace-pre-wrap">
-                    {participacion.planteamientoSolucion}
-                  </p>
-                </Field>
-              )}
-              <div className="flex flex-wrap gap-3">
-                {participacion.prototipoEnlaces.map((enlace) => (
-                  <ExternalAnchor
-                    key={enlace}
-                    href={enlace}
-                    label={t('prototypeLabel')}
-                    icon={<ExternalLink className="w-3.5 h-3.5" />}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onOpenIframe(enlace)
-                    }}
-                  />
-                ))}
-                {participacion.documentacionTecnica && (
-                  <ExternalAnchor
-                    href={participacion.documentacionTecnica}
-                    label={t('techDocLabel')}
-                    icon={<FileText className="w-3.5 h-3.5" />}
-                    onClick={async (e) => {
-                      e.preventDefault()
-                      // El doc vive en un bucket privado: se resuelve a una URL
-                      // firmada (1h) antes de abrirlo. Las URLs legacy externas
-                      // la action las devuelve tal cual.
-                      const signed = await getSignedUrlDocumentacionTecnica(
-                        participacion.idParticipacion,
-                      )
-                      if (signed.ok) {
-                        onOpenIframe(signed.data.url)
-                      } else {
-                        toast.error(t('techDocOpenError'))
-                      }
-                    }}
-                  />
+            <div className="space-y-4 text-sm">
+              {/* Cover Letter and Solution Proposal Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {participacion.cartaPostulacion && (
+                  <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-3 shadow-inner/5">
+                    <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                      <FileText className="w-4.5 h-4.5 text-primary shrink-0" />
+                      <span>{t('coverLetterLabel')}</span>
+                    </div>
+                    <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap font-sans">
+                      {participacion.cartaPostulacion}
+                    </p>
+                  </div>
                 )}
-                {participacion.urlRepositorioProyecto && (
-                  <ExternalAnchor
-                    href={participacion.urlRepositorioProyecto}
-                    label={t('repoLabel')}
-                    icon={<GitBranch className="w-3.5 h-3.5" />}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onOpenIframe(participacion.urlRepositorioProyecto!)
-                    }}
-                  />
+                {participacion.planteamientoSolucion && (
+                  <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-3 shadow-inner/5">
+                    <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                      <Lightbulb className="w-4.5 h-4.5 text-primary shrink-0" />
+                      <span>{t('solutionLabel')}</span>
+                    </div>
+                    <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap font-sans">
+                      {participacion.planteamientoSolucion}
+                    </p>
+                  </div>
                 )}
               </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-                <span>
-                  {t('appliedOnLabel')}:{' '}
-                  <span className="font-semibold text-foreground">
-                    {participacion.fechaPostulacion.slice(0, 10)}
-                  </span>
-                </span>
-                {participacion.fechaEntregaPrototipo && (
+
+              {/* Attachments & Meta Info Footer */}
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-border/40">
+                <div className="flex flex-wrap gap-2">
+                  {participacion.prototipoEnlaces.map((enlace) => (
+                    <ExternalAnchor
+                      key={enlace}
+                      href={enlace}
+                      label={t('prototypeLabel')}
+                      icon={<ExternalLink className="w-3.5 h-3.5" />}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onOpenIframe(enlace)
+                      }}
+                    />
+                  ))}
+                  {participacion.documentacionTecnica && (
+                    <ExternalAnchor
+                      href={participacion.documentacionTecnica}
+                      label={t('techDocLabel')}
+                      icon={<FileText className="w-3.5 h-3.5" />}
+                      onClick={async (e) => {
+                        e.preventDefault()
+                        const signed = await getSignedUrlDocumentacionTecnica(
+                          participacion.idParticipacion,
+                        )
+                        if (signed.ok) {
+                          onOpenIframe(signed.data.url)
+                        } else {
+                          toast.error(t('techDocOpenError'))
+                        }
+                      }}
+                    />
+                  )}
+                  {participacion.urlRepositorioProyecto && (
+                    <ExternalAnchor
+                      href={participacion.urlRepositorioProyecto}
+                      label={t('repoLabel')}
+                      icon={<GitBranch className="w-3.5 h-3.5" />}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onOpenIframe(participacion.urlRepositorioProyecto!)
+                      }}
+                    />
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-ink-muted font-sans">
+                  <Clock className="w-3.5 h-3.5 text-ink-muted" />
                   <span>
-                    {t('deliveredOnLabel')}:{' '}
-                    <span className="font-semibold text-foreground">
-                      {participacion.fechaEntregaPrototipo.slice(0, 10)}
+                    {t('appliedOnLabel')}:{' '}
+                    <span className="font-semibold text-ink-strong">
+                      {participacion.fechaPostulacion.slice(0, 10)}
                     </span>
                   </span>
-                )}
+                  {participacion.fechaEntregaPrototipo && (
+                    <span className="ml-3">
+                      {t('deliveredOnLabel')}:{' '}
+                      <span className="font-semibold text-ink-strong">
+                        {participacion.fechaEntregaPrototipo.slice(0, 10)}
+                      </span>
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -680,7 +734,7 @@ function ParticipationCard({
                   <span
                     aria-disabled="true"
                     title={pendingTitle}
-                    className="text-xs text-muted-foreground/70 italic"
+                    className="text-xs text-muted-foreground/70 italic font-sans"
                   >
                     {pendingTitle}
                   </span>
@@ -1233,7 +1287,7 @@ function ExternalAnchor({
       target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline cursor-pointer"
+      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-foreground hover:bg-primary/10 border border-primary/20 bg-primary/5 rounded px-2.5 py-1.5 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer font-sans"
     >
       {icon}
       {label}
@@ -1251,7 +1305,7 @@ function InitialsAvatar({
   const iniciales =
     `${nombre.charAt(0)}${apellidos.charAt(0)}`.toUpperCase() || '?'
   return (
-    <div className="w-10 h-10 shrink-0 rounded-full bg-secondary/15 text-secondary flex items-center justify-center font-bold text-sm">
+    <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-base shadow-inner font-sans">
       {iniciales}
     </div>
   )

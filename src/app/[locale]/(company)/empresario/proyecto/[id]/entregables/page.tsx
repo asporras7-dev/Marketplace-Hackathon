@@ -73,10 +73,10 @@ export default async function ProjectEntregablesPage({
 
   return (
     <CompanyShell>
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+      <div className="flex-1 w-full flex flex-col lg:flex-row">
         <SidebarEmpresaNuevo />
 
-        <main className="flex-1 space-y-8">
+        <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 min-w-0">
           <Link
             href="/empresario/contrataciones"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]"
