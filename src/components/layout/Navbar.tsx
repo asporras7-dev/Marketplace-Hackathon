@@ -252,7 +252,7 @@ export function Navbar({
               <img
                 src="/images/logo-fwd-icon.png"
                 alt="Logo FWD"
-                className="w-10 h-10 animate-spin-slow object-contain"
+                className="w-10 h-10 object-contain transition-transform duration-500 group-hover:rotate-180 group-hover:scale-110"
               />
               <span
                 className={`font-heading text-xl font-bold tracking-tight block transition-colors duration-300 ${isHero ? 'text-white' : 'text-foreground'}`}

@@ -34,6 +34,7 @@ export interface StudentProfileView {
   regionNombre?: string | null
   skills: StudentSkill[]
   projects: PortfolioProject[]
+  urlCurriculum: string | null
 }
 
 export type StudentProfileInput = Partial<
@@ -43,6 +44,7 @@ export type StudentProfileInput = Partial<
     | 'portafolio_visible_publicamente'
     | 'paisIsoResidencia'
     | 'regionResidencia'
+    | 'urlCurriculum'
   >
 >
 
@@ -75,6 +77,7 @@ export async function getStudentProfile(): Promise<
         reputacion,
         pais_iso_residencia,
         region_residencia,
+        url_curriculum,
         usuarios!estudiantes_id_usuario_fkey(nombre, apellido_1, apellido_2, foto_perfil),
         habilidades_tecnicas(nivel, id_tecnologia, tecnologias(nombre)),
         proyectos_portafolio(id_portafolio, titulo, descripcion, url_repositorio, url_demo, fecha, portafolio_tecnologias(tecnologias(nombre)))
@@ -145,6 +148,7 @@ export async function getStudentProfile(): Promise<
         : null,
       skills: skillsList,
       projects: projectsList,
+      urlCurriculum: estudiante.url_curriculum ?? null,
     }
 
     return ok(profile)
@@ -191,10 +195,14 @@ export async function saveStudentProfile(
     if (profile.regionResidencia !== undefined) {
       estudianteProfile.region_residencia = profile.regionResidencia
     }
+    if (profile.urlCurriculum !== undefined) {
+      estudianteProfile.url_curriculum = profile.urlCurriculum
+    }
 
     const { error: estudianteError } = await supabase
       .from('estudiantes')
-      .upsert(estudianteProfile, { onConflict: 'id_usuario' })
+      .update(estudianteProfile)
+      .eq('id_usuario', user.id)
 
     if (estudianteError) {
       logger.error(

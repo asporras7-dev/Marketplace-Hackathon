@@ -22,6 +22,7 @@ import {
   MessageSquare,
   HelpCircle,
   Users,
+  Star,
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
@@ -61,6 +62,13 @@ export function SidebarEmpresaNuevo() {
       label: t('menuPostulaciones'),
       icon: Send,
       isActive: (path) => path.startsWith('/empresario/postulaciones'),
+    },
+    {
+      id: 'talento',
+      href: '/empresario/talento',
+      label: t('menuTalento'),
+      icon: Star,
+      isActive: (path) => path.startsWith('/empresario/talento'),
     },
     {
       id: 'contrataciones',
