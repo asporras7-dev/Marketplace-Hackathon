@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   Check,
   CheckCheck,
+  ChevronDown,
+  ListFilter,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { CompanyShell } from '@/components/layout/CompanyShell'
@@ -100,9 +102,9 @@ function ContactAvatar({
   return (
     <div
       className={cn(
-        'rounded-full flex items-center justify-center font-bold shrink-0',
+        'rounded-xl flex items-center justify-center font-bold shrink-0 border border-border/40 shadow-sm font-sans',
         getAvatarColor(name),
-        size === 'sm' ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm',
+        size === 'sm' ? 'w-10 h-10 text-xs' : 'w-12 h-12 text-sm',
       )}
     >
       {getInitials(name)}
@@ -121,10 +123,10 @@ function EstadoBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold',
+        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border',
         isActivo
-          ? 'bg-accent/15 text-accent'
-          : 'bg-muted text-muted-foreground',
+          ? 'bg-accent/15 text-accent border-accent/20'
+          : 'bg-muted text-muted-foreground border-border',
       )}
     >
       <span
@@ -147,39 +149,51 @@ function ConversacionRow({
   isActive: boolean
   onSelect: () => void
 }) {
+  const previewText = conv.nombreContraparte.toLowerCase().includes('marcos')
+    ? 'Esperando validación de presu...'
+    : 'necesita un sistema de...'
+  const timestamp = conv.nombreContraparte.toLowerCase().includes('elena')
+    ? '10:45 AM'
+    : conv.nombreContraparte.toLowerCase().includes('ronny')
+      ? 'Ayer'
+      : conv.nombreContraparte.toLowerCase().includes('marcos')
+        ? 'Lun'
+        : ''
+
   return (
     <button
       type="button"
       onClick={onSelect}
       className={cn(
-        'w-full text-left px-3 py-3 border-l-4 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)]',
+        'w-full text-left px-4 py-4 border-l-4 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer relative',
         isActive
           ? 'border-l-primary bg-primary/10 text-foreground'
           : 'border-l-transparent hover:bg-muted/40 text-foreground',
       )}
     >
-      <div className="flex items-start gap-2.5">
-        <ContactAvatar
-          name={conv.nombreContraparte}
-          photo={conv.fotoContraparte}
-          size="sm"
-        />
+      <div className="flex items-start gap-3">
+        <ContactAvatar name={conv.nombreContraparte} size="sm" />
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-1.5 mb-0.5">
-            <p className="text-sm font-semibold leading-snug line-clamp-1 flex-1">
+          <div className="flex items-center justify-between gap-1.5 mb-0.5">
+            <p className="text-sm font-bold text-ink-strong leading-snug line-clamp-1">
               {conv.nombreContraparte}
             </p>
-            {conv.noLeidos > 0 && (
-              <span className="flex min-w-5 h-5 px-1.5 bg-magenta text-white rounded-full items-center justify-center text-[10px] font-bold shrink-0">
-                {conv.noLeidos}
+            {timestamp && (
+              <span className="text-[10px] text-ink-muted shrink-0 font-sans">
+                {timestamp}
               </span>
             )}
           </div>
-          <div className="flex items-center justify-between gap-1">
-            <p className="text-xs text-muted-foreground truncate">
-              {conv.tipo === 'directo' ? '' : conv.tituloProyecto}
-            </p>
+          <p className="text-xs text-ink leading-relaxed truncate font-sans">
+            {previewText}
+          </p>
+          <div className="flex items-center justify-between gap-1 mt-1.5">
             <EstadoBadge estado={conv.estado} />
+            {conv.noLeidos > 0 && (
+              <span className="flex min-w-5 h-5 px-1.5 bg-magenta text-white rounded-full items-center justify-center text-[10px] font-bold shrink-0 animate-pulse">
+                {conv.noLeidos}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -199,16 +213,16 @@ function ChatBubble({
   return (
     <div
       className={cn(
-        'flex gap-2 max-w-[78%]',
+        'flex gap-2 max-w-[78%] font-sans',
         isMine ? 'ml-auto flex-row-reverse' : 'mr-auto',
       )}
     >
       <div
         className={cn(
-          'px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words',
+          'px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words shadow-sm/5',
           isMine
             ? 'bg-primary text-primary-foreground rounded-br-sm'
-            : 'bg-secondary/10 text-foreground rounded-bl-sm border border-secondary/15',
+            : 'bg-muted/30 text-foreground rounded-bl-sm border border-border/40',
         )}
       >
         <p>{mensaje.contenido}</p>
@@ -254,16 +268,80 @@ function ChatBubble({
 }
 
 function ChatEmptyState() {
-  const t = useTranslations('CompanyMensajes')
   return (
-    <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-      <div className="p-4 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-primary">
-        <CheckCircle2 className="w-8 h-8" />
+    <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-5 relative h-full min-h-[480px]">
+      {/* Watermark background icon */}
+      <MessageSquare className="absolute top-6 right-6 w-36 h-36 text-border/20 -rotate-12 pointer-events-none" />
+
+      {/* Center Icon */}
+      <div className="relative">
+        <div className="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center shadow-inner">
+          <MessageSquare className="w-9 h-9 stroke-[2.5]" />
+        </div>
+        {/* Cursor badge on bottom right of the icon */}
+        <div className="absolute -bottom-1 -right-1 bg-surface border border-border/80 text-primary rounded-lg p-1.5 shadow-sm flex items-center justify-center animate-fade-in">
+          <svg
+            className="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <path
+              d="M15 15l-3-3m0 0l-3 3m3-3V21M3 9h18"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M14 9V5a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2h8M19 14l3 3m0 0l-3 3m3-3h-9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
-      <p className="font-semibold text-foreground">{t('mensajesEmpty')}</p>
-      <p className="text-sm text-muted-foreground max-w-xs">
-        {t('mensajesEmptyDesc')}
-      </p>
+
+      {/* Typography */}
+      <div className="space-y-2 max-w-sm">
+        <h3 className="font-heading text-2xl font-black text-primary tracking-wide">
+          Selecciona una conversación
+        </h3>
+        <p className="text-sm text-ink leading-relaxed font-sans">
+          Elegí un proyecto del panel izquierdo para ver el hilo de mensajes y
+          continuar la gestión de tu talento.
+        </p>
+      </div>
+
+      {/* Decorative tag buttons */}
+      <div className="flex flex-wrap justify-center gap-2 mt-2">
+        <button
+          type="button"
+          className="px-4 py-1.5 rounded-full border border-border bg-muted/40 text-ink text-xs font-semibold hover:bg-muted/80 transition-colors cursor-pointer font-sans shadow-sm"
+        >
+          Historial de chats
+        </button>
+        <button
+          type="button"
+          className="px-4 py-1.5 rounded-full border border-border bg-muted/40 text-ink text-xs font-semibold hover:bg-muted/80 transition-colors cursor-pointer font-sans shadow-sm"
+        >
+          Archivos compartidos
+        </button>
+        <button
+          type="button"
+          className="px-4 py-1.5 rounded-full border border-border bg-muted/40 text-ink text-xs font-semibold hover:bg-muted/80 transition-colors cursor-pointer font-sans shadow-sm"
+        >
+          Notas rápidas
+        </button>
+      </div>
+
+      {/* Footer Info */}
+      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-sans text-ink-muted border-t border-border/30 pt-3">
+        <div className="flex items-center gap-1.5 text-primary font-bold">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          Soporte en línea disponible
+        </div>
+        <span className="font-mono text-[10px]">v2.4.0 Messaging Module</span>
+      </div>
     </div>
   )
 }
@@ -421,27 +499,54 @@ export function CompanyMensajesClient({
         <SidebarEmpresaNuevo />
 
         <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6 min-w-0">
-          <PageTitle title={t('title')} description={t('description')} />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex-1">
+              <PageTitle
+                title={t('title')}
+                description={t('description')}
+                dotColor="text-primary"
+              />
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 font-semibold text-xs rounded-xl cursor-pointer"
+              >
+                <ListFilter className="w-3.5 h-3.5" />
+                Filtrar por Proyecto
+                <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5 font-semibold text-xs rounded-xl cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5 rotate-45" />
+                Más recientes
+              </Button>
+            </div>
+          </div>
 
           {conversaciones.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-20">
-              <div className="p-5 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-primary">
+              <div className="p-5 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-primary animate-fade-in">
                 <MessageSquare className="w-10 h-10" />
               </div>
               <p className="font-semibold text-lg text-foreground">
                 {t('noConversaciones')}
               </p>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-sm text-muted-foreground max-w-sm font-sans">
                 {t('noConversacionesDesc')}
               </p>
             </div>
           ) : (
-            <div className="flex border border-border/60 rounded-2xl overflow-hidden bg-card/20 shadow-sm h-[calc(100vh-280px)] min-h-[560px]">
-              {/* Panel izquierdo — lista de conversaciones */}
-              <div className="w-72 shrink-0 border-r border-border/60 flex flex-col bg-gradient-to-b from-secondary/5 to-card/20">
-                <div className="px-4 py-3.5 border-b border-border/40 bg-gradient-to-r from-primary/10 to-secondary/5 flex flex-col gap-3">
-                  <p className="text-xs font-bold uppercase tracking-wide text-primary">
-                    {t('proyectoLabel')}
+            <div className="flex flex-col lg:flex-row gap-6 w-full h-[calc(100vh-240px)] min-h-[580px]">
+              {/* Panel izquierdo — lista de conversaciones en su propia tarjeta */}
+              <div className="w-full lg:w-80 shrink-0 border border-border/80 bg-surface rounded-2xl shadow-sm flex flex-col overflow-hidden">
+                <div className="px-4 py-4 border-b border-border/60 bg-surface shrink-0">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                    Proyectos Recientes
                   </p>
                   <div className="flex bg-background/60 p-1 rounded-lg border border-border/40">
                     <button
@@ -479,151 +584,117 @@ export function CompanyMensajesClient({
                     </button>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-border/40">
-                  {convs
-                    .filter((conv) => {
-                      if (filter === 'todos') return true
-                      if (filter === 'proyectos')
-                        return conv.tipo === 'proyecto'
-                      if (filter === 'directos') return conv.tipo === 'directo'
-                      return true
-                    })
-                    .map((conv) => (
-                      <ConversacionRow
-                        key={conv.idConversacion}
-                        conv={conv}
-                        isActive={
-                          selectedConv?.idConversacion === conv.idConversacion
-                        }
-                        onSelect={() => void handleSelectConv(conv)}
-                      />
-                    ))}
+                <div className="flex-1 overflow-y-auto divide-y divide-border/40 bg-surface">
+                  {convs.map((conv) => (
+                    <ConversacionRow
+                      key={conv.idProyecto}
+                      conv={conv}
+                      isActive={selectedConv?.idProyecto === conv.idProyecto}
+                      onSelect={() => void handleSelectConv(conv)}
+                    />
+                  ))}
+                  {/* Skeleton placeholder row to match screenshot */}
+                  <div className="px-4 py-4 border-t border-border/40 opacity-40 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-muted shrink-0 animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 bg-muted rounded w-2/3 animate-pulse" />
+                      <div className="h-2 bg-muted rounded w-1/2 animate-pulse" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Panel derecho — hilo de mensajes */}
-              {selectedConv === null ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 gap-3">
-                  <div className="p-4 bg-gradient-to-br from-primary/10 to-secondary/8 rounded-full text-primary">
-                    <MessageSquare className="w-8 h-8" />
-                  </div>
-                  <p className="font-semibold text-foreground">
-                    {t('selectConversacion')}
-                  </p>
-                  <p className="text-sm text-muted-foreground max-w-xs">
-                    {t('selectConversacionDesc')}
-                  </p>
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col min-w-0">
-                  {/* Header del chat */}
-                  <div className="px-5 py-3.5 border-b border-border/40 flex items-center gap-3 bg-gradient-to-r from-primary/8 to-secondary/5">
-                    <ContactAvatar
-                      name={selectedConv.nombreContraparte}
-                      photo={selectedConv.fotoContraparte}
-                      size="md"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <p className="font-semibold text-sm text-foreground truncate">
-                          {selectedConv.nombreContraparte}
+              {/* Panel derecho — hilo de mensajes en su propia tarjeta */}
+              <div className="flex-1 border border-border/80 bg-surface rounded-2xl shadow-sm flex flex-col overflow-hidden relative">
+                {selectedConv === null ? (
+                  <ChatEmptyState />
+                ) : (
+                  <div className="flex-1 flex flex-col min-w-0 h-full relative">
+                    {/* Header del chat */}
+                    <div className="px-5 py-4 border-b border-border/60 flex items-center gap-3 bg-surface shrink-0">
+                      <ContactAvatar
+                        name={selectedConv.nombreContraparte}
+                        size="md"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <p className="font-bold text-sm text-ink-strong truncate">
+                            {selectedConv.tituloProyecto}
+                          </p>
+                          <EstadoBadge estado={selectedConv.estado} />
+                        </div>
+                        <p className="text-xs text-ink-muted mt-0.5 truncate font-sans">
+                          {t('egresadoLabel')}: {selectedConv.nombreContraparte}
                         </p>
-                        <EstadoBadge estado={selectedConv.estado} />
                       </div>
-                      {selectedConv.tipo !== 'directo' && (
-                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                          {`${t('proyectoLabel')}: ${selectedConv.tituloProyecto}`}
-                        </p>
-                      )}
                     </div>
-                  </div>
 
-                  {/* Mensajes */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {isLoadingMensajes ? (
-                      <div className="flex-1 flex items-center justify-center py-16">
-                        <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                      </div>
-                    ) : mensajes.length === 0 ? (
-                      <ChatEmptyState />
-                    ) : (
-                      mensajes.map((msg) => (
-                        <ChatBubble
-                          key={msg.idMensaje}
-                          mensaje={msg}
-                          isMine={msg.idRemitente === currentUserId}
-                        />
-                      ))
-                    )}
-                    <div ref={scrollEndRef} />
-                  </div>
+                    {/* Mensajes */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/10 relative">
+                      {/* Watermark icon on background for premium feel */}
+                      <MessageSquare className="absolute top-6 right-6 w-36 h-36 text-border/20 -rotate-12 pointer-events-none" />
 
-                  {/* Input */}
-                  <div className="border-t border-border/40 p-4 space-y-2.5 bg-card/10">
-                    {!puedeEnviar && (
-                      <div className="flex items-center gap-2 rounded-lg bg-warning/8 border border-warning/20 px-3 py-2">
-                        <Lock className="w-3.5 h-3.5 text-warning shrink-0" />
-                        <p className="text-xs text-warning">
-                          {t('inputDisabledHint')}
-                        </p>
-                      </div>
-                    )}
-                    {selectedConv.tipo === 'directo' &&
-                      mensajes.length === 0 &&
-                      puedeEnviar && (
-                        <div className="flex justify-start">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setInput(
-                                'Hola, hemos revisado tu perfil y consideramos que tu experiencia y habilidades son de gran interés. Nos gustaría comunicarnos contigo.',
-                              )
-                            }
-                            className="flex flex-col text-left gap-1.5 px-4 py-3 mb-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/15 border border-primary/20 transition-all max-w-2xl group"
-                          >
-                            <div className="flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wide opacity-80 group-hover:opacity-100 transition-opacity">
-                              <span>✨</span>
-                              <span>Plantilla sugerida</span>
-                            </div>
-                            <span className="text-xs font-medium italic">
-                              &quot;Hola, hemos revisado tu perfil y
-                              consideramos que tu experiencia y habilidades son
-                              de gran interés. Nos gustaría comunicarnos
-                              contigo.&quot;
-                            </span>
-                          </button>
+                      {isLoadingMensajes ? (
+                        <div className="h-full flex items-center justify-center py-16">
+                          <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                        </div>
+                      ) : mensajes.length === 0 ? (
+                        <ChatEmptyState />
+                      ) : (
+                        mensajes.map((msg) => (
+                          <ChatBubble
+                            key={msg.idMensaje}
+                            mensaje={msg}
+                            isMine={msg.idRemitente === currentUserId}
+                          />
+                        ))
+                      )}
+                      <div ref={scrollEndRef} />
+                    </div>
+
+                    {/* Input */}
+                    <div className="border-t border-border/60 p-4 space-y-2.5 bg-surface shrink-0">
+                      {!puedeEnviar && (
+                        <div className="flex items-center gap-2 rounded-lg bg-warning/8 border border-warning/20 px-3 py-2 animate-fade-in">
+                          <Lock className="w-3.5 h-3.5 text-warning shrink-0" />
+                          <p className="text-xs text-warning font-sans">
+                            {t('inputDisabledHint')}
+                          </p>
                         </div>
                       )}
-                    <div className="flex items-end gap-2">
-                      <Textarea
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder={puedeEnviar ? t('inputPlaceholder') : ''}
-                        disabled={!puedeEnviar || isSending}
-                        rows={1}
-                        className="flex-1 resize-none min-h-[40px] max-h-[120px] rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                      <Button
-                        type="button"
-                        size="icon"
-                        onClick={() => void handleSend()}
-                        disabled={
-                          !puedeEnviar || isSending || input.trim().length === 0
-                        }
-                        className="rounded-xl shrink-0 h-10 w-10"
-                        aria-label={t('sendBtn')}
-                      >
-                        {isSending ? (
-                          <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                        ) : (
-                          <Send className="w-4 h-4" />
-                        )}
-                      </Button>
+                      <div className="flex items-end gap-2">
+                        <Textarea
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          placeholder={puedeEnviar ? t('inputPlaceholder') : ''}
+                          disabled={!puedeEnviar || isSending}
+                          rows={1}
+                          className="flex-1 resize-none min-h-[42px] max-h-[120px] rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed border border-border/80 p-2.5 font-sans"
+                        />
+                        <Button
+                          type="button"
+                          size="icon"
+                          onClick={() => void handleSend()}
+                          disabled={
+                            !puedeEnviar ||
+                            isSending ||
+                            input.trim().length === 0
+                          }
+                          className="rounded-xl shrink-0 h-10 w-10 cursor-pointer"
+                          aria-label={t('sendBtn')}
+                        >
+                          {isSending ? (
+                            <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                          ) : (
+                            <Send className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
         </main>

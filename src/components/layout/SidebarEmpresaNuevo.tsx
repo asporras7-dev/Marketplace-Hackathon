@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { createSupportTicket } from '@/lib/company/actions'
+import { SupportTicketDialog } from '@/components/features/shared/SupportTicketDialog'
 import {
   Loader2,
   Send,
@@ -46,33 +46,11 @@ export function SidebarEmpresaNuevo() {
   const router = useRouter()
   const { resetAuth } = useAuth()
   const { isHidden, toggle } = useSidebarHidden()
-  const [isSupportOpen, setIsSupportOpen] = useState(false)
-
   const handleLogout = async () => {
     const { signOut } = await import('@/lib/auth/actions')
     await signOut()
     resetAuth()
     router.push('/login')
-  }
-  const [supportDescription, setSupportDescription] = useState('')
-  const [isSubmittingSupport, setIsSubmittingSupport] = useState(false)
-
-  const handleSupportSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (supportDescription.length < 15) {
-      toast.error(t('supportMinLength'))
-      return
-    }
-    setIsSubmittingSupport(true)
-    const res = await createSupportTicket(supportDescription)
-    setIsSubmittingSupport(false)
-    if (res.ok) {
-      toast.success(t('supportSuccess'))
-      setSupportDescription('')
-      setIsSupportOpen(false)
-    } else {
-      toast.error(res.error)
-    }
   }
 
   // El highlight sigue la SECCIÓN, no solo la URL exacta: las subrutas de
@@ -164,72 +142,16 @@ export function SidebarEmpresaNuevo() {
             </Link>
           )
         })}
-
         {/* Ayuda / Soporte Técnico abre el Dialog */}
-        <Dialog open={isSupportOpen} onOpenChange={setIsSupportOpen}>
-          <DialogTrigger asChild>
-            <button
-              type="button"
-              className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 text-white/70 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
-            >
-              <HelpCircle className="w-4 h-4 shrink-0" />
-              <span>{t('menuAyuda')}</span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] bg-card border-border">
-            <DialogHeader>
-              <DialogTitle className="text-foreground font-heading font-extrabold text-lg text-left">
-                {t('supportModalTitle')}
-              </DialogTitle>
-              <DialogDescription className="text-muted-foreground text-xs leading-relaxed pt-1 text-left">
-                {t('supportModalDesc')}
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSupportSubmit} className="space-y-4 pt-4">
-              <div className="space-y-2 text-left">
-                <Label
-                  htmlFor="description"
-                  className="text-xs font-bold text-foreground"
-                >
-                  {t('supportFieldDesc')}
-                </Label>
-                <Textarea
-                  id="description"
-                  rows={4}
-                  placeholder={t('supportPlaceholder')}
-                  value={supportDescription}
-                  onChange={(e) => setSupportDescription(e.target.value)}
-                  className="bg-card/50 border-border focus-visible:ring-primary text-sm"
-                />
-                <p className="text-[10px] text-muted-foreground text-right">
-                  {supportDescription.length}/15 {t('supportMinCharsInfo')}
-                </p>
-              </div>
-              <div className="flex justify-end gap-3 pt-2 border-t border-border/40">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsSupportOpen(false)}
-                  className="text-xs font-semibold"
-                >
-                  {t('cancelar')}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmittingSupport}
-                  size="sm"
-                  className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs flex items-center gap-1.5"
-                >
-                  {isSubmittingSupport && (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  )}
-                  {t('supportSubmit')}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <SupportTicketDialog>
+          <button
+            type="button"
+            className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 text-white/70 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+          >
+            <HelpCircle className="w-4 h-4 shrink-0" />
+            <span>{t('menuAyuda')}</span>
+          </button>
+        </SupportTicketDialog>
       </nav>
 
       {/* Cerrar sesión (mismo patrón con confirmación que el admin) */}
