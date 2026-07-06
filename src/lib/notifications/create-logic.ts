@@ -46,6 +46,12 @@ export function validateNotificacionInputs(
     const parsed = inputSchema.safeParse(input)
     if (!parsed.success) {
       const issue = parsed.error.issues[0]
+      console.error(
+        'Validation failed for input:',
+        input,
+        'Errors:',
+        parsed.error.issues,
+      )
       return err(
         `notificacion_invalida: ${issue?.message ?? 'entrada inválida'}`,
       )

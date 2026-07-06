@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import {
   saveStudentProfile,
@@ -48,6 +49,15 @@ import {
   BookOpen,
   Loader2,
   Star,
+  Camera,
+  CheckCircle2,
+  CheckCircle,
+  XCircle,
+  Info,
+  MapPin,
+  TrendingUp,
+  Award,
+  FileText,
 } from 'lucide-react'
 import type { PortfolioProject, StudentSkill } from '@/types'
 import type { CalificacionRecibida } from '@/lib/evaluaciones/actions'
@@ -245,9 +255,9 @@ export function PortfolioManager({
   const [isSavingBio, setIsSavingBio] = useState(false)
   const [isSavingLocation, setIsSavingLocation] = useState(false)
   const [visibility, setVisibility] = useState<'publico' | 'empresas'>(
-    initialProfile?.portafolio_visible_publicamente === false
-      ? 'empresas'
-      : 'publico',
+    initialProfile?.portafolio_visible_publicamente === true
+      ? 'publico'
+      : 'empresas',
   )
   const [editingProject, setEditingProject] = useState<
     PortfolioProject | undefined
@@ -265,6 +275,7 @@ export function PortfolioManager({
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const [localPhotoUrl, setLocalPhotoUrl] = useState<string | null>(null)
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false)
 
   // Crop state
   const [imageToCrop, setImageToCrop] = useState<string | null>(null)
@@ -335,6 +346,30 @@ export function PortfolioManager({
     initialProfile?.regionResidencia || '',
   )
 
+  const cvSchema = React.useMemo(
+    () =>
+      z.object({
+        url: z.union([z.literal(''), z.string().url('URL inválida')]),
+      }),
+    [],
+  )
+  type CvValues = z.infer<typeof cvSchema>
+
+  const [portfolioCv, setPortfolioCv] = useState(
+    initialProfile?.urlCurriculum || '',
+  )
+  const [isSavingCv, setIsSavingCv] = useState(false)
+  const {
+    register: registerCv,
+    handleSubmit: handleCvSubmit,
+    formState: { errors: cvErrors },
+    reset: resetCv,
+  } = useForm<CvValues>({
+    resolver: zodResolver(cvSchema),
+    defaultValues: { url: portfolioCv },
+  })
+  useEffect(() => resetCv({ url: portfolioCv }), [portfolioCv, resetCv])
+
   const {
     handleSubmit: handleLocationSubmit,
     formState: { errors: locationErrors },
@@ -356,7 +391,10 @@ export function PortfolioManager({
     })
   }, [portfolioCountry, portfolioRegion, resetLocation])
 
-  const handleVisibilityChange = async (newVis: 'publico' | 'empresas') => {
+  const handleVisibilityChange = async (
+    newVis: 'publico' | 'empresas',
+    customMessage?: string,
+  ) => {
     setIsSavingVis(true)
     const res = await saveStudentProfile({
       portafolio_visible_publicamente: newVis === 'publico',
@@ -365,7 +403,10 @@ export function PortfolioManager({
 
     if (res.ok) {
       setVisibility(newVis)
-      toast.success(t('toastVisibilityUpdated'))
+      toast.success(customMessage || t('toastVisibilityUpdated'), {
+        duration: 2000,
+      })
+      if (newVis === 'publico') setIsPublishDialogOpen(false)
     } else {
       toast.error('Error al actualizar la visibilidad')
     }
@@ -401,6 +442,21 @@ export function PortfolioManager({
       router.refresh()
     } else {
       toast.error('Error al guardar la ubicación')
+    }
+  }
+
+  const handleCvSave = async (data: CvValues) => {
+    setIsSavingCv(true)
+    const res = await saveStudentProfile({
+      urlCurriculum: data.url || null,
+    })
+    setIsSavingCv(false)
+    if (res.ok) {
+      setPortfolioCv(data.url || '')
+      toast.success(t('portfolioCvSaved'))
+      router.refresh()
+    } else {
+      toast.error(t('portfolioCvError'))
     }
   }
 
@@ -502,8 +558,14 @@ export function PortfolioManager({
                   type="button"
                   variant={visibility === 'publico' ? 'default' : 'outline'}
                   className="flex-1 justify-center gap-2"
-                  onClick={() => handleVisibilityChange('publico')}
                   disabled={isSavingVis}
+                  onClick={() => {
+                    if (visibility !== 'publico') {
+                      toast.info(
+                        "Para publicar tu perfil, presiona el botón 'Publicar' que se encuentra abajo en la vista previa.",
+                      )
+                    }
+                  }}
                 >
                   <Globe className="h-4 w-4" />
                   {t('visibilityPublic')}
@@ -600,6 +662,40 @@ export function PortfolioManager({
                   disabled={isSavingLocation}
                 >
                   Guardar Ubicación
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                {t('portfolioCvTitle')}
+              </CardTitle>
+              <CardDescription>{t('portfolioCvDesc')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form
+                onSubmit={handleCvSubmit(handleCvSave)}
+                className="space-y-4"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio-cv-url" className="sr-only">
+                    {t('portfolioCvLabel')}
+                  </Label>
+                  <Input
+                    id="portfolio-cv-url"
+                    placeholder={t('portfolioCvPlaceholder')}
+                    {...registerCv('url')}
+                  />
+                  {cvErrors.url && (
+                    <p className="text-xs text-destructive">
+                      {cvErrors.url.message}
+                    </p>
+                  )}
+                </div>
+                <Button type="submit" className="w-full" disabled={isSavingCv}>
+                  {t('portfolioCvSave')}
                 </Button>
               </form>
             </CardContent>
@@ -1035,6 +1131,43 @@ export function PortfolioManager({
                     ))}
                   </div>
                 )}
+              </div>
+
+              <div className="h-px bg-border/50" />
+
+              <div className="space-y-3">
+                <p className="text-[11px] font-bold tracking-widest text-primary/70 uppercase font-display">
+                  Publicación
+                </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <p className="text-sm text-foreground">
+                    {visibility === 'publico'
+                      ? 'Tu perfil profesional ya está publicado en el apartado de búsqueda de empleo.'
+                      : '¿Deseas publicar tu perfil profesional a nuestro apartado de búsqueda de empleo?'}
+                  </p>
+                  <Button
+                    onClick={() =>
+                      handleVisibilityChange(
+                        'publico',
+                        'Tu perfil profesional se ha publicado exitosamente',
+                      )
+                    }
+                    disabled={isSavingVis || visibility === 'publico'}
+                    variant={visibility === 'publico' ? 'secondary' : 'default'}
+                    className="shrink-0"
+                  >
+                    {isSavingVis ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Publicando...
+                      </>
+                    ) : visibility === 'publico' ? (
+                      'Publicado'
+                    ) : (
+                      'Publicar'
+                    )}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
