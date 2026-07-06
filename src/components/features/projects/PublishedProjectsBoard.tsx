@@ -59,7 +59,7 @@ export function PublishedProjectsBoard({
 
   if (projects.length === 0) {
     return (
-      <div className="p-8 border border-dashed border-border rounded-xl text-center text-muted-foreground bg-card/20">
+      <div className="p-8 border border-dashed border-gray-200 rounded-xl text-center text-muted-foreground bg-white">
         <p className="font-semibold text-foreground">{t('empty')}</p>
         <p className="text-sm mt-1">{t('emptyDesc')}</p>
       </div>
@@ -69,11 +69,11 @@ export function PublishedProjectsBoard({
   return (
     <div className="space-y-5">
       {/* Segmented Filter Control */}
-      <div className="flex justify-between items-center gap-4 flex-wrap bg-surface border border-border px-5 py-3 rounded-xl shadow-sm">
+      <div className="flex justify-between items-center gap-4 flex-wrap bg-white border border-gray-100 px-5 py-3 rounded-xl shadow-sm">
         <span className="text-xs text-ink-muted font-bold font-sans uppercase tracking-wider">
           {t('filterLabel')}
         </span>
-        <div className="flex bg-muted/60 p-1 rounded-xl gap-0.5 border border-border/10">
+        <div className="flex bg-gray-50 p-1 rounded-xl gap-0.5 border border-gray-100">
           <FilterButton
             active={filter === 'all'}
             onClick={() => setFilter('all')}
@@ -102,7 +102,7 @@ export function PublishedProjectsBoard({
           return (
             <Card
               key={project.id}
-              className="border border-border/80 bg-surface shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all duration-[var(--duration-fast)]"
+              className="border border-gray-100 bg-white shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all duration-[var(--duration-fast)]"
             >
               <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-2.5 min-w-0 flex-1">
@@ -180,7 +180,7 @@ function FilterButton({
       className={cn(
         'rounded-lg px-3 py-1.5 text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer font-sans border-none select-none',
         active
-          ? 'bg-surface text-ink-strong shadow-sm'
+          ? 'bg-white text-ink-strong shadow-sm'
           : 'bg-transparent text-ink-muted hover:text-ink',
       )}
     >

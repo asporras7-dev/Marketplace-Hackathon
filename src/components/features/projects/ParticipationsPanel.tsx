@@ -511,7 +511,7 @@ function ParticipationCard({
   const effectiveProjectId = participacion.proyecto?.id ?? projectId
 
   return (
-    <Card className="border border-border bg-surface shadow-sm rounded-xl">
+    <Card className="border border-gray-100 bg-white shadow-sm rounded-xl">
       <CardContent className="p-6 space-y-5">
         {participacion.proyecto && (
           <Link
@@ -593,7 +593,7 @@ function ParticipationCard({
               </PopoverTrigger>
               <PopoverContent
                 align="end"
-                className="w-40 p-1.5 bg-surface border border-border shadow-soft rounded-lg"
+                className="w-40 p-1.5 bg-white border border-gray-100 shadow-soft rounded-lg"
               >
                 <div className="flex flex-col gap-0.5">
                   <Link

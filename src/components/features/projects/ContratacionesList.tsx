@@ -122,7 +122,7 @@ export function ContratacionesList({
 
   if (contrataciones.length === 0) {
     return (
-      <div className="p-12 border border-dashed border-border rounded-2xl flex flex-col items-center justify-center text-center bg-card/20 w-full">
+      <div className="p-12 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-center bg-white w-full">
         <Briefcase className="w-12 h-12 text-muted-foreground/40 mb-4" />
         <h3 className="text-lg font-bold text-foreground">
           {t('sinContrataciones')}
@@ -140,7 +140,7 @@ export function ContratacionesList({
         {/* Columna Izquierda: Filtros y Lista de Candidatos (2/3 de ancho) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Filtros por estado y Decoración Reclutadores */}
-          <div className="flex items-center justify-between gap-4 flex-wrap bg-surface border border-border px-5 py-4 rounded-xl shadow-sm">
+          <div className="flex items-center justify-between gap-4 flex-wrap bg-white border border-gray-100 px-5 py-4 rounded-xl shadow-sm">
             <div className="flex items-center gap-2">
               {filtros.map(({ key, label }) => (
                 <button
@@ -150,7 +150,7 @@ export function ContratacionesList({
                   className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer ${
                     filtro === key
                       ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                      : 'bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+                      : 'bg-white text-muted-foreground border-gray-100 hover:border-primary/40 hover:text-foreground'
                   }`}
                 >
                   {label}
@@ -160,13 +160,13 @@ export function ContratacionesList({
             {/* Reclutadores decorativos para coincidir con la captura de pantalla */}
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">
-                <div className="w-6 h-6 rounded-full bg-primary/15 text-primary border-2 border-surface flex items-center justify-center text-[10px] font-bold shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-primary/15 text-primary border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm">
                   JD
                 </div>
-                <div className="w-6 h-6 rounded-full bg-secondary/15 text-secondary border-2 border-surface flex items-center justify-center text-[10px] font-bold shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-secondary/15 text-secondary border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm">
                   AS
                 </div>
-                <div className="w-6 h-6 rounded-full bg-accent/20 text-accent border-2 border-surface flex items-center justify-center text-[10px] font-bold shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-accent/20 text-accent border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-sm">
                   ML
                 </div>
               </div>
@@ -178,7 +178,7 @@ export function ContratacionesList({
 
           {/* Lista de candidatos */}
           {visibles.length === 0 ? (
-            <div className="p-10 border border-dashed border-border rounded-2xl flex flex-col items-center justify-center text-center bg-card/20">
+            <div className="p-10 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-center bg-white">
               <Briefcase className="w-8 h-8 text-muted-foreground/30 mb-3" />
               <p className="text-sm text-muted-foreground">
                 {t('sinResultadosFiltro')}
@@ -189,7 +189,7 @@ export function ContratacionesList({
               {visibles.map((item) => (
                 <Card
                   key={item.idParticipacion}
-                  className="overflow-hidden border border-border bg-surface shadow-sm rounded-xl hover:shadow-md transition-all duration-[var(--duration-fast)]"
+                  className="overflow-hidden border border-gray-100 bg-white shadow-sm rounded-xl hover:shadow-md transition-all duration-[var(--duration-fast)]"
                 >
                   <CardContent className="p-6 space-y-4">
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -324,7 +324,7 @@ export function ContratacionesList({
         {/* Columna Derecha: Sidebar con widgets (1/3 de ancho) */}
         <div className="space-y-6">
           {/* Card: Métricas de Talento */}
-          <Card className="border border-border bg-surface shadow-sm rounded-xl">
+          <Card className="border border-gray-100 bg-white shadow-sm rounded-xl">
             <CardContent className="p-6 space-y-6">
               <div className="flex items-center justify-between border-b border-border/40 pb-3">
                 <h3 className="font-heading text-lg font-bold text-ink-strong">
@@ -401,7 +401,7 @@ export function ContratacionesList({
           </Card>
 
           {/* Card: Próximos Pasos */}
-          <Card className="border border-border bg-surface shadow-sm rounded-xl">
+          <Card className="border border-gray-100 bg-white shadow-sm rounded-xl">
             <CardContent className="p-6 space-y-4">
               <h4 className="text-xs font-bold uppercase tracking-wider text-ink-muted font-sans">
                 Próximos Pasos

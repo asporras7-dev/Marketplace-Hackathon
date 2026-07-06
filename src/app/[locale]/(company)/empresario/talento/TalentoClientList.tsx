@@ -80,7 +80,7 @@ export function TalentoClientList({
         {initialProfiles.map((profile) => (
           <Card
             key={profile.id_estudiante}
-            className="flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 border-primary/20"
+            className="flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 border-gray-100 bg-white"
             onClick={() => setSelectedProfile(profile)}
           >
             <CardHeader className="relative pb-4">
