@@ -13,20 +13,18 @@ export function GlobalLoaderProvider({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const loadStartTime = useRef<number>(0)
-  const minLoadTime = 600 // 600ms para asegurar que la animación se vea bien y fluida
+  const minLoadTime = 200 // Reducido a 200ms para que se sienta más rápido
 
   // Detener el loader cuando cambie la ruta actual (significa que Next.js terminó de cargar)
   useEffect(() => {
-    if (isLoading) {
-      const timeElapsed = Date.now() - loadStartTime.current
-      if (timeElapsed < minLoadTime) {
-        const timeoutId = setTimeout(() => {
-          setIsLoading(false)
-        }, minLoadTime - timeElapsed)
-        return () => clearTimeout(timeoutId)
-      } else {
+    const timeElapsed = Date.now() - loadStartTime.current
+    if (timeElapsed < minLoadTime) {
+      const timeoutId = setTimeout(() => {
         setIsLoading(false)
-      }
+      }, minLoadTime - timeElapsed)
+      return () => clearTimeout(timeoutId)
+    } else {
+      setIsLoading(false)
     }
   }, [pathname, searchParams]) // Dependencias: se dispara cuando la ruta se resuelve
 
@@ -68,8 +66,12 @@ export function GlobalLoaderProvider({
         // Ignorar clicks si tienen teclas especiales (abren nueva pestaña)
         if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return
 
-        // Omitir por completo la aparición del loader si se va al módulo de login
-        if (url.pathname.includes('/login')) return
+        // Omitir por completo la aparición del loader si se va al módulo de login o mensajes
+        if (
+          url.pathname.includes('/login') ||
+          url.pathname.includes('/mensajes')
+        )
+          return
 
         loadStartTime.current = Date.now()
         setIsLoading(true)
@@ -80,43 +82,22 @@ export function GlobalLoaderProvider({
     return () => document.removeEventListener('click', handleAnchorClick, true)
   }, [])
 
-  // Interceptar navegación programática y botones del navegador
+  // Interceptar botones del navegador (back/forward)
   useEffect(() => {
     const handlePopState = () => {
       loadStartTime.current = Date.now()
       setIsLoading(true)
     }
-
-    const originalPushState = window.history.pushState
-    window.history.pushState = function (...args) {
-      const href =
-        typeof args[2] === 'string'
-          ? args[2]
-          : args[2]
-            ? args[2].toString()
-            : ''
-
-      // Ignorar el loader si se está navegando hacia el módulo de login
-      const isGoingToLogin = href.includes('/login')
-
-      if (!isGoingToLogin) {
-        loadStartTime.current = Date.now()
-        setIsLoading(true)
-      }
-      return originalPushState.apply(window.history, args)
-    }
-
-    const originalReplaceState = window.history.replaceState
-    window.history.replaceState = function (...args) {
-      // Ignoramos replaceState si es solo un update de estado interno sin cambio real
-      return originalReplaceState.apply(window.history, args)
+    const handleCustomTrigger = () => {
+      loadStartTime.current = Date.now()
+      setIsLoading(true)
     }
 
     window.addEventListener('popstate', handlePopState)
+    window.addEventListener('trigger-global-loader', handleCustomTrigger)
     return () => {
       window.removeEventListener('popstate', handlePopState)
-      window.history.pushState = originalPushState
-      window.history.replaceState = originalReplaceState
+      window.removeEventListener('trigger-global-loader', handleCustomTrigger)
     }
   }, [])
 

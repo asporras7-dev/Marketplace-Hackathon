@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -97,6 +97,42 @@ export type Database = {
         }
         Relationships: []
       }
+      chats_directos: {
+        Row: {
+          created_at: string
+          id_chat: string
+          id_empresario: string
+          id_estudiante: string
+        }
+        Insert: {
+          created_at?: string
+          id_chat?: string
+          id_empresario: string
+          id_estudiante: string
+        }
+        Update: {
+          created_at?: string
+          id_chat?: string
+          id_empresario?: string
+          id_estudiante?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'chats_directos_id_empresario_fkey'
+            columns: ['id_empresario']
+            isOneToOne: false
+            referencedRelation: 'empresarios'
+            referencedColumns: ['id_empresario']
+          },
+          {
+            foreignKeyName: 'chats_directos_id_estudiante_fkey'
+            columns: ['id_estudiante']
+            isOneToOne: false
+            referencedRelation: 'estudiantes'
+            referencedColumns: ['id_estudiante']
+          },
+        ]
+      }
       comentarios_entregables: {
         Row: {
           comentado_at: string
@@ -136,6 +172,48 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'entregables'
             referencedColumns: ['id_entregable']
+          },
+        ]
+      }
+      mensajes_directos: {
+        Row: {
+          contenido: string
+          fecha_envio: string
+          id_chat: string
+          id_mensaje: string
+          id_remitente: string
+          leido: boolean
+        }
+        Insert: {
+          contenido: string
+          fecha_envio?: string
+          id_chat: string
+          id_mensaje?: string
+          id_remitente: string
+          leido?: boolean
+        }
+        Update: {
+          contenido?: string
+          fecha_envio?: string
+          id_chat?: string
+          id_mensaje?: string
+          id_remitente?: string
+          leido?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'mensajes_directos_id_chat_fkey'
+            columns: ['id_chat']
+            isOneToOne: false
+            referencedRelation: 'chats_directos'
+            referencedColumns: ['id_chat']
+          },
+          {
+            foreignKeyName: 'mensajes_directos_id_remitente_fkey'
+            columns: ['id_remitente']
+            isOneToOne: false
+            referencedRelation: 'usuarios'
+            referencedColumns: ['id_usuario']
           },
         ]
       }
@@ -494,6 +572,7 @@ export type Database = {
           reputacion: number | null
           titulo_fwd: Database['public']['Enums']['titulo_fwd_enum'] | null
           updated_at: string
+          url_curriculum: string | null
           url_portafolio: string | null
           verificado_at: string | null
           verificado_por: string | null
@@ -514,6 +593,7 @@ export type Database = {
           reputacion?: number | null
           titulo_fwd?: Database['public']['Enums']['titulo_fwd_enum'] | null
           updated_at?: string
+          url_curriculum?: string | null
           url_portafolio?: string | null
           verificado_at?: string | null
           verificado_por?: string | null
@@ -534,6 +614,7 @@ export type Database = {
           reputacion?: number | null
           titulo_fwd?: Database['public']['Enums']['titulo_fwd_enum'] | null
           updated_at?: string
+          url_curriculum?: string | null
           url_portafolio?: string | null
           verificado_at?: string | null
           verificado_por?: string | null

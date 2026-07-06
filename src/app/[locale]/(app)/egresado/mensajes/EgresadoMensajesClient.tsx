@@ -23,11 +23,17 @@ import {
   type Mensaje,
   type ConversacionItem,
 } from '@/lib/mensajes/actions'
+import {
+  getMensajesDirectos,
+  enviarMensajeDirecto,
+  marcarLeidosDirectos,
+} from '@/lib/mensajes/actions_directos'
 import { ReportButton } from '@/components/features/moderation/ReportButton'
 
 interface Props {
   conversaciones: ConversacionItem[]
   initialProjectId: string | null
+  initialDirectChatId?: string | null
   initialMensajes: { mensajes: Mensaje[]; puedeEnviar: boolean } | null
   currentUserId: string
 }
@@ -70,11 +76,26 @@ function formatHora(fechaEnvio: string): string {
 
 function ContactAvatar({
   name,
+  photo,
   size = 'sm',
 }: {
   name: string
+  photo?: string | null | undefined
   size?: 'sm' | 'md'
 }) {
+  if (photo) {
+    return (
+      <img
+        src={photo}
+        alt={name}
+        referrerPolicy="no-referrer"
+        className={cn(
+          'rounded-full object-cover shrink-0',
+          size === 'sm' ? 'w-8 h-8' : 'w-10 h-10',
+        )}
+      />
+    )
+  }
   return (
     <div
       className={cn(
@@ -88,9 +109,14 @@ function ContactAvatar({
   )
 }
 
-function EstadoBadge({ estado }: { estado: 'contratada' | 'finalizada' }) {
+function EstadoBadge({
+  estado,
+}: {
+  estado: 'contratada' | 'finalizada' | 'directo'
+}) {
   const t = useTranslations('EgresadoMensajes')
-  const isActivo = estado === 'contratada'
+  const isActivo = estado === 'contratada' || estado === 'directo'
+
   return (
     <span
       className={cn(
@@ -132,7 +158,11 @@ function ConversacionRow({
       )}
     >
       <div className="flex items-start gap-2.5">
-        <ContactAvatar name={conv.nombreContraparte} size="sm" />
+        <ContactAvatar
+          name={conv.nombreContraparte}
+          photo={conv.fotoContraparte}
+          size="sm"
+        />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-1.5 mb-0.5">
             <p className="text-sm font-semibold leading-snug line-clamp-1 flex-1">
@@ -146,7 +176,7 @@ function ConversacionRow({
           </div>
           <div className="flex items-center justify-between gap-1">
             <p className="text-xs text-muted-foreground truncate">
-              {conv.tituloProyecto}
+              {conv.tipo === 'directo' ? '' : conv.tituloProyecto}
             </p>
             <EstadoBadge estado={conv.estado} />
           </div>
@@ -188,6 +218,7 @@ function ChatBubble({
           )}
         >
           <p
+            suppressHydrationWarning
             className={cn(
               'text-[10px]',
               isMine ? 'text-primary-foreground/60' : 'text-muted-foreground',
@@ -239,23 +270,30 @@ function ChatEmptyState() {
 export function EgresadoMensajesClient({
   conversaciones,
   initialProjectId,
+  initialDirectChatId,
   initialMensajes,
   currentUserId,
 }: Props) {
   const t = useTranslations('EgresadoMensajes')
   const scrollEndRef = useRef<HTMLDivElement>(null)
 
+  const initialConversacionId = initialProjectId || initialDirectChatId
+
   const [convs, setConvs] = useState<ConversacionItem[]>(() =>
     conversaciones.map((c) =>
-      c.idProyecto === initialProjectId ? { ...c, noLeidos: 0 } : c,
+      c.idConversacion === initialConversacionId ? { ...c, noLeidos: 0 } : c,
     ),
   )
   const [selectedConv, setSelectedConv] = useState<ConversacionItem | null>(
     () =>
-      initialProjectId
-        ? (conversaciones.find((c) => c.idProyecto === initialProjectId) ??
-          null)
+      initialConversacionId
+        ? (conversaciones.find(
+            (c) => c.idConversacion === initialConversacionId,
+          ) ?? null)
         : null,
+  )
+  const [filter, setFilter] = useState<'todos' | 'proyectos' | 'directos'>(
+    'todos',
   )
   const [mensajes, setMensajes] = useState<Mensaje[]>(
     initialMensajes?.mensajes ?? [],
@@ -270,27 +308,54 @@ export function EgresadoMensajesClient({
   useEffect(() => {
     setConvs(
       conversaciones.map((c) =>
-        c.idProyecto === selectedConv?.idProyecto ? { ...c, noLeidos: 0 } : c,
+        c.idConversacion === selectedConv?.idConversacion
+          ? { ...c, noLeidos: 0 }
+          : c,
       ),
     )
   }, [conversaciones, selectedConv])
+
+  useEffect(() => {
+    if (
+      initialConversacionId &&
+      initialConversacionId !== selectedConv?.idConversacion
+    ) {
+      const newSelected = conversaciones.find(
+        (c) => c.idConversacion === initialConversacionId,
+      )
+      if (newSelected) {
+        setSelectedConv(newSelected)
+        setMensajes(initialMensajes?.mensajes ?? [])
+        setPuedeEnviar(initialMensajes?.puedeEnviar ?? false)
+      }
+    }
+  }, [
+    initialConversacionId,
+    conversaciones,
+    selectedConv?.idConversacion,
+    initialMensajes,
+  ])
 
   useEffect(() => {
     scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensajes])
 
   const handleSelectConv = async (conv: ConversacionItem) => {
-    if (selectedConv?.idProyecto === conv.idProyecto) return
+    if (selectedConv?.idConversacion === conv.idConversacion) return
     setSelectedConv(conv)
     setConvs((prev) =>
       prev.map((c) =>
-        c.idProyecto === conv.idProyecto ? { ...c, noLeidos: 0 } : c,
+        c.idConversacion === conv.idConversacion ? { ...c, noLeidos: 0 } : c,
       ),
     )
     setMensajes([])
     setIsLoadingMensajes(true)
 
-    const result = await getMensajesDeProyecto(conv.idProyecto)
+    const result =
+      conv.tipo === 'directo'
+        ? await getMensajesDirectos(conv.idChat!)
+        : await getMensajesDeProyecto(conv.idProyecto!)
+
     setIsLoadingMensajes(false)
 
     if (!result.ok) {
@@ -300,7 +365,11 @@ export function EgresadoMensajesClient({
 
     setMensajes(result.data.mensajes)
     setPuedeEnviar(result.data.puedeEnviar)
-    void marcarLeidos(conv.idProyecto)
+    if (conv.tipo === 'directo') {
+      void marcarLeidosDirectos(conv.idChat!)
+    } else {
+      void marcarLeidos(conv.idProyecto!)
+    }
   }
 
   const handleSend = async () => {
@@ -309,10 +378,17 @@ export function EgresadoMensajesClient({
     setInput('')
     setIsSending(true)
 
-    const result = await enviarMensaje({
-      idProyecto: selectedConv.idProyecto,
-      contenido,
-    })
+    const result =
+      selectedConv.tipo === 'directo'
+        ? await enviarMensajeDirecto({
+            idChat: selectedConv.idChat!,
+            contenido,
+          })
+        : await enviarMensaje({
+            idProyecto: selectedConv.idProyecto!,
+            contenido,
+          })
+
     setIsSending(false)
 
     if (!result.ok) {
@@ -350,29 +426,73 @@ export function EgresadoMensajesClient({
               </p>
             </div>
           ) : (
-            <div
-              className="flex border border-border/60 rounded-2xl overflow-hidden bg-card/20 shadow-sm mt-2"
-              style={{ height: 'calc(100vh - 220px)', minHeight: '560px' }}
-            >
+            <div className="flex border border-border/60 rounded-2xl overflow-hidden bg-card/20 shadow-sm mt-2 h-[calc(100vh-220px)] min-h-[560px]">
               {/* Panel izquierdo — lista de conversaciones */}
               <div className="w-[320px] shrink-0 border-r border-border/60 flex flex-col bg-gradient-to-b from-accent/5 to-card/20">
-                <div className="px-4 py-3.5 border-b border-border/40 bg-gradient-to-r from-accent/10 to-primary/5 flex items-center justify-between">
-                  <p className="text-xs font-bold uppercase tracking-wide text-accent">
-                    {t('proyectoLabel')}
-                  </p>
-                  <span className="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
-                    {conversaciones.length}
-                  </span>
+                <div className="px-4 py-3.5 border-b border-border/40 bg-gradient-to-r from-accent/10 to-primary/5 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold uppercase tracking-wide text-accent">
+                      {t('proyectoLabel')}
+                    </p>
+                    <span className="bg-primary/10 text-primary w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
+                      {conversaciones.length}
+                    </span>
+                  </div>
+                  <div className="flex bg-background/60 p-1 rounded-lg border border-border/40">
+                    <button
+                      onClick={() => setFilter('todos')}
+                      className={cn(
+                        'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-md transition-all',
+                        filter === 'todos'
+                          ? 'bg-background shadow-sm text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      Todos
+                    </button>
+                    <button
+                      onClick={() => setFilter('proyectos')}
+                      className={cn(
+                        'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-md transition-all',
+                        filter === 'proyectos'
+                          ? 'bg-background shadow-sm text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      Proyectos
+                    </button>
+                    <button
+                      onClick={() => setFilter('directos')}
+                      className={cn(
+                        'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-md transition-all',
+                        filter === 'directos'
+                          ? 'bg-background shadow-sm text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      Talento
+                    </button>
+                  </div>
                 </div>
                 <div className="flex-1 overflow-y-auto divide-y divide-border/40">
-                  {convs.map((conv) => (
-                    <ConversacionRow
-                      key={conv.idProyecto}
-                      conv={conv}
-                      isActive={selectedConv?.idProyecto === conv.idProyecto}
-                      onSelect={() => void handleSelectConv(conv)}
-                    />
-                  ))}
+                  {convs
+                    .filter((conv) => {
+                      if (filter === 'todos') return true
+                      if (filter === 'proyectos')
+                        return conv.tipo === 'proyecto'
+                      if (filter === 'directos') return conv.tipo === 'directo'
+                      return true
+                    })
+                    .map((conv) => (
+                      <ConversacionRow
+                        key={conv.idConversacion}
+                        conv={conv}
+                        isActive={
+                          selectedConv?.idConversacion === conv.idConversacion
+                        }
+                        onSelect={() => void handleSelectConv(conv)}
+                      />
+                    ))}
                 </div>
               </div>
 
@@ -395,6 +515,7 @@ export function EgresadoMensajesClient({
                   <div className="px-5 py-3.5 border-b border-border/40 flex items-center gap-3 bg-gradient-to-r from-accent/8 to-primary/5">
                     <ContactAvatar
                       name={selectedConv.nombreContraparte}
+                      photo={selectedConv.fotoContraparte}
                       size="md"
                     />
                     <div className="flex-1 min-w-0">
@@ -404,9 +525,11 @@ export function EgresadoMensajesClient({
                         </p>
                         <EstadoBadge estado={selectedConv.estado} />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                        {t('empresaLabel')}: {selectedConv.tituloProyecto}
-                      </p>
+                      {selectedConv.tipo !== 'directo' && (
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          {`${t('empresaLabel')}: ${selectedConv.tituloProyecto}`}
+                        </p>
+                      )}
                     </div>
                   </div>
 

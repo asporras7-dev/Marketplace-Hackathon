@@ -37,7 +37,6 @@ const TIPOS_CONOCIDOS: ReadonlySet<string> = new Set<TipoNotificacion>(
  */
 const TIPOS_I18N_ESTATICOS: ReadonlySet<string> = new Set<TipoNotificacion>([
   'cuenta_verificada',
-  'mensaje_nuevo',
 ])
 
 /**
@@ -58,6 +57,7 @@ const TIPOS_CON_PLANTILLA: ReadonlySet<string> = new Set<TipoNotificacion>([
   'entregable_aprobado',
   'entregable_rechazado',
   'entregable_enviado',
+  'mensaje_nuevo',
 ])
 
 /**
@@ -107,7 +107,12 @@ export function resolveNotificationContent(input: {
   }
   const hasParams = params != null && Object.keys(params).length > 0
   if (hasParams && TIPOS_CON_PLANTILLA.has(tipo)) {
-    return { kind: 'i18n', key: `content.${tipo}`, values: params }
+    // Para notificaciones antiguas que tenían params pero no 'remitente', proveemos un fallback
+    const safeValues = { ...params }
+    if (tipo === 'mensaje_nuevo' && !safeValues.remitente) {
+      safeValues.remitente = 'un usuario'
+    }
+    return { kind: 'i18n', key: `content.${tipo}`, values: safeValues }
   }
   return { kind: 'raw', text: mensaje }
 }

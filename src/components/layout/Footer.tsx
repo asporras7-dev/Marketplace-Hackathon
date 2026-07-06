@@ -13,7 +13,11 @@ export function Footer() {
           {/* Logo & Description */}
           <div className="md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center space-x-2.5 group">
-              <FwdLogo className="w-8 h-8 group-hover:scale-105 transition-transform duration-[var(--duration-fast)] ease-[var(--ease-out)]" />
+              <img
+                src="/images/logo-fwd-icon.png"
+                alt="Logo FWD"
+                className="w-8 h-8 group-hover:scale-105 transition-transform duration-[var(--duration-fast)] ease-[var(--ease-out)] object-contain"
+              />
               <span className="font-heading text-xl font-bold tracking-tight text-secondary-foreground">
                 Marketplace FWD<span className="text-highlight">.</span>
               </span>

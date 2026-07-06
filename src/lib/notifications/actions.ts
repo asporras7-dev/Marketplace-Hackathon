@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 import { ok, err, type Result } from '@/lib/result'
 import { logger } from '@/lib/logger'
@@ -130,6 +131,34 @@ export async function marcarTodasMisNotificacionesLeidas(): Promise<
 
   if (error) {
     logger.error('marcarTodasMisNotificacionesLeidas: fallo al actualizar', {
+      error: error.message,
+    })
+    return err(error.message)
+  }
+
+  return ok(undefined)
+}
+
+/**
+ * Elimina una notificación propia. El filtro por `id_usuario`
+ * garantiza que no se eliminen notificaciones de otros.
+ */
+export async function eliminarNotificacion(id: string): Promise<Result<void>> {
+  const parsed = idSchema.safeParse(id)
+  if (!parsed.success) return err('invalid_id')
+
+  const user = await getCurrentUser()
+  if (!user) return err('unauthenticated')
+
+  const admin = createSupabaseAdminClient()
+  const { error } = await admin
+    .from('notificaciones')
+    .delete()
+    .eq('id_notificacion', parsed.data)
+    .eq('id_usuario', user.id)
+
+  if (error) {
+    logger.error('eliminarNotificacion: fallo al eliminar', {
       error: error.message,
     })
     return err(error.message)

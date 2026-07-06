@@ -19,11 +19,15 @@ export interface Mensaje {
 }
 
 export interface ConversacionItem {
-  idProyecto: string
-  tituloProyecto: string
+  idConversacion?: string
+  tipo?: 'proyecto' | 'directo'
+  idProyecto?: string
+  idChat?: string
+  tituloProyecto?: string
   nombreContraparte: string
-  estado: 'contratada' | 'finalizada'
+  estado: 'contratada' | 'finalizada' | 'directo'
   noLeidos: number
+  fotoContraparte?: string | null
 }
 
 interface AccesoMensajes {
@@ -31,6 +35,7 @@ interface AccesoMensajes {
   estaVerificado: boolean
   idUsuarioContraparte: string
   urlContraparteBase: string
+  nombreRemitente: string
 }
 
 const EnviarMensajeSchema = z.object({
@@ -52,7 +57,7 @@ async function resolveAccesoMensajes(
   // Camino 1: el usuario es empresario dueño del proyecto
   const { data: empresario, error: empError } = await admin
     .from('empresarios')
-    .select('id_empresario, estado_verificacion')
+    .select('id_empresario, estado_verificacion, nombre_empresa')
     .eq('id_usuario', idUsuario)
     .maybeSingle()
 
@@ -115,13 +120,15 @@ async function resolveAccesoMensajes(
       estaVerificado: empresario.estado_verificacion === 'verificado',
       idUsuarioContraparte: estudianteData.id_usuario,
       urlContraparteBase: '/egresado/mensajes',
+      nombreRemitente: empresario.nombre_empresa ?? 'Empresa',
     })
   }
 
-  // Camino 2: el usuario es egresado con participacion en el proyecto
   const { data: estudianteProfile, error: estProfileError } = await admin
     .from('estudiantes')
-    .select('id_estudiante, estado_verificacion')
+    .select(
+      'id_estudiante, estado_verificacion, usuarios!estudiantes_id_usuario_fkey(nombre, apellido_1)',
+    )
     .eq('id_usuario', idUsuario)
     .maybeSingle()
 
@@ -181,11 +188,16 @@ async function resolveAccesoMensajes(
     return err('unexpected')
   }
 
+  const nombreEstudiante = estudianteProfile.usuarios
+    ? `${(estudianteProfile.usuarios as unknown as { nombre: string }).nombre || ''} ${(estudianteProfile.usuarios as unknown as { apellido_1: string }).apellido_1 || ''}`.trim()
+    : ''
+
   return ok({
     puedeEnviar: part.estado === 'contratada',
     estaVerificado: estudianteProfile.estado_verificacion === 'verificado',
     idUsuarioContraparte: empData.id_usuario,
     urlContraparteBase: '/empresario/mensajes',
+    nombreRemitente: nombreEstudiante || 'un estudiante',
   })
 }
 
@@ -263,13 +275,16 @@ export async function enviarMensaje(
     return err('envio_fallido')
   }
 
-  // Best-effort: no aborta el envío si la notificación falla (RF-47)
-  void crearNotificacion({
+  // Best-effort: no aborta el envío si la notificación falla, pero debemos esperarla (await) para que serverless no la mate
+  await crearNotificacion({
     idUsuario: acceso.data.idUsuarioContraparte,
     tipoEvento: 'mensaje_nuevo',
-    mensaje: 'Tienes un mensaje nuevo',
+    mensaje: `Tienes un mensaje nuevo de ${acceso.data.nombreRemitente}`,
     urlDestino: `${acceso.data.urlContraparteBase}?proyecto=${parsed.data.idProyecto}`,
-    params: { idProyecto: parsed.data.idProyecto },
+    params: {
+      idProyecto: parsed.data.idProyecto,
+      remitente: acceso.data.nombreRemitente,
+    },
   })
 
   return ok({
@@ -379,7 +394,7 @@ export async function getConversacionesEmpresario(): Promise<
 
   const { data: usuarios, error: usrError } = await admin
     .from('usuarios')
-    .select('id_usuario, nombre, apellido_1, apellido_2')
+    .select('id_usuario, nombre, apellido_1, apellido_2, foto_perfil')
     .in('id_usuario', usuarioIds)
 
   if (usrError) {
@@ -399,9 +414,12 @@ export async function getConversacionesEmpresario(): Promise<
   const usuarioMap = new Map(
     (usuarios ?? []).map((u) => [
       u.id_usuario,
-      u.apellido_2
-        ? `${u.nombre} ${u.apellido_1} ${u.apellido_2}`
-        : `${u.nombre} ${u.apellido_1}`,
+      {
+        nombre: u.apellido_2
+          ? `${u.nombre} ${u.apellido_1} ${u.apellido_2}`
+          : `${u.nombre} ${u.apellido_1}`,
+        foto: u.foto_perfil,
+      },
     ]),
   )
 
@@ -431,16 +449,19 @@ export async function getConversacionesEmpresario(): Promise<
     if (part.estado !== 'contratada' && part.estado !== 'finalizada') return []
     const titulo = proyectoMap.get(part.id_proyecto)
     const idUsuarioEst = estudianteMap.get(part.id_estudiante)
-    const nombreContraparte = idUsuarioEst
+    const estudianteData = idUsuarioEst
       ? usuarioMap.get(idUsuarioEst)
       : undefined
-    if (!titulo || !nombreContraparte) return []
+    if (!titulo || !estudianteData) return []
     const noLeidos = unreadMap.get(part.id_proyecto) ?? 0
     return [
       {
+        idConversacion: part.id_proyecto,
+        tipo: 'proyecto',
         idProyecto: part.id_proyecto,
         tituloProyecto: titulo,
-        nombreContraparte,
+        nombreContraparte: estudianteData.nombre,
+        fotoContraparte: estudianteData.foto,
         estado: part.estado,
         noLeidos,
       },
@@ -520,12 +541,15 @@ export async function getConversacionesEgresado(): Promise<
     (e) => e.nombre_empresa === null,
   )
 
-  let usuarioNombreMap = new Map<string, string>()
+  let usuarioNombreMap = new Map<
+    string,
+    { nombre: string; foto: string | null }
+  >()
   if (sinNombreEmpresa.length > 0) {
     const usuarioIds = sinNombreEmpresa.map((e) => e.id_usuario)
     const { data: usuarios, error: usrError } = await admin
       .from('usuarios')
-      .select('id_usuario, nombre')
+      .select('id_usuario, nombre, foto_perfil')
       .in('id_usuario', usuarioIds)
 
     if (usrError) {
@@ -538,20 +562,28 @@ export async function getConversacionesEgresado(): Promise<
       return err('unexpected')
     }
     usuarioNombreMap = new Map(
-      (usuarios ?? []).map((u) => [u.id_usuario, u.nombre]),
+      (usuarios ?? []).map((u) => [
+        u.id_usuario,
+        { nombre: u.nombre, foto: u.foto_perfil },
+      ]),
     )
   }
 
-  const proyectoMap = new Map(
+  const proyectoMap = new Map<string, { titulo: string; idEmpresario: string }>(
     (proyectos ?? []).map((p) => [
       p.id_proyecto,
       { titulo: p.titulo, idEmpresario: p.id_empresario },
     ]),
   )
+
   const empresarioMap = new Map(
     (empresarios ?? []).map((e) => [
       e.id_empresario,
-      e.nombre_empresa ?? usuarioNombreMap.get(e.id_usuario) ?? '',
+      {
+        nombre:
+          e.nombre_empresa ?? usuarioNombreMap.get(e.id_usuario)?.nombre ?? '',
+        foto: usuarioNombreMap.get(e.id_usuario)?.foto ?? null,
+      },
     ]),
   )
 
@@ -580,16 +612,19 @@ export async function getConversacionesEgresado(): Promise<
   const conversaciones: ConversacionItem[] = participaciones.flatMap((part) => {
     if (part.estado !== 'contratada' && part.estado !== 'finalizada') return []
     const proyectoData = proyectoMap.get(part.id_proyecto)
-    const nombreContraparte = proyectoData
+    const empresarioData = proyectoData
       ? empresarioMap.get(proyectoData.idEmpresario)
       : undefined
-    if (!proyectoData || !nombreContraparte) return []
+    if (!proyectoData || !empresarioData) return []
     const noLeidos = unreadMap.get(part.id_proyecto) ?? 0
     return [
       {
+        idConversacion: part.id_proyecto,
+        tipo: 'proyecto',
         idProyecto: part.id_proyecto,
         tituloProyecto: proyectoData.titulo,
-        nombreContraparte,
+        nombreContraparte: empresarioData.nombre,
+        fotoContraparte: empresarioData.foto,
         estado: part.estado,
         noLeidos,
       },
