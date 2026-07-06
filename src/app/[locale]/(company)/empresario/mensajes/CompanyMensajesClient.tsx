@@ -587,9 +587,11 @@ export function CompanyMensajesClient({
                 <div className="flex-1 overflow-y-auto divide-y divide-border/40 bg-surface">
                   {convs.map((conv) => (
                     <ConversacionRow
-                      key={conv.idProyecto}
+                      key={conv.idConversacion}
                       conv={conv}
-                      isActive={selectedConv?.idProyecto === conv.idProyecto}
+                      isActive={
+                        selectedConv?.idConversacion === conv.idConversacion
+                      }
                       onSelect={() => void handleSelectConv(conv)}
                     />
                   ))}
