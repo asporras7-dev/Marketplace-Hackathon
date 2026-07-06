@@ -26,11 +26,17 @@ import {
   type Mensaje,
   type ConversacionItem,
 } from '@/lib/mensajes/actions'
+import {
+  getMensajesDirectos,
+  enviarMensajeDirecto,
+  marcarLeidosDirectos,
+} from '@/lib/mensajes/actions_directos'
 import { ReportButton } from '@/components/features/moderation/ReportButton'
 
 interface Props {
   conversaciones: ConversacionItem[]
   initialProjectId: string | null
+  initialDirectChatId?: string | null
   initialMensajes: { mensajes: Mensaje[]; puedeEnviar: boolean } | null
   currentUserId: string
 }
@@ -73,11 +79,26 @@ function formatHora(fechaEnvio: string): string {
 
 function ContactAvatar({
   name,
+  photo,
   size = 'sm',
 }: {
   name: string
+  photo?: string | null | undefined
   size?: 'sm' | 'md'
 }) {
+  if (photo) {
+    return (
+      <img
+        src={photo}
+        alt={name}
+        referrerPolicy="no-referrer"
+        className={cn(
+          'rounded-full object-cover shrink-0',
+          size === 'sm' ? 'w-8 h-8' : 'w-10 h-10',
+        )}
+      />
+    )
+  }
   return (
     <div
       className={cn(
@@ -91,9 +112,14 @@ function ContactAvatar({
   )
 }
 
-function EstadoBadge({ estado }: { estado: 'contratada' | 'finalizada' }) {
+function EstadoBadge({
+  estado,
+}: {
+  estado: 'contratada' | 'finalizada' | 'directo'
+}) {
   const t = useTranslations('CompanyMensajes')
-  const isActivo = estado === 'contratada'
+  const isActivo = estado === 'contratada' || estado === 'directo'
+
   return (
     <span
       className={cn(
@@ -207,6 +233,7 @@ function ChatBubble({
           )}
         >
           <p
+            suppressHydrationWarning
             className={cn(
               'text-[10px]',
               isMine ? 'text-primary-foreground/60' : 'text-muted-foreground',
@@ -322,23 +349,30 @@ function ChatEmptyState() {
 export function CompanyMensajesClient({
   conversaciones,
   initialProjectId,
+  initialDirectChatId,
   initialMensajes,
   currentUserId,
 }: Props) {
   const t = useTranslations('CompanyMensajes')
   const scrollEndRef = useRef<HTMLDivElement>(null)
 
+  const initialConversacionId = initialProjectId || initialDirectChatId
+
   const [convs, setConvs] = useState<ConversacionItem[]>(() =>
     conversaciones.map((c) =>
-      c.idProyecto === initialProjectId ? { ...c, noLeidos: 0 } : c,
+      c.idConversacion === initialConversacionId ? { ...c, noLeidos: 0 } : c,
     ),
   )
   const [selectedConv, setSelectedConv] = useState<ConversacionItem | null>(
     () =>
-      initialProjectId
-        ? (conversaciones.find((c) => c.idProyecto === initialProjectId) ??
-          null)
+      initialConversacionId
+        ? (conversaciones.find(
+            (c) => c.idConversacion === initialConversacionId,
+          ) ?? null)
         : null,
+  )
+  const [filter, setFilter] = useState<'todos' | 'proyectos' | 'directos'>(
+    'todos',
   )
   const [mensajes, setMensajes] = useState<Mensaje[]>(
     initialMensajes?.mensajes ?? [],
@@ -353,27 +387,54 @@ export function CompanyMensajesClient({
   useEffect(() => {
     setConvs(
       conversaciones.map((c) =>
-        c.idProyecto === selectedConv?.idProyecto ? { ...c, noLeidos: 0 } : c,
+        c.idConversacion === selectedConv?.idConversacion
+          ? { ...c, noLeidos: 0 }
+          : c,
       ),
     )
   }, [conversaciones, selectedConv])
+
+  useEffect(() => {
+    if (
+      initialConversacionId &&
+      initialConversacionId !== selectedConv?.idConversacion
+    ) {
+      const newSelected = conversaciones.find(
+        (c) => c.idConversacion === initialConversacionId,
+      )
+      if (newSelected) {
+        setSelectedConv(newSelected)
+        setMensajes(initialMensajes?.mensajes ?? [])
+        setPuedeEnviar(initialMensajes?.puedeEnviar ?? false)
+      }
+    }
+  }, [
+    initialConversacionId,
+    conversaciones,
+    selectedConv?.idConversacion,
+    initialMensajes,
+  ])
 
   useEffect(() => {
     scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensajes])
 
   const handleSelectConv = async (conv: ConversacionItem) => {
-    if (selectedConv?.idProyecto === conv.idProyecto) return
+    if (selectedConv?.idConversacion === conv.idConversacion) return
     setSelectedConv(conv)
     setConvs((prev) =>
       prev.map((c) =>
-        c.idProyecto === conv.idProyecto ? { ...c, noLeidos: 0 } : c,
+        c.idConversacion === conv.idConversacion ? { ...c, noLeidos: 0 } : c,
       ),
     )
     setMensajes([])
     setIsLoadingMensajes(true)
 
-    const result = await getMensajesDeProyecto(conv.idProyecto)
+    const result =
+      conv.tipo === 'directo'
+        ? await getMensajesDirectos(conv.idChat!)
+        : await getMensajesDeProyecto(conv.idProyecto!)
+
     setIsLoadingMensajes(false)
 
     if (!result.ok) {
@@ -383,7 +444,18 @@ export function CompanyMensajesClient({
 
     setMensajes(result.data.mensajes)
     setPuedeEnviar(result.data.puedeEnviar)
-    void marcarLeidos(conv.idProyecto)
+    if (conv.tipo === 'directo' && result.data.mensajes.length === 0) {
+      // Do not pre-fill automatically anymore
+      setInput('')
+    } else {
+      setInput('')
+    }
+
+    if (conv.tipo === 'directo') {
+      void marcarLeidosDirectos(conv.idChat!)
+    } else {
+      void marcarLeidos(conv.idProyecto!)
+    }
   }
 
   const handleSend = async () => {
@@ -392,10 +464,17 @@ export function CompanyMensajesClient({
     setInput('')
     setIsSending(true)
 
-    const result = await enviarMensaje({
-      idProyecto: selectedConv.idProyecto,
-      contenido,
-    })
+    const result =
+      selectedConv.tipo === 'directo'
+        ? await enviarMensajeDirecto({
+            idChat: selectedConv.idChat!,
+            contenido,
+          })
+        : await enviarMensaje({
+            idProyecto: selectedConv.idProyecto!,
+            contenido,
+          })
+
     setIsSending(false)
 
     if (!result.ok) {
@@ -469,6 +548,41 @@ export function CompanyMensajesClient({
                   <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
                     Proyectos Recientes
                   </p>
+                  <div className="flex bg-background/60 p-1 rounded-lg border border-border/40">
+                    <button
+                      onClick={() => setFilter('todos')}
+                      className={cn(
+                        'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-md transition-all',
+                        filter === 'todos'
+                          ? 'bg-background shadow-sm text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      Todos
+                    </button>
+                    <button
+                      onClick={() => setFilter('proyectos')}
+                      className={cn(
+                        'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-md transition-all',
+                        filter === 'proyectos'
+                          ? 'bg-background shadow-sm text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      Proyectos
+                    </button>
+                    <button
+                      onClick={() => setFilter('directos')}
+                      className={cn(
+                        'flex-1 text-[11px] font-semibold py-1.5 px-2 rounded-md transition-all',
+                        filter === 'directos'
+                          ? 'bg-background shadow-sm text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      Talento
+                    </button>
+                  </div>
                 </div>
                 <div className="flex-1 overflow-y-auto divide-y divide-border/40 bg-surface">
                   {convs.map((conv) => (

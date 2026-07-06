@@ -476,7 +476,15 @@
     "replySuccess": "Respuesta enviada con éxito",
     "replyError": "No se pudo enviar la respuesta",
     "alreadyReplied": "Tu respuesta",
-    "viewCompanyProfile": "Ver perfil de la empresa"
+    "viewCompanyProfile": "Ver perfil de la empresa",
+    "portfolioCvTitle": "Enlace a Currículum",
+    "portfolioCvDesc": "Puedes agregar un link externo a tu CV (Drive, LinkedIn, web personal, etc).",
+    "portfolioCvLabel": "URL Currículum",
+    "portfolioCvPlaceholder": "https://...",
+    "portfolioCvSave": "Guardar Currículum",
+    "portfolioCvSaved": "Currículum guardado correctamente",
+    "portfolioCvError": "Error al guardar currículum",
+    "portfolioCvView": "Ver Currículum"
   },
   "Validation": {
     "emailInvalid": "Debe ingresar un correo electrónico válido.",
@@ -1438,7 +1446,7 @@
       "entregable_rechazado": "El empresario solicitó cambios en tu entregable de \"{titulo}\".",
       "entregable_enviado": "El egresado envió un entregable para tu proyecto \"{titulo}\".",
       "participacion_en_revision": "La empresa está revisando tu propuesta para \"{titulo}\".",
-      "mensaje_nuevo": "Tienes un mensaje nuevo.",
+      "mensaje_nuevo": "Tienes un mensaje nuevo de {remitente}.",
       "cuenta_verificada": "Tu cuenta ha sido activada. Ya puedes explorar proyectos y postularte."
     }
   },
@@ -1486,6 +1494,7 @@
     "website": "Sitio Web",
     "menuPanel": "Panel",
     "menuPostulaciones": "Postulaciones",
+    "menuTalento": "Talento",
     "menuContrataciones": "Contrataciones",
     "menuMensajes": "Mensajes",
     "menuPerfil": "Perfil",

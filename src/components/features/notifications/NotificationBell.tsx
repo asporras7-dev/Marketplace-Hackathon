@@ -11,6 +11,7 @@ import {
   getMisNotificacionesNoLeidasCount,
   marcarNotificacionLeida,
   marcarTodasMisNotificacionesLeidas,
+  eliminarNotificacion,
   type NotificacionItem,
 } from '@/lib/notifications/actions'
 import {
@@ -19,8 +20,10 @@ import {
   resolveNotificationContent,
   type NotificationTone,
 } from '@/lib/notifications/format'
+import { useAuth } from '@/lib/auth/AuthContext'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
-const POLL_INTERVAL_MS = 60_000
+const POLL_INTERVAL_MS = 5_000
 const UNREAD_BADGE_CAP = 99
 
 const TONE_CLASSES: Record<NotificationTone, string> = {
@@ -51,8 +54,10 @@ export function NotificationBell({
   const panelRef = useRef<HTMLDivElement>(null)
   const bellRef = useRef<HTMLButtonElement>(null)
 
-  const fetchNotifications = useCallback(async () => {
-    setIsLoading(true)
+  const { currentUser } = useAuth()
+
+  const fetchNotifications = useCallback(async (silent: boolean = false) => {
+    if (!silent) setIsLoading(true)
     try {
       const [listResult, countResult] = await Promise.all([
         getMisNotificaciones(),
@@ -61,15 +66,41 @@ export function NotificationBell({
       if (listResult.ok) setNotifications(listResult.data)
       if (countResult.ok) setUnreadCount(countResult.data)
     } finally {
-      setIsLoading(false)
+      if (!silent) setIsLoading(false)
     }
   }, [])
 
   useEffect(() => {
     void fetchNotifications()
-    const timer = setInterval(() => void fetchNotifications(), POLL_INTERVAL_MS)
-    return () => clearInterval(timer)
   }, [fetchNotifications])
+
+  // Escuchar notificaciones en tiempo real
+  useEffect(() => {
+    if (!currentUser?.id) return
+
+    const supabase = createSupabaseBrowserClient()
+    const channelName = `realtime_notifs_${currentUser.id}_${Math.random().toString(36).substring(7)}`
+
+    const channel = supabase
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notificaciones',
+          filter: `id_usuario=eq.${currentUser.id}`,
+        },
+        () => {
+          void fetchNotifications(true)
+        },
+      )
+      .subscribe()
+
+    return () => {
+      void supabase.removeChannel(channel)
+    }
+  }, [currentUser?.id, fetchNotifications])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -97,6 +128,20 @@ export function NotificationBell({
     })
   }
 
+  const handleDeleteOne = (id: string, isUnread: boolean) => {
+    // Optimistic update
+    setNotifications((prev) => prev.filter((n) => n.id_notificacion !== id))
+    if (isUnread) setUnreadCount((prev) => Math.max(0, prev - 1))
+
+    startTransition(async () => {
+      const result = await eliminarNotificacion(id)
+      if (!result.ok) {
+        // Revert on failure (optional, but good practice)
+        void fetchNotifications()
+      }
+    })
+  }
+
   const handleMarkAll = () => {
     startTransition(async () => {
       const result = await marcarTodasMisNotificacionesLeidas()
@@ -107,8 +152,9 @@ export function NotificationBell({
   }
 
   const handleGoToAction = (notification: NotificacionItem) => {
-    if (!notification.leida) handleMarkOne(notification.id_notificacion)
+    handleDeleteOne(notification.id_notificacion, !notification.leida)
     if (notification.url_destino) {
+      window.dispatchEvent(new Event('trigger-global-loader'))
       router.push(
         stripLocalePrefix(notification.url_destino) as Parameters<
           typeof router.push
@@ -121,7 +167,7 @@ export function NotificationBell({
   const toggleOpen = () => {
     const next = !isOpen
     setIsOpen(next)
-    if (next) void fetchNotifications()
+    if (next) void fetchNotifications(true)
   }
 
   const badgeText =
@@ -232,8 +278,10 @@ export function NotificationBell({
                 return (
                   <div
                     key={n.id_notificacion}
+                    onClick={() => handleGoToAction(n)}
                     className={cn(
-                      'flex items-start gap-3 px-4 py-3',
+                      'flex items-start gap-3 px-4 py-3 transition-colors',
+                      'cursor-pointer hover:bg-muted/50',
                       n.leida ? 'bg-surface' : 'bg-primary/5',
                     )}
                   >
