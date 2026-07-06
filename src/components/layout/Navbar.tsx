@@ -17,6 +17,7 @@ import {
 import Image from 'next/image'
 import { FwdLogo } from '@/components/features/brand/FwdLogo'
 import { NotificationBell } from '@/components/features/notifications/NotificationBell'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import {
   Menu,
   X,
@@ -308,6 +309,9 @@ export function Navbar({
                 </div>
               </div>
             )}
+
+            {/* Theme Toggle (solo aparece si está envuelto en su Provider local, ej. panel empresario) */}
+            <ThemeToggle />
 
             {/* Notification Bell */}
             <NotificationBell isHero={isHero} className="shrink-0" />

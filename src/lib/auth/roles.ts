@@ -11,7 +11,7 @@ import type { UserRole } from '@/types'
  */
 export const ROLE_HOME: Record<UserRole, string> = {
   egresado: '',
-  empresario: '/empresario',
+  empresario: '',
   administrador: '/admin',
 }
 
