@@ -79,7 +79,7 @@ export function MisPostulacionesList({
       <div className="mt-8 text-center">
         <Link
           href="/egresado/projects"
-          className="text-sm font-semibold text-primary hover:underline"
+          className="text-sm font-semibold text-secondary hover:underline"
         >
           {tEgresado('exploreMoreProjects')}
         </Link>

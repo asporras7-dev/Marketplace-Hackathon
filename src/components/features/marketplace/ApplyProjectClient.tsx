@@ -192,7 +192,7 @@ export function ApplyProjectClient({
         <div className="flex justify-start mb-6">
           <Link
             href={`/egresado/projects/${projectId}`}
-            className="inline-flex items-center text-xs font-semibold text-primary hover:underline gap-1.5 transition-colors"
+            className="inline-flex items-center text-xs font-semibold text-secondary hover:underline gap-1.5 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             {tEgresado('backToProjectDetail')}
@@ -214,12 +214,12 @@ export function ApplyProjectClient({
         </div>
 
         {/* AI Assistant Help Card */}
-        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 flex gap-4 text-left mb-6">
-          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shrink-0 self-start">
+        <div className="bg-secondary/5 border border-secondary/20 rounded-2xl p-5 flex gap-4 text-left mb-6">
+          <div className="p-2.5 bg-secondary/10 rounded-xl text-secondary shrink-0 self-start">
             <Lightbulb className="w-5 h-5" />
           </div>
           <div className="space-y-1">
-            <h4 className="text-xs font-extrabold font-heading uppercase tracking-wider text-primary">
+            <h4 className="text-xs font-extrabold font-heading uppercase tracking-wider text-secondary">
               {tEgresado('aiModuleTitle')}
             </h4>
             <p className="text-xs text-ink-muted leading-relaxed font-sans">
@@ -237,13 +237,13 @@ export function ApplyProjectClient({
             >
               {/* LOGÍSTICA DEL PROYECTO */}
               <div className="space-y-5">
-                <h3 className="text-xs font-extrabold uppercase tracking-widest text-ink-muted border-b border-border/40 pb-2">
+                <h3 className="text-xs font-extrabold uppercase tracking-widest text-magenta border-b border-border/40 pb-2">
                   {tEgresado('projectLogistics')}
                 </h3>
 
                 {/* TÍTULO DEL PROYECTO */}
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
+                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-primary">
                     <Label htmlFor="tituloProyectoMock">
                       {tEgresado('projectTitleLabel')}
                     </Label>
@@ -267,7 +267,7 @@ export function ApplyProjectClient({
                 <div className="space-y-2">
                   <Label
                     htmlFor="modalidadTrabajoMock"
-                    className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
+                    className="text-[10px] font-extrabold uppercase tracking-wider text-accent"
                   >
                     {tEgresado('workMode')}
                   </Label>
@@ -289,7 +289,7 @@ export function ApplyProjectClient({
                   <div className="space-y-2">
                     <Label
                       htmlFor="monedaMock"
-                      className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
+                      className="text-[10px] font-extrabold uppercase tracking-wider text-accent"
                     >
                       {tEgresado('currency')}
                     </Label>
@@ -308,7 +308,7 @@ export function ApplyProjectClient({
                   <div className="space-y-2">
                     <Label
                       htmlFor="presupuestoMinMock"
-                      className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
+                      className="text-[10px] font-extrabold uppercase tracking-wider text-accent"
                     >
                       {tEgresado('minBudget')}
                     </Label>
@@ -324,7 +324,7 @@ export function ApplyProjectClient({
                   <div className="space-y-2">
                     <Label
                       htmlFor="presupuestoMaxMock"
-                      className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
+                      className="text-[10px] font-extrabold uppercase tracking-wider text-accent"
                     >
                       {tEgresado('maxBudget')}
                     </Label>
@@ -343,7 +343,7 @@ export function ApplyProjectClient({
                 <div className="space-y-2">
                   <Label
                     htmlFor="plazoMock"
-                    className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
+                    className="text-[10px] font-extrabold uppercase tracking-wider text-accent"
                   >
                     {tEgresado('deadlineOffers')}
                   </Label>
@@ -358,7 +358,7 @@ export function ApplyProjectClient({
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted pointer-events-none" />
                   </div>
-                  <p className="text-[9px] font-extrabold text-orange-600 tracking-wider uppercase pt-0.5">
+                  <p className="text-[9px] font-extrabold text-secondary tracking-wider uppercase pt-0.5">
                     {tEgresado('suggestedRangeDays')}
                   </p>
                 </div>
@@ -366,13 +366,13 @@ export function ApplyProjectClient({
 
               {/* PROPUESTA TÉCNICA */}
               <div className="space-y-6 pt-4">
-                <h3 className="text-xs font-extrabold uppercase tracking-widest text-ink-muted border-b border-border/40 pb-2">
+                <h3 className="text-xs font-extrabold uppercase tracking-widest text-warning border-b border-border/40 pb-2">
                   {tEgresado('technicalProposal')}
                 </h3>
 
                 {/* PLANTEAMIENTO DE SOLUCIÓN */}
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
+                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-primary">
                     <Label htmlFor="planteamientoSolucion">
                       {tEgresado('solutionApproach')}
                     </Label>
@@ -400,7 +400,7 @@ export function ApplyProjectClient({
                 <div className="space-y-2">
                   <Label
                     htmlFor="prototipoUrl"
-                    className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
+                    className="text-[10px] font-extrabold uppercase tracking-wider text-accent"
                   >
                     {tEgresado('prototypeUrlLabel')}
                   </Label>
@@ -420,7 +420,7 @@ export function ApplyProjectClient({
 
                 {/* CARTA DE PRESENTACIÓN */}
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
+                  <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-primary">
                     <Label htmlFor="coverLetter">
                       {tEgresado('coverLetter')}
                     </Label>
@@ -444,7 +444,7 @@ export function ApplyProjectClient({
 
                 {/* DOCUMENTACIÓN TÉCNICA (PDF O ZIP) */}
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
+                  <Label className="text-[10px] font-extrabold uppercase tracking-wider text-accent">
                     {tEgresado('technicalDocUrlLabel')}
                   </Label>
                   <label
@@ -480,14 +480,14 @@ export function ApplyProjectClient({
                 {/* ENLACES EXTRA (Opcionales) */}
                 <div className="space-y-4 pt-2">
                   <div className="flex items-center justify-between">
-                    <Label className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
+                    <Label className="text-[10px] font-extrabold uppercase tracking-wider text-accent">
                       {tEgresado('prototypeExtraLabel')}
                     </Label>
                     {fields.length < MAX_ENLACES_EXTRA && (
                       <button
                         type="button"
                         onClick={() => append({ value: '' })}
-                        className="text-[10px] font-extrabold uppercase text-primary hover:underline flex items-center gap-1"
+                        className="text-[10px] font-extrabold uppercase text-warning hover:underline flex items-center gap-1"
                       >
                         <Plus className="w-3 h-3" />
                         {tEgresado('addLink')}
@@ -542,7 +542,7 @@ export function ApplyProjectClient({
                 <Button
                   type="submit"
                   disabled={isSubmitting || isPending}
-                  className="bg-primary hover:bg-primary/90 text-white rounded-full px-6 py-2.5 text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-md"
+                  className="bg-magenta hover:bg-magenta/90 text-white font-semibold h-11 px-6 flex items-center justify-center gap-2 rounded-md transition-colors"
                 >
                   {tEgresado('applySubmitBtn')}
                   <Play className="w-3 h-3 fill-white" />

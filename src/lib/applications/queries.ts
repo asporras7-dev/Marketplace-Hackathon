@@ -1,6 +1,7 @@
 'use server'
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 import { ok, err, type Result } from '@/lib/result'
 import { logger } from '@/lib/logger'
@@ -96,13 +97,17 @@ export async function getMisPostulaciones(): Promise<
 
   if (!estudiante) return ok([])
 
-  const { data, error } = await supabase
+  const supabaseAdmin = createSupabaseAdminClient()
+  const { data, error } = await supabaseAdmin
     .from('participaciones')
     .select(
       `
       id_participacion,
       id_proyecto,
       carta_postulacion,
+      planteamiento_solucion,
+      prototipo_enlaces,
+      documentacion_tecnica,
       estado,
       fecha_postulacion,
       proyectos (
@@ -138,6 +143,9 @@ export async function getMisPostulaciones(): Promise<
       projectTitle: p.proyectos?.titulo ?? 'Proyecto Desconocido',
       companyName,
       carta_postulacion: p.carta_postulacion,
+      planteamiento_solucion: p.planteamiento_solucion,
+      prototipo_enlaces: p.prototipo_enlaces,
+      documentacion_tecnica: p.documentacion_tecnica,
       estado: p.estado,
       estadoEfectivo: proyectoEstado
         ? computeEstadoParticipacionEfectivo(p.estado, proyectoEstado)

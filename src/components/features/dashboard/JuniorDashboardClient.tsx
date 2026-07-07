@@ -39,14 +39,14 @@ export function JuniorDashboardClient({
       value: stats.total,
       icon: FileText,
       description: tEgresado('statAppliedDesc'),
-      colorClass: 'text-primary bg-primary/10',
+      colorClass: 'text-secondary bg-secondary/10',
     },
     {
       title: tEgresado('activeApplications'),
       value: stats.activas,
       icon: Send,
       description: tEgresado('statActiveDesc'),
-      colorClass: 'text-accent bg-accent/10',
+      colorClass: 'text-warning bg-warning/10',
     },
     {
       title: tEgresado('acceptedProjects'),

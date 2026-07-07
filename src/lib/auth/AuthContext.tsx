@@ -23,6 +23,7 @@ interface AuthContextType {
   avatarUrl: string | null
   setUserRole: (role: UserRole) => void
   resetAuth: () => void
+  updateAvatarUrl: (url: string | null) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -131,6 +132,7 @@ export function AuthProvider({
         avatarUrl,
         setUserRole,
         resetAuth,
+        updateAvatarUrl: setAvatarUrl,
       }}
     >
       {children}

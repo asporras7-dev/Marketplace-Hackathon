@@ -279,7 +279,7 @@ export function ContratacionesList({
                         asChild
                         size="sm"
                         variant="default"
-                        className="h-8 text-xs font-semibold gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground ml-auto cursor-pointer"
+                        className="h-8 text-xs font-semibold gap-1.5 bg-warning hover:bg-warning/90 text-white ml-auto cursor-pointer"
                       >
                         <Link
                           href={`/empresario/proyecto/${item.proyecto.id}/entregables`}

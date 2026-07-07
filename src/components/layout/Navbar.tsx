@@ -345,55 +345,44 @@ export function Navbar({
               </button>
             </div>
 
-            {/* Logout solo para egresado; empresario y admin lo tienen en su sidebar */}
-            {role === 'egresado' ? (
-              <button
-                type="button"
-                onClick={() => setLogoutOpen(true)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] shrink-0 ${
-                  isHero
-                    ? 'border-white/25 bg-white/15 text-white hover:bg-white/25'
-                    : 'border-border/60 bg-muted/30 text-muted-foreground hover:border-destructive/40 hover:text-destructive hover:bg-destructive/5'
-                }`}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                {t('logout')}
-              </button>
-            ) : (
-              <div className="relative group shrink-0">
-                {role === 'empresario' ? (
-                  <Link
-                    href="/empresario/perfil"
-                    className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
-                    aria-label={t('profile')}
-                  >
-                    {avatarUrl ? (
-                      <Image
-                        src={avatarUrl}
-                        alt={displayName ?? ''}
-                        width={36}
-                        height={36}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : initials ? (
-                      <span className="text-xs font-bold leading-none">
-                        {initials}
-                      </span>
-                    ) : (
-                      <User className="w-5 h-5" />
-                    )}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
-                    aria-label={t('profile')}
-                  >
+            {/* Avatar de Perfil para empresario y egresado */}
+            <div className="relative group shrink-0">
+              {role === 'empresario' || role === 'egresado' ? (
+                <Link
+                  href={
+                    role === 'empresario'
+                      ? '/empresario/perfil'
+                      : '/egresado/portfolio'
+                  }
+                  className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+                  aria-label={t('profile')}
+                >
+                  {avatarUrl ? (
+                    <Image
+                      src={avatarUrl}
+                      alt={displayName ?? ''}
+                      width={36}
+                      height={36}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : initials ? (
+                    <span className="text-xs font-bold leading-none">
+                      {initials}
+                    </span>
+                  ) : (
                     <User className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-            )}
+                  )}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+                  aria-label={t('profile')}
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Mobile Controls */}

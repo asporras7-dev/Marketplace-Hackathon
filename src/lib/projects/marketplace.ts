@@ -3,6 +3,7 @@ import 'server-only'
 import { unstable_rethrow } from 'next/navigation'
 import type { QueryData } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { ok, err, type Result } from '@/lib/result'
 import type { Project } from '@/types'
 import { logger } from '@/lib/logger'
@@ -14,7 +15,9 @@ import {
   type MatchStudentSkill,
 } from './match-logic'
 
-type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>
+type ServerClient =
+  | Awaited<ReturnType<typeof createSupabaseServerClient>>
+  | ReturnType<typeof createSupabaseAdminClient>
 
 const PROYECTO_SELECT = `
   *,
@@ -56,13 +59,20 @@ function mapProject(
     matchDetalles = match.detalles
   }
 
+  if (!Array.isArray(row.empresarios) && row.empresarios) {
+    console.log('empresarios:', row.empresarios)
+  }
+
   return {
     id: row.id_proyecto,
     title: row.titulo,
     companyId: row.id_empresario,
     // El nombre de empresa siempre viene (FK NOT NULL); si faltara, la UI rotula
     // el vacío vía i18n (sin string hardcodeado acá, reglas.md §4).
-    companyName: row.empresarios?.nombre_empresa ?? '',
+    companyName: Array.isArray(row.empresarios)
+      ? (row.empresarios[0]?.nombre_empresa ?? '')
+      : ((row.empresarios as { nombre_empresa?: string | null })
+          ?.nombre_empresa ?? ''),
     description: row.descripcion,
     stack,
     durationDays: durationInDays(row.fecha_publicacion, row.fecha_cierre),
@@ -88,8 +98,9 @@ export async function getMarketplaceProjects(): Promise<
 > {
   try {
     const supabase = await createSupabaseServerClient()
+    const supabaseAdmin = createSupabaseAdminClient()
 
-    const { data, error } = await selectProyectos(supabase)
+    const { data, error } = await selectProyectos(supabaseAdmin)
       .eq('is_active', true)
       .in('estado', ['abierto', 'en_recepcion'])
       .order('created_at', { ascending: false })
@@ -142,8 +153,9 @@ export async function getMarketplaceProjectById(
 ): Promise<Result<Project, string>> {
   try {
     const supabase = await createSupabaseServerClient()
+    const supabaseAdmin = createSupabaseAdminClient()
 
-    const { data, error } = await selectProyectos(supabase)
+    const { data, error } = await selectProyectos(supabaseAdmin)
       .eq('id_proyecto', id)
       .single()
 
