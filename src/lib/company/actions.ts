@@ -377,8 +377,8 @@ export async function getSupportTickets(): Promise<Result<SupportTicket[]>> {
       return err('forbidden')
     }
 
-    const supabase = await createSupabaseServerClient()
-    const { data, error } = await supabase
+    const adminClient = createSupabaseAdminClient()
+    const { data, error } = await adminClient
       .from('soporte_tickets')
       .select(
         '*, usuarios(nombre, correo, empresarios!empresarios_id_usuario_fkey(nombre_empresa))',
@@ -395,6 +395,17 @@ export async function getSupportTickets(): Promise<Result<SupportTicket[]>> {
     const tickets: SupportTicket[] = (data || []).map((ticket) => {
       const usuarios = ticket.usuarios
       const empresarios = usuarios?.empresarios
+      let companyName = ''
+      if (empresarios) {
+        if (Array.isArray(empresarios)) {
+          companyName =
+            (empresarios[0] as { nombre_empresa?: string })?.nombre_empresa ??
+            ''
+        } else {
+          companyName =
+            (empresarios as { nombre_empresa?: string })?.nombre_empresa ?? ''
+        }
+      }
       return {
         id: ticket.id_ticket,
         userId: ticket.id_usuario,
@@ -402,7 +413,7 @@ export async function getSupportTickets(): Promise<Result<SupportTicket[]>> {
         createdAt: ticket.created_at,
         userEmail: usuarios?.correo ?? '',
         userName: usuarios?.nombre ?? '',
-        companyName: empresarios?.nombre_empresa ?? '',
+        companyName,
       }
     })
 
