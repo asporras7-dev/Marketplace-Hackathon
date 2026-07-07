@@ -1,6 +1,5 @@
 import { Link } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
-import { FwdLogo } from '@/components/features/brand/FwdLogo'
 
 export function Footer() {
   const t = useTranslations('Footer')

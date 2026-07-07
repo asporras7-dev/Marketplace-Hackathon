@@ -1,7 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils/cn'
 import { useTranslations } from 'next-intl'
-import { FwdLogo } from '@/components/features/brand/FwdLogo'
+
 import styles from './GlobalLoader.module.css'
 
 interface GlobalLoaderProps {

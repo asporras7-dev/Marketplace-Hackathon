@@ -11,14 +11,12 @@ import {
   Clock,
   ArrowRight,
   Calendar,
-  ChevronDown,
   Check,
   BarChart3,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -46,29 +44,6 @@ function InitialsAvatar({
   return (
     <div className="w-14 h-14 shrink-0 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-base shadow-inner font-sans">
       {iniciales}
-    </div>
-  )
-}
-
-function ReputacionStars({ rating }: { rating: number | null }) {
-  const t = useTranslations('EmpresaPerfil')
-  if (rating === null) {
-    return (
-      <span className="text-xs text-muted-foreground">{t('noRatings')}</span>
-    )
-  }
-  return (
-    <div className="flex items-center gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={`w-3.5 h-3.5 ${
-            i < rating
-              ? 'text-highlight fill-highlight'
-              : 'text-muted-foreground/30'
-          }`}
-        />
-      ))}
     </div>
   )
 }

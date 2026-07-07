@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 import { ok, err, type Result } from '@/lib/result'
-import { logger } from '@/lib/logger'
+
 import { crearNotificacion } from '@/lib/notifications/create'
 import type { ConversacionItem, Mensaje } from './actions'
 
@@ -176,7 +176,8 @@ export async function getConversacionesDirectas(
     })
 
     return ok(conversaciones)
-  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e) {
     return err('unexpected')
   }
 }

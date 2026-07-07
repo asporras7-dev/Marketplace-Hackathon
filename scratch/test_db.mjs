@@ -8,29 +8,18 @@ const admin = createClient(supabaseUrl, supabaseServiceRole, {
 })
 
 async function run() {
-  console.log('Querying auth users...')
-  const { data: { users }, error: authError } = await admin.auth.admin.listUsers()
-  if (authError) {
-    console.error('Error listing auth users:', authError)
+  console.log('Querying first estudiante record with select *...')
+  const { data, error } = await admin
+    .from('estudiantes')
+    .select('*')
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching estudiantes:', error)
     return
   }
   
-  console.log(`Found ${users.length} auth users. Checking matches in public.usuarios...`)
-  for (const user of users) {
-    const { data: pubUser, error: pubError } = await admin
-      .from('usuarios')
-      .select('id_usuario, correo')
-      .eq('id_usuario', user.id)
-      .maybeSingle()
-    
-    if (pubError) {
-      console.error(`Error querying user ${user.email}:`, pubError)
-    } else if (!pubUser) {
-      console.log(`❌ Auth user missing in public.usuarios: ${user.email} (ID: ${user.id})`)
-    } else {
-      console.log(`✅ User match: ${user.email} (ID: ${user.id})`)
-    }
-  }
+  console.log('Columns in estudiantes table:', Object.keys(data[0] || {}))
 }
 
 run()
