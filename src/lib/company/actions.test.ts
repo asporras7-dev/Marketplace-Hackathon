@@ -9,6 +9,9 @@ vi.mock('@/lib/logger', () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
 }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: vi.fn(),
+}))
 
 import {
   getCompanyProfile,
@@ -16,9 +19,11 @@ import {
   saveCompanyProfile,
 } from './actions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 
 const mockedServer = vi.mocked(createSupabaseServerClient)
+const mockedAdmin = vi.mocked(createSupabaseAdminClient)
 const mockedGetCurrentUser = vi.mocked(getCurrentUser)
 
 const USER_ID = 'usr-empresa-1'
@@ -80,6 +85,26 @@ beforeEach(() => {
     id: USER_ID,
     email: 'empresa@test.com',
   } as never)
+  mockedAdmin.mockImplementation(
+    () =>
+      ({
+        from: vi.fn((table) => {
+          if (table === 'empresarios') {
+            return {
+              upsert: vi.fn().mockResolvedValue({ error: null }),
+            }
+          }
+          if (table === 'usuarios') {
+            return {
+              update: vi.fn(() => ({
+                eq: vi.fn().mockResolvedValue({ error: null }),
+              })),
+            }
+          }
+          return {}
+        }),
+      }) as never,
+  )
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -355,19 +380,21 @@ describe('saveCompanyProfile', () => {
     const result = await saveCompanyProfile(validProfile)
     expect(result.ok).toBe(true)
   })
-
   it('retorna error si el upsert de empresarios falla', async () => {
-    mockedServer.mockResolvedValue(
-      withUser((table) => {
-        if (table === 'empresarios') {
-          return {
-            upsert: vi
-              .fn()
-              .mockResolvedValue({ error: { message: 'upsert failed' } }),
-          }
-        }
-        return {}
-      }) as never,
+    mockedAdmin.mockImplementation(
+      () =>
+        ({
+          from: vi.fn((table) => {
+            if (table === 'empresarios') {
+              return {
+                upsert: vi
+                  .fn()
+                  .mockResolvedValue({ error: { message: 'upsert failed' } }),
+              }
+            }
+            return {}
+          }),
+        }) as never,
     )
 
     const result = await saveCompanyProfile(validProfile)

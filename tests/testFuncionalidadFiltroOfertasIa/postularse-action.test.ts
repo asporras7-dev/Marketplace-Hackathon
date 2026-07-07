@@ -48,6 +48,12 @@ vi.mock('@/lib/supabase/admin', () => ({
       })),
       insert: vi.fn().mockResolvedValue({ error: null }),
     })),
+    storage: {
+      from: vi.fn(() => ({
+        upload: vi.fn().mockResolvedValue({ data: {}, error: null }),
+        remove: vi.fn().mockResolvedValue({ data: {}, error: null }),
+      })),
+    },
   })),
 }))
 

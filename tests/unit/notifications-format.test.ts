@@ -116,14 +116,18 @@ describe('resolveNotificationContent', () => {
     ).toEqual({ kind: 'i18n', key: 'content.cuenta_verificada', values: {} })
   })
 
-  it('usa clave i18n estática para mensaje_nuevo (RF-45) ignorando params y mensaje', () => {
+  it('usa clave i18n con plantilla para mensaje_nuevo (RF-45) con remitente fallback si no viene en params', () => {
     expect(
       resolveNotificationContent({
         tipo: 'mensaje_nuevo',
         mensaje: 'Tienes un mensaje nuevo',
         params: { idProyecto: 'abc' },
       }),
-    ).toEqual({ kind: 'i18n', key: 'content.mensaje_nuevo', values: {} })
+    ).toEqual({
+      kind: 'i18n',
+      key: 'content.mensaje_nuevo',
+      values: { idProyecto: 'abc', remitente: 'un usuario' },
+    })
   })
 
   it('usa clave i18n para plazo_vence con params.titulo (RF-33)', () => {

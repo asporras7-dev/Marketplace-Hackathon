@@ -190,11 +190,13 @@ describe('saveStudentProfile', () => {
   })
 
   it('guarda el perfil exitosamente', async () => {
+    const mockEq = vi.fn().mockResolvedValue({ error: null })
+    const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq })
     mockedServer.mockResolvedValue(
       withUser((table) => {
         if (table === 'estudiantes') {
           return {
-            upsert: vi.fn().mockResolvedValue({ error: null }),
+            update: mockUpdate,
           }
         }
         return {}
@@ -206,16 +208,24 @@ describe('saveStudentProfile', () => {
       portafolio_visible_publicamente: true,
     })
     expect(result.ok).toBe(true)
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        descripcion: 'Nuevo perfil',
+        portafolio_visible_publicamente: true,
+      }),
+    )
   })
 
   it('retorna error si el upsert falla', async () => {
+    const mockEq = vi
+      .fn()
+      .mockResolvedValue({ error: { message: 'update failed' } })
+    const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq })
     mockedServer.mockResolvedValue(
       withUser((table) => {
         if (table === 'estudiantes') {
           return {
-            upsert: vi
-              .fn()
-              .mockResolvedValue({ error: { message: 'upsert failed' } }),
+            update: mockUpdate,
           }
         }
         return {}
