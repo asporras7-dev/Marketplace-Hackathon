@@ -44,7 +44,7 @@ export function DashboardStats({ stats, className }: DashboardStatsProps) {
               <p className="truncate text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 {stat.title}
               </p>
-              <p className="mt-0.5 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
+              <p className="mt-0.5 text-2xl font-bold tabular-nums text-ink-strong">
                 {stat.value}
               </p>
               {stat.description && (

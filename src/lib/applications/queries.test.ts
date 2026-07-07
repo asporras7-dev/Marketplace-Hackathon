@@ -3,6 +3,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/supabase/server', () => ({
   createSupabaseServerClient: vi.fn(),
 }))
+vi.mock('@/lib/supabase/admin', () => ({
+  createSupabaseAdminClient: vi.fn(),
+}))
 vi.mock('@/lib/auth/dal', () => ({ getCurrentUser: vi.fn() }))
 vi.mock('@/lib/logger', () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
@@ -13,10 +16,25 @@ vi.mock('@/lib/projects/project-detail-logic', () => ({
 
 import { getMisPostulacionesStats, getMisPostulaciones } from './queries'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 
 const mockedServer = vi.mocked(createSupabaseServerClient)
+const mockedAdminServer = vi.mocked(createSupabaseAdminClient)
 const mockedGetCurrentUser = vi.mocked(getCurrentUser)
+
+let activeClient: unknown = null
+const originalMockResolvedValue = mockedServer.mockResolvedValue
+mockedServer.mockResolvedValue = (
+  value: Parameters<typeof originalMockResolvedValue>[0],
+) => {
+  activeClient = value
+  return originalMockResolvedValue(value)
+}
+
+mockedAdminServer.mockImplementation(() => {
+  return activeClient as never
+})
 
 const USER_ID = 'usr-egresado-1'
 const EST_ID = 'est-1'
@@ -27,6 +45,7 @@ function withAuth(fromImpl: (table: string) => unknown) {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  activeClient = null
   mockedGetCurrentUser.mockResolvedValue({ id: USER_ID } as never)
 })
 
