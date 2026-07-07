@@ -27,7 +27,7 @@ import {
 import { maxBirthDateForMinAge } from '@/lib/utils/age'
 import { saveCompanyProfile } from '@/lib/company/actions'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import imageCompression from 'browser-image-compression'
+import { compressImage } from '@/lib/utils/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -160,14 +160,7 @@ export function CompanyProfileForm({
     file: File,
     userId: string,
   ): Promise<string> => {
-    // Comprimir la imagen antes de subirla
-    const options = {
-      maxSizeMB: 0.5, // 500KB máximo
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    }
-    const compressedFile = await imageCompression(file, options)
-
+    const compressedFile = await compressImage(file)
     const ext = compressedFile.name.split('.').pop() ?? 'jpg'
     const path = `${userId}/${bucket}-${Date.now()}.${ext}`
     const { error } = await supabase.storage

@@ -67,7 +67,6 @@ export async function getProjectMatches(
         habilidades_tecnicas(id_tecnologia, nivel)
       `,
       )
-      .eq('portafolio_visible_publicamente', true)
 
     if (studentsError) {
       logger.error('Error fetching public students for matches', {
