@@ -12,7 +12,6 @@ import {
   RotateCcw,
   ShieldAlert,
   Sparkles,
-  Bot,
   History,
   MoreVertical,
 } from 'lucide-react'

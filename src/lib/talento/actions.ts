@@ -9,7 +9,6 @@ import { getLocale } from 'next-intl/server'
 import { getCountryName, getSubdivisionName } from '@/lib/geo/catalog'
 import type { PortfolioProject } from '@/types'
 import { getCurrentUser } from '@/lib/auth/dal'
-import { crearNotificacion } from '@/lib/notifications/create'
 
 export async function getPublicProfiles(): Promise<
   Result<StudentProfileView[]>

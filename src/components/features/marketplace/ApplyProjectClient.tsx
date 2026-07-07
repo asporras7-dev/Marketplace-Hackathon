@@ -6,7 +6,6 @@ import { Link } from '@/i18n/routing'
 import { useAccountStatus } from '@/components/features/auth/AccountStatusContext'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { PageTitle } from '@/components/features/brand/PageTitle'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -19,9 +18,7 @@ import * as zod from 'zod'
 import { toast } from 'sonner'
 import {
   ArrowLeft,
-  Send,
   FileText,
-  Link2,
   Plus,
   X,
   Lightbulb,
@@ -187,7 +184,7 @@ export function ApplyProjectClient({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-canvas">
       <Navbar />
 
       <main className="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
@@ -209,10 +206,10 @@ export function ApplyProjectClient({
             <span className="text-primary">.</span>
           </h1>
           <p className="text-sm font-sans text-ink-muted">
-            Proyecto:{' '}
-            <span className="font-semibold text-ink-strong">
-              {projectTitle}
-            </span>
+            {tEgresado('applyFormProjectInfo', {
+              title: projectTitle,
+              company: projectCompanyName,
+            })}
           </p>
         </div>
 
@@ -223,12 +220,10 @@ export function ApplyProjectClient({
           </div>
           <div className="space-y-1">
             <h4 className="text-xs font-extrabold font-heading uppercase tracking-wider text-primary">
-              MÓDULO DE ASISTENCIA INTELIGENTE
+              {tEgresado('aiModuleTitle')}
             </h4>
             <p className="text-xs text-ink-muted leading-relaxed font-sans">
-              Ingresa el contexto base. Nuestro motor de IA optimizará el
-              título, la descripción técnica y los stacks recomendados para vos
-              en tiempo real.
+              {tEgresado('aiModuleDesc')}
             </p>
           </div>
         </div>
@@ -243,28 +238,28 @@ export function ApplyProjectClient({
               {/* LOGÍSTICA DEL PROYECTO */}
               <div className="space-y-5">
                 <h3 className="text-xs font-extrabold uppercase tracking-widest text-ink-muted border-b border-border/40 pb-2">
-                  Logística del proyecto
+                  {tEgresado('projectLogistics')}
                 </h3>
 
                 {/* TÍTULO DEL PROYECTO */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
                     <Label htmlFor="tituloProyectoMock">
-                      Título del proyecto
+                      {tEgresado('projectTitleLabel')}
                     </Label>
                     <Badge
                       variant="outline"
                       className="text-[9px] font-bold px-2 py-0.5 rounded bg-primary/5 text-primary border-primary/20 border"
                     >
-                      IA GENERATED • OPTIONAL
+                      {tEgresado('iaGeneratedOptional')}
                     </Badge>
                   </div>
                   <Input
                     id="tituloProyectoMock"
                     placeholder="Ej: Rediseño UX App Pedidos"
-                    className="bg-slate-100/80 border-border/80 text-ink-strong"
+                    className="bg-surface-sunken/80 border-border/80 text-ink-strong"
                     readOnly
-                    value={'Propuesta para ' + projectTitle}
+                    value={tEgresado('proposalFor', { title: projectTitle })}
                   />
                 </div>
 
@@ -274,16 +269,16 @@ export function ApplyProjectClient({
                     htmlFor="modalidadTrabajoMock"
                     className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
                   >
-                    Modalidad de trabajo
+                    {tEgresado('workMode')}
                   </Label>
                   <div className="relative">
                     <select
                       id="modalidadTrabajoMock"
-                      className="w-full bg-slate-100/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
+                      className="w-full bg-surface-sunken/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
                       disabled
                       value="remoto"
                     >
-                      <option value="remoto">Remoto</option>
+                      <option value="remoto">{tEgresado('remote')}</option>
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted pointer-events-none" />
                   </div>
@@ -296,7 +291,7 @@ export function ApplyProjectClient({
                       htmlFor="monedaMock"
                       className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
                     >
-                      Moneda
+                      {tEgresado('currency')}
                     </Label>
                     <div className="relative">
                       <select
@@ -315,7 +310,7 @@ export function ApplyProjectClient({
                       htmlFor="presupuestoMinMock"
                       className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
                     >
-                      Presupuesto mínimo
+                      {tEgresado('minBudget')}
                     </Label>
                     <Input
                       id="presupuestoMinMock"
@@ -331,7 +326,7 @@ export function ApplyProjectClient({
                       htmlFor="presupuestoMaxMock"
                       className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
                     >
-                      Presupuesto máximo
+                      {tEgresado('maxBudget')}
                     </Label>
                     <Input
                       id="presupuestoMaxMock"
@@ -350,7 +345,7 @@ export function ApplyProjectClient({
                     htmlFor="plazoMock"
                     className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
                   >
-                    Plazo de recepción de ofertas
+                    {tEgresado('deadlineOffers')}
                   </Label>
                   <div className="relative">
                     <select
@@ -359,12 +354,12 @@ export function ApplyProjectClient({
                       disabled
                       value="10_dias"
                     >
-                      <option value="10_dias">10 días</option>
+                      <option value="10_dias">{tEgresado('tenDays')}</option>
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted pointer-events-none" />
                   </div>
                   <p className="text-[9px] font-extrabold text-orange-600 tracking-wider uppercase pt-0.5">
-                    RANGO SUGERIDO: 5 - 15 DIAS
+                    {tEgresado('suggestedRangeDays')}
                   </p>
                 </div>
               </div>
@@ -372,23 +367,25 @@ export function ApplyProjectClient({
               {/* PROPUESTA TÉCNICA */}
               <div className="space-y-6 pt-4">
                 <h3 className="text-xs font-extrabold uppercase tracking-widest text-ink-muted border-b border-border/40 pb-2">
-                  Propuesta técnica
+                  {tEgresado('technicalProposal')}
                 </h3>
 
                 {/* PLANTEAMIENTO DE SOLUCIÓN */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
                     <Label htmlFor="planteamientoSolucion">
-                      Planteamiento de solución
+                      {tEgresado('solutionApproach')}
                     </Label>
                     <span className="font-normal text-ink-muted">
-                      Mínimo {MIN_PLANTEAMIENTO_LEN} caracteres
+                      {tEgresado('minCharacters', {
+                        min: MIN_PLANTEAMIENTO_LEN,
+                      })}
                     </span>
                   </div>
                   <Textarea
                     id="planteamientoSolucion"
                     rows={6}
-                    placeholder="Explica cómo resolverías el reto de este proyecto..."
+                    placeholder={tEgresado('solutionApproachPlaceholder')}
                     className={`bg-card border-border/80 text-ink-strong ${errors.planteamientoSolucion ? 'border-destructive' : 'focus-visible:ring-primary'}`}
                     {...register('planteamientoSolucion')}
                   />
@@ -405,7 +402,7 @@ export function ApplyProjectClient({
                     htmlFor="prototipoUrl"
                     className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted"
                   >
-                    Enlace del prototipo
+                    {tEgresado('prototypeUrlLabel')}
                   </Label>
                   <Input
                     id="prototipoUrl"
@@ -424,15 +421,17 @@ export function ApplyProjectClient({
                 {/* CARTA DE PRESENTACIÓN */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
-                    <Label htmlFor="coverLetter">Carta de presentación</Label>
+                    <Label htmlFor="coverLetter">
+                      {tEgresado('coverLetter')}
+                    </Label>
                     <span className="font-normal text-ink-muted">
-                      Máximo {MAX_CARTA_LEN} caracteres
+                      {tEgresado('maxCharacters', { max: MAX_CARTA_LEN })}
                     </span>
                   </div>
                   <Textarea
                     id="coverLetter"
                     rows={6}
-                    placeholder="Cuéntale a la empresa por qué eres el candidato ideal..."
+                    placeholder={tEgresado('coverLetterPlaceholder')}
                     className={`bg-card border-border/80 text-ink-strong ${errors.coverLetter ? 'border-destructive' : 'focus-visible:ring-primary'}`}
                     {...register('coverLetter')}
                   />
@@ -446,7 +445,7 @@ export function ApplyProjectClient({
                 {/* DOCUMENTACIÓN TÉCNICA (PDF O ZIP) */}
                 <div className="space-y-2">
                   <Label className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
-                    Documentación técnica (PDF o ZIP)
+                    {tEgresado('technicalDocUrlLabel')}
                   </Label>
                   <label
                     htmlFor="documentacionTecnica"
@@ -457,11 +456,11 @@ export function ApplyProjectClient({
                     </div>
                     <p className="text-xs font-bold text-ink-strong">
                       {fileName
-                        ? `Archivo: ${fileName}`
-                        : 'Haz clic para subir o arrastra y suelta'}
+                        ? tEgresado('fileNameLabel', { name: fileName })
+                        : tEgresado('uploadClickOrDrag')}
                     </p>
                     <p className="text-[10px] text-ink-muted">
-                      PDF o ZIP (máx. 5 MB)
+                      {tEgresado('pdfOrZipLimit')}
                     </p>
                   </label>
                   <input
@@ -482,7 +481,7 @@ export function ApplyProjectClient({
                 <div className="space-y-4 pt-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-[10px] font-extrabold uppercase tracking-wider text-ink-muted">
-                      Enlaces adicionales
+                      {tEgresado('prototypeExtraLabel')}
                     </Label>
                     {fields.length < MAX_ENLACES_EXTRA && (
                       <button
@@ -538,14 +537,14 @@ export function ApplyProjectClient({
                   href={`/egresado/projects/${projectId}`}
                   className="text-sm font-extrabold text-ink-muted hover:text-ink-strong transition-colors cursor-pointer"
                 >
-                  Cancelar
+                  {tCommon('cancel')}
                 </Link>
                 <Button
                   type="submit"
                   disabled={isSubmitting || isPending}
                   className="bg-primary hover:bg-primary/90 text-white rounded-full px-6 py-2.5 text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-md"
                 >
-                  Enviar Postulación
+                  {tEgresado('applySubmitBtn')}
                   <Play className="w-3 h-3 fill-white" />
                 </Button>
               </div>

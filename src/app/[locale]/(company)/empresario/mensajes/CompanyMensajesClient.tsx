@@ -7,7 +7,6 @@ import {
   MessageSquare,
   Send,
   Lock,
-  CheckCircle2,
   Check,
   CheckCheck,
   ChevronDown,

@@ -9,29 +9,15 @@ import {
   Send,
   MessageSquare,
   FileCheck2,
-  Settings,
   HelpCircle,
   ChevronLeft,
   ChevronRight,
-  Loader2,
 } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
+
 import { SupportTicketDialog } from '@/components/features/shared/SupportTicketDialog'
 
 export function SidebarEgresado() {
   const t = useTranslations('Nav')
-  const tEmpresa = useTranslations('EmpresaPerfil')
   const pathname = usePathname()
   const { currentUser } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
