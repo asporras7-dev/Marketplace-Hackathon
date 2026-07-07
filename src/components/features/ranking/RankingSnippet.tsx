@@ -29,7 +29,7 @@ export function RankingSnippet({
           <Award className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">{t('snippetTitle')}</h3>
+          <h3 className="font-semibold text-foreground">{t('snippetTitle')}</h3>
           <p className="text-sm text-muted-foreground">
             {t('snippetSubtitle')}
           </p>

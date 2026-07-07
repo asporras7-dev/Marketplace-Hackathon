@@ -14,6 +14,7 @@ import {
 import { useAuth } from '@/lib/auth/AuthContext'
 import { useSidebarHidden } from '@/hooks/use-sidebar-hidden'
 import { SidebarAdmin } from './SidebarAdmin'
+import { ThemeToggle } from './ThemeToggle'
 import { FwdLogo } from '@/components/features/brand/FwdLogo'
 import { NotificationBell } from '@/components/features/notifications/NotificationBell'
 import { cn } from '@/lib/utils/cn'
@@ -104,16 +105,13 @@ export function AdminShell({
       {/* ── Main content column ── */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* ── Top Header Bar (White / very light gray) ── */}
-        <header
-          className="sticky top-0 z-30 flex h-[52px] items-center gap-3 px-5 border-b border-gray-100 shadow-sm"
-          style={{ background: 'var(--surface)' }}
-        >
+        <header className="sticky top-0 z-30 flex h-[52px] items-center gap-3 px-5 border-b border-border shadow-sm bg-surface">
           {/* Mobile hamburger */}
           <button
             type="button"
             aria-label={mobileOpen ? t('closeMenu') : t('openMenu')}
             onClick={() => setMobileOpen((open) => !open)}
-            className="rounded-lg p-1.5 text-gray-600 hover:bg-gray-100 md:hidden transition-colors"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-surface-sunken md:hidden transition-colors"
           >
             {mobileOpen ? (
               <X className="h-5 w-5" />
@@ -129,7 +127,7 @@ export function AdminShell({
             aria-label={isSidebarHidden ? t('showSidebar') : t('hideSidebar')}
             aria-expanded={!isSidebarHidden}
             aria-controls="admin-sidebar"
-            className="hidden md:inline-flex rounded-lg p-1.5 text-gray-600 hover:bg-gray-100 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]"
+            className="hidden md:inline-flex rounded-lg p-1.5 text-muted-foreground hover:bg-surface-sunken transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]"
           >
             {isSidebarHidden ? (
               <PanelLeftOpen className="h-5 w-5" />
@@ -141,7 +139,7 @@ export function AdminShell({
           {/* Foundation brand pill */}
           <span className="flex items-center gap-2 mr-2">
             <ShieldCheck className="h-4 w-4 text-purple-700 shrink-0" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-700 hidden sm:inline">
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground hidden sm:inline">
               {t('adminEyebrow')}
             </span>
           </span>
@@ -149,12 +147,15 @@ export function AdminShell({
           {/* Spacer */}
           <div className="flex-1" />
 
+          {/* Theme toggle */}
+          <ThemeToggle />
+
           {/* Notification bell */}
           <NotificationBell className="shrink-0" />
 
           {/* Language switcher */}
           <div
-            className="flex items-center rounded-full border border-gray-250 bg-gray-100 p-0.5"
+            className="flex items-center rounded-full border border-border bg-surface-sunken p-0.5"
             aria-label={t('language')}
           >
             <button
@@ -163,8 +164,8 @@ export function AdminShell({
               className={cn(
                 'rounded-full px-3 py-1 text-xs font-bold transition-all duration-[var(--duration-fast)]',
                 locale === 'es'
-                  ? 'bg-white text-gray-800 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-800',
+                  ? 'bg-surface text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               ES
@@ -175,8 +176,8 @@ export function AdminShell({
               className={cn(
                 'rounded-full px-3 py-1 text-xs font-bold transition-all duration-[var(--duration-fast)]',
                 locale === 'en'
-                  ? 'bg-white text-gray-800 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-800',
+                  ? 'bg-surface text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               EN
@@ -184,7 +185,7 @@ export function AdminShell({
           </div>
 
           {/* Role badge */}
-          <span className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100/60 px-3 py-1 text-xs font-bold text-gray-700">
+          <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface-sunken px-3 py-1 text-xs font-bold text-foreground">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-magenta" />
             {t('roleAdmin')}
           </span>
@@ -193,21 +194,21 @@ export function AdminShell({
           <button
             type="button"
             title={adminEmail || undefined}
-            className="flex items-center gap-2.5 rounded-full border border-gray-200 bg-gray-100/60 pl-1 pr-3 py-1 hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-2.5 rounded-full border border-border bg-surface-sunken pl-1 pr-3 py-1 hover:bg-surface transition-colors"
           >
             {/* Avatar circle */}
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-magenta text-[10px] font-bold text-white">
               {initials || '?'}
             </span>
             <span className="hidden sm:flex flex-col items-start leading-tight max-w-[10rem]">
-              <span className="truncate text-xs font-bold text-gray-800 leading-none">
+              <span className="truncate text-xs font-bold text-foreground leading-none">
                 {adminName}
               </span>
-              <span className="truncate text-[10px] text-gray-500 leading-none mt-0.5">
+              <span className="truncate text-[10px] text-muted-foreground leading-none mt-0.5">
                 {adminEmail}
               </span>
             </span>
-            <ChevronDown className="h-3 w-3 text-gray-500 hidden sm:block shrink-0" />
+            <ChevronDown className="h-3 w-3 text-muted-foreground hidden sm:block shrink-0" />
           </button>
         </header>
 

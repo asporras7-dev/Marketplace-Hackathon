@@ -584,11 +584,6 @@ export function CompanyMensajesClient({
                 <div className="flex-1 overflow-y-auto divide-y divide-border/40 bg-surface">
                   {convs
                     .filter((conv) => {
-                      console.log('FILTRANDO:', {
-                        filter,
-                        tipo: conv.tipo,
-                        nombre: conv.nombreContraparte,
-                      })
                       if (filter === 'todos') return true
                       if (filter === 'proyectos')
                         return conv.tipo === 'proyecto'

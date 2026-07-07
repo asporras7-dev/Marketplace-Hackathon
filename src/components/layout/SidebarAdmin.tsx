@@ -16,7 +16,6 @@ import {
   BarChart3,
   type LucideIcon,
 } from 'lucide-react'
-import { FwdLogo } from '@/components/features/brand/FwdLogo'
 import { ConfirmButton } from '@/components/features/shared/ConfirmButton'
 import { cn } from '@/lib/utils/cn'
 
@@ -97,11 +96,13 @@ export function SidebarAdmin({
       <Link
         href="/admin"
         onClick={onNavigate}
-        className="flex items-center gap-3 px-5 py-5 hover:opacity-90 transition-opacity z-10"
+        className="flex items-center gap-3 px-5 py-5 hover:opacity-90 transition-opacity z-10 group"
       >
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
-          <FwdLogo className="h-6 w-6" />
-        </div>
+        <img
+          src="/images/logo-fwd-icon.png"
+          alt="Logo FWD"
+          className="w-10 h-10 object-contain transition-transform duration-500 group-hover:rotate-180 group-hover:scale-110 shrink-0"
+        />
         <span className="font-heading text-base font-bold tracking-tight leading-tight text-white">
           Marketplace<span className="text-magenta"> FWD</span>
         </span>

@@ -34,21 +34,21 @@ export function DashboardStats({ stats, className }: DashboardStatsProps) {
             <div
               className={cn(
                 'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105',
-                stat.colorClass ?? 'bg-gray-100 text-gray-500',
+                stat.colorClass ?? 'bg-muted text-muted-foreground',
               )}
             >
               <Icon className="h-5 w-5" />
             </div>
             {/* Text */}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <p className="truncate text-xs font-semibold uppercase tracking-wide text-ink-muted">
                 {stat.title}
               </p>
-              <p className="mt-0.5 text-2xl font-bold tabular-nums text-gray-900">
+              <p className="mt-0.5 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
                 {stat.value}
               </p>
               {stat.description && (
-                <p className="mt-0.5 truncate text-xs text-gray-400">
+                <p className="mt-0.5 truncate text-xs text-ink-muted">
                   {stat.description}
                 </p>
               )}

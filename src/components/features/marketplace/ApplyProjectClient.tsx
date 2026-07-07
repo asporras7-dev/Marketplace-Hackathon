@@ -184,10 +184,10 @@ export function ApplyProjectClient({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-canvas">
+    <div className="flex flex-col min-h-screen relative bg-fwd-page-gradient">
       <Navbar />
 
-      <main className="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
+      <main className="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center relative z-10">
         {/* Back Link */}
         <div className="flex justify-start mb-6">
           <Link
@@ -296,7 +296,7 @@ export function ApplyProjectClient({
                     <div className="relative">
                       <select
                         id="monedaMock"
-                        className="w-full bg-slate-100/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
+                        className="w-full bg-surface-sunken/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
                         disabled
                         value="USD"
                       >
@@ -317,7 +317,7 @@ export function ApplyProjectClient({
                       type="text"
                       placeholder="1000"
                       value="1000"
-                      className="bg-slate-100/80 border-border/80 text-ink-strong cursor-not-allowed"
+                      className="bg-surface-sunken/80 border-border/80 text-ink-strong cursor-not-allowed"
                       readOnly
                     />
                   </div>
@@ -333,7 +333,7 @@ export function ApplyProjectClient({
                       type="text"
                       placeholder="2000"
                       value="2000"
-                      className="bg-slate-100/80 border-border/80 text-ink-strong cursor-not-allowed"
+                      className="bg-surface-sunken/80 border-border/80 text-ink-strong cursor-not-allowed"
                       readOnly
                     />
                   </div>
@@ -350,7 +350,7 @@ export function ApplyProjectClient({
                   <div className="relative">
                     <select
                       id="plazoMock"
-                      className="w-full bg-slate-100/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
+                      className="w-full bg-surface-sunken/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
                       disabled
                       value="10_dias"
                     >

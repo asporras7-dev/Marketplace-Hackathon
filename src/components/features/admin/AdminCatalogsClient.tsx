@@ -91,7 +91,7 @@ export function AdminCatalogsClient({
     items: CatalogItem[],
     type: 'tecnologias' | 'categorias',
   ) => (
-    <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden mt-4">
+    <div className="rounded-xl border border-border/50 bg-surface shadow-sm overflow-hidden mt-4">
       <Table>
         <TableHeader>
           <TableRow>

@@ -5,6 +5,7 @@ import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { useLocale, useTranslations } from 'next-intl'
 import type { UserRole } from '@/types'
 import { useAuth } from '@/lib/auth/AuthContext'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -60,7 +61,42 @@ export function Navbar({
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
-  const { userRole: role, resetAuth, displayName, avatarUrl } = useAuth()
+  const {
+    userRole: role,
+    resetAuth,
+    displayName,
+    avatarUrl: authAvatarUrl,
+    currentUser,
+  } = useAuth()
+
+  const [actualAvatar, setActualAvatar] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!currentUser) {
+      setActualAvatar(null)
+      return
+    }
+
+    // First fallback to the one from AuthContext (from usuarios table)
+    setActualAvatar(authAvatarUrl)
+
+    // Then try to fetch role-specific ones
+    const fetchRoleAvatar = async () => {
+      const supabase = createSupabaseBrowserClient()
+      if (role === 'empresario') {
+        const { data } = await supabase
+          .from('empresarios')
+          .select('logo')
+          .eq('id_usuario', currentUser.id)
+          .maybeSingle()
+        if (data?.logo) setActualAvatar(data.logo)
+      } else {
+        // Egresado or Admin just use the base user foto_perfil
+        setActualAvatar(authAvatarUrl)
+      }
+    }
+    void fetchRoleAvatar()
+  }, [currentUser, role, authAvatarUrl])
 
   const initials = displayName
     ? displayName
@@ -357,9 +393,9 @@ export function Navbar({
                   className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
                   aria-label={t('profile')}
                 >
-                  {avatarUrl ? (
+                  {actualAvatar ? (
                     <Image
-                      src={avatarUrl}
+                      src={actualAvatar}
                       alt={displayName ?? ''}
                       width={36}
                       height={36}

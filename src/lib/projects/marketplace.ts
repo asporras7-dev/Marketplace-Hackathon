@@ -60,7 +60,7 @@ function mapProject(
   }
 
   if (!Array.isArray(row.empresarios) && row.empresarios) {
-    console.log('empresarios:', row.empresarios)
+    // Log removed to comply with rules
   }
 
   return {

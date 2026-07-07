@@ -283,9 +283,11 @@ export function PortfolioManager({
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
 
   useEffect(() => {
-    getActiveTechnologies().then((res) => {
+    const fetchTechnologies = async () => {
+      const res = await getActiveTechnologies()
       if (res.ok) setAvailableTechnologies(res.data)
-    })
+    }
+    void fetchTechnologies()
   }, [])
 
   useEffect(() => {
@@ -708,13 +710,9 @@ export function PortfolioManager({
                               await uploadAndSaveProfilePhoto(formData)
 
                             if (result.ok) {
-                              // @ts-expect-error cloudinary result contains secureUrl in data but typing might vary
-                              const newUrl =
-                                result.data?.secureUrl ||
-                                result.data ||
-                                result.value
-                              setLocalPhotoUrl(newUrl as string)
-                              updateAvatarUrl(newUrl as string)
+                              const newUrl = result.data
+                              setLocalPhotoUrl(newUrl)
+                              updateAvatarUrl(newUrl)
                               toast.success(
                                 'Foto de perfil actualizada exitosamente.',
                                 { id: toastId },

@@ -513,7 +513,7 @@ export function ProjectWizard({
                       maxLength={CONTEXTO_MAX}
                       disabled={loading}
                       placeholder="Describí los requerimientos técnicos, el alcance y los objetivos de negocio para que la IA estructure la propuesta ideal..."
-                      className="bg-white border-border/80 rounded-2xl p-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle min-h-[120px] resize-y"
+                      className="bg-surface-sunken border-border/80 rounded-2xl p-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle min-h-[120px] resize-y"
                       {...register('contextoInicial')}
                     />
                     {/* Resize diagonal arrow indicator styled nicely */}
