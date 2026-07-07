@@ -35,12 +35,12 @@ export function FloatingButterfly() {
     let currentIndex = 0
 
     // Mostrar el primer mensaje de inmediato
-    setNotification(messages[0])
+    setNotification(messages[0] ?? null)
 
     // Cambiar el mensaje cada 1 minuto
     const interval = setInterval(() => {
       currentIndex = (currentIndex + 1) % messages.length
-      setNotification(messages[currentIndex])
+      setNotification(messages[currentIndex] ?? null)
     }, 60000)
 
     return () => clearInterval(interval)

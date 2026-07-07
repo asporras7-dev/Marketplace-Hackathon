@@ -141,6 +141,39 @@ export async function completarOnboarding(
 
   const admin = createSupabaseAdminClient()
 
+  // Asegurar que exista la fila en public.usuarios (mecanismo de sanación)
+  const { data: usuarioExistente } = await admin
+    .from('usuarios')
+    .select('id_usuario')
+    .eq('id_usuario', user.id)
+    .maybeSingle()
+
+  if (!usuarioExistente) {
+    const rawName = (user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      '') as string
+    const parts = rawName.trim().split(' ').filter(Boolean)
+    const nombre = parts[0] || user.email?.split('@')[0] || 'Usuario'
+    const apellido = parts.slice(1).join(' ') || 'FWD'
+
+    const { error: insertUserError } = await admin.from('usuarios').insert({
+      id_usuario: user.id,
+      nombre,
+      apellido_1: apellido,
+      correo: user.email ?? '',
+      foto_perfil: (user.user_metadata?.avatar_url as string) || null,
+      estado_cuenta: 'activa',
+      is_active: true,
+    })
+
+    if (insertUserError) {
+      logger.error('completarOnboarding: fallo al sanar usuario en db', {
+        error: insertUserError.message,
+      })
+      return err(insertUserError.message)
+    }
+  }
+
   const perfil: PerfilInput =
     data.role === 'egresado'
       ? { role: 'egresado', tituloFwd: data.tituloFwd }

@@ -39,8 +39,8 @@ describe('isEgresadoEmailAllowed', () => {
     expect(isEgresadoEmailAllowed('FWD+demo@gmail.com')).toBe(true)
   })
 
-  it('rechaza un correo que no está en la allowlist', () => {
-    expect(isEgresadoEmailAllowed('otro@gmail.com')).toBe(false)
-    expect(isEgresadoEmailAllowed('persona@empresa.com')).toBe(false)
+  it('acepta cualquier correo fuera de la allowlist', () => {
+    expect(isEgresadoEmailAllowed('otro@gmail.com')).toBe(true)
+    expect(isEgresadoEmailAllowed('persona@empresa.com')).toBe(true)
   })
 })
