@@ -224,7 +224,7 @@ export function CompanyProfileForm({
       {/* Estado de verificación (solo lectura) */}
       <div className="bg-[#f8fafd] px-6 py-5 border-b border-border/80 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#0a6cb9]/15 flex items-center justify-center text-[#0a6cb9]">
+          <div className="w-10 h-10 rounded-full bg-warning/15 flex items-center justify-center text-warning">
             <ShieldCheck className="w-5.5 h-5.5" />
           </div>
           <div>
@@ -239,7 +239,7 @@ export function CompanyProfileForm({
         {verif ? (
           <span
             className={cn(
-              'text-xs font-extrabold px-5 py-2 rounded-full text-white bg-[#0a6cb9] shadow-sm',
+              'text-xs font-extrabold px-5 py-2 rounded-full text-white bg-warning shadow-sm',
             )}
           >
             {verif === 'verificado'
@@ -541,7 +541,7 @@ export function CompanyProfileForm({
             <Button
               type="submit"
               disabled={loading}
-              className="bg-secondary hover:bg-secondary/95 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-magenta hover:bg-magenta/95 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-white">
                 {loading ? (
@@ -672,8 +672,8 @@ function ImageUploadField({
       </Label>
 
       {variant === 'avatar' ? (
-        <div className="flex flex-col sm:flex-row gap-5 items-center p-5 bg-[#f1f4fe]/45 border border-dashed border-[#0a6cb9]/20 rounded-3xl transition-colors duration-200">
-          <div className="w-20 h-20 bg-white flex items-center justify-center shrink-0 border border-[#0a6cb9]/15 rounded-full overflow-hidden relative shadow-sm">
+        <div className="flex flex-col sm:flex-row gap-5 items-center p-5 bg-[#f1f4fe]/45 border border-dashed border-magenta/20 rounded-3xl transition-colors duration-200">
+          <div className="w-20 h-20 bg-white flex items-center justify-center shrink-0 border border-magenta/15 rounded-full overflow-hidden relative shadow-sm">
             {preview ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -685,13 +685,13 @@ function ImageUploadField({
                 />
               </>
             ) : (
-              <div className="w-full h-full bg-[#f1f3fd] flex items-center justify-center text-[#0a6cb9]">
+              <div className="w-full h-full bg-[#f1f3fd] flex items-center justify-center text-magenta">
                 <User className="w-9 h-9" />
               </div>
             )}
             {uploading && (
               <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
-                <Loader2 className="w-5 h-5 animate-spin text-[#0a6cb9]" />
+                <Loader2 className="w-5 h-5 animate-spin text-magenta" />
               </div>
             )}
           </div>
@@ -701,7 +701,7 @@ function ImageUploadField({
               {tEmpresa('uploadFormats')}
             </p>
             <label className="inline-block mt-1">
-              <span className="cursor-pointer inline-flex items-center gap-1.5 px-5 py-2 bg-white hover:bg-[#eff3fd] border border-[#0a6cb9] text-[#0a6cb9] hover:border-[#0a6cb9]/80 text-xs font-extrabold rounded-full shadow-sm transition-all duration-200">
+              <span className="cursor-pointer inline-flex items-center gap-1.5 px-5 py-2 bg-white hover:bg-[#eff3fd] border border-magenta text-magenta hover:border-magenta/80 text-xs font-extrabold rounded-full shadow-sm transition-all duration-200">
                 <Upload className="w-3.5 h-3.5" />
                 {tEmpresa('selectFile')}
               </span>
@@ -716,7 +716,7 @@ function ImageUploadField({
           </div>
         </div>
       ) : (
-        <div className="border border-dashed border-[#0a6cb9]/30 rounded-3xl bg-white p-8 text-center hover:border-[#0a6cb9]/60 transition-colors duration-200">
+        <div className="border border-dashed border-secondary/30 rounded-3xl bg-white p-8 text-center hover:border-secondary/60 transition-colors duration-200">
           {preview ? (
             <div className="w-24 h-24 mx-auto mb-4 bg-muted flex items-center justify-center border border-border rounded-2xl overflow-hidden relative shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -733,7 +733,7 @@ function ImageUploadField({
             </div>
           ) : (
             <div className="w-14 h-14 bg-[#f1f4fe] flex items-center justify-center rounded-2xl mx-auto mb-3 text-secondary shadow-sm">
-              <ImageIcon className="w-7 h-7 text-[#0a6cb9]" />
+              <ImageIcon className="w-7 h-7 text-secondary" />
             </div>
           )}
           <p className="text-sm font-extrabold text-foreground">{title}</p>

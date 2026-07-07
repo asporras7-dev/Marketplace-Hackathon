@@ -44,7 +44,7 @@ function InitialsAvatar({
   const iniciales =
     `${nombre.charAt(0)}${apellidos.charAt(0)}`.toUpperCase() || '?'
   return (
-    <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-base shadow-inner font-sans">
+    <div className="w-14 h-14 shrink-0 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-base shadow-inner font-sans">
       {iniciales}
     </div>
   )
@@ -80,13 +80,13 @@ function EstadoBadge({ estado }: { estado: string }) {
     <span
       className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider ${
         isActive
-          ? 'bg-primary/10 text-primary border-primary/20'
-          : 'bg-accent/10 text-accent border-accent/20'
+          ? 'bg-accent/10 text-accent border-accent/20'
+          : 'bg-muted text-muted-foreground border-gray-200'
       }`}
     >
       <span
         className={`w-1.5 h-1.5 rounded-full ${
-          isActive ? 'bg-primary' : 'bg-accent'
+          isActive ? 'bg-accent' : 'bg-muted-foreground'
         }`}
       />
       {isActive ? t('estadoEnDesarrollo') : t('estadoFinalizado')}
@@ -149,8 +149,8 @@ export function ContratacionesList({
                   onClick={() => setFiltro(key)}
                   className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer ${
                     filtro === key
-                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                      : 'bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+                      ? 'bg-accent text-accent-foreground border-accent shadow-sm'
+                      : 'bg-card text-muted-foreground border-border hover:border-accent/40 hover:text-foreground'
                   }`}
                 >
                   {label}
@@ -160,7 +160,7 @@ export function ContratacionesList({
             {/* Reclutadores decorativos para coincidir con la captura de pantalla */}
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">
-                <div className="w-6 h-6 rounded-full bg-primary/15 text-primary border-2 border-surface flex items-center justify-center text-[10px] font-bold shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-warning/15 text-warning border-2 border-surface flex items-center justify-center text-[10px] font-bold shadow-sm">
                   JD
                 </div>
                 <div className="w-6 h-6 rounded-full bg-secondary/15 text-secondary border-2 border-surface flex items-center justify-center text-[10px] font-bold shadow-sm">
@@ -209,7 +209,7 @@ export function ContratacionesList({
                             />
                           )}
                           {/* Blue checkmark/star badge at bottom-right of avatar to match screenshot */}
-                          <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-0.5 border-2 border-surface shadow-sm flex items-center justify-center animate-fade-in">
+                          <div className="absolute -bottom-1 -right-1 bg-accent text-accent-foreground rounded-full p-0.5 border-2 border-surface shadow-sm flex items-center justify-center animate-fade-in">
                             <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </div>
                         </div>
@@ -217,7 +217,7 @@ export function ContratacionesList({
                           <h4 className="font-bold text-[17px] text-ink-strong leading-tight">
                             {item.estudianteNombre} {item.estudianteApellidos}
                           </h4>
-                          <p className="text-primary text-xs font-bold uppercase tracking-wider mt-1.5 font-sans">
+                          <p className="text-magenta text-xs font-bold uppercase tracking-wider mt-1.5 font-sans">
                             {tituloLabels[item.tituloFwd ?? ''] ??
                               t('tituloEgresado')}
                           </p>
@@ -260,7 +260,7 @@ export function ContratacionesList({
                         <EstadoBadge estado={item.estado} />
                         <Link
                           href={`/empresario/portafolio-egresado/${item.idParticipacion}`}
-                          className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline mt-auto group transition-colors duration-[var(--duration-fast)]"
+                          className="inline-flex items-center gap-1 text-xs font-bold text-magenta hover:underline mt-auto group transition-colors duration-[var(--duration-fast)]"
                         >
                           <span>{t('viewProfile')}</span>
                           <ArrowRight className="w-3.5 h-3.5 transition-transform duration-[var(--duration-fast)] group-hover:translate-x-0.5" />
@@ -270,7 +270,7 @@ export function ContratacionesList({
 
                     {/* Proyecto */}
                     <div className="flex items-center gap-3 bg-muted/30 rounded-xl px-4 py-3 border border-border/40">
-                      <Briefcase className="w-4 h-4 text-primary shrink-0" />
+                      <Briefcase className="w-4 h-4 text-secondary shrink-0" />
                       <div className="flex-1 min-w-0">
                         <span className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-0.5 font-sans">
                           {t('contratadoPara')}
@@ -282,7 +282,7 @@ export function ContratacionesList({
                       <button
                         type="button"
                         onClick={() => setSelectedTitle(item.proyecto.titulo)}
-                        className="shrink-0 text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] focus:outline-none cursor-pointer"
+                        className="shrink-0 text-ink-muted hover:text-magenta transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] focus:outline-none cursor-pointer"
                         title={t('verTituloCompleto')}
                       >
                         <Eye className="w-4 h-4" />
@@ -349,7 +349,7 @@ export function ContratacionesList({
                       cx="72"
                       cy="72"
                       r="56"
-                      stroke="var(--primary)"
+                      stroke="var(--accent)"
                       strokeWidth="10"
                       fill="transparent"
                       strokeDasharray="351.8"
@@ -378,7 +378,7 @@ export function ContratacionesList({
                   </div>
                   <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-primary rounded-full"
+                      className="h-full bg-accent rounded-full"
                       style={{ width: '92%' }}
                     />
                   </div>
@@ -409,7 +409,7 @@ export function ContratacionesList({
 
               <div className="space-y-3.5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-lg bg-primary/10 text-primary shrink-0 animate-fade-in">
+                  <div className="p-2.5 rounded-lg bg-warning/10 text-warning shrink-0 animate-fade-in">
                     <Calendar className="w-4.5 h-4.5" />
                   </div>
                   <div className="min-w-0">
@@ -479,7 +479,7 @@ export function ContratacionesList({
           <div className="flex-1 overflow-y-auto pr-2 py-4 space-y-6">
             {selectedMotivacion?.cartaPostulacion ? (
               <div className="space-y-2">
-                <h4 className="font-bold text-sm uppercase tracking-wider text-primary">
+                <h4 className="font-bold text-sm uppercase tracking-wider text-warning">
                   {t('cartaPresentacion')}
                 </h4>
                 <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap bg-muted/20 p-4 rounded-xl border border-border/40">

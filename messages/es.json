@@ -1731,5 +1731,11 @@
     "submitRating": "Enviar calificación",
     "alreadyRated": "Ya calificaste tu experiencia con esta empresa.",
     "rateSuccess": "Calificación enviada con éxito."
+  },
+  "Theme": {
+    "toggle": "Cambiar tema",
+    "light": "Modo claro",
+    "dark": "Modo oscuro",
+    "system": "Sistema"
   }
 }

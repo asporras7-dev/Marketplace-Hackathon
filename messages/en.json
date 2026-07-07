@@ -1731,5 +1731,11 @@
     "submitRating": "Submit rating",
     "alreadyRated": "You already rated your experience with this company.",
     "rateSuccess": "Rating submitted successfully."
+  },
+  "Theme": {
+    "toggle": "Toggle theme",
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "system": "System"
   }
 }

@@ -3,6 +3,7 @@
 import { type ReactNode } from 'react'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { LocalThemeProvider } from './ThemeContext'
 
 interface CompanyShellProps {
   children: ReactNode
@@ -13,10 +14,10 @@ interface CompanyShellProps {
  */
 export function CompanyShell({ children }: CompanyShellProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-canvas">
+    <LocalThemeProvider>
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
-    </div>
+    </LocalThemeProvider>
   )
 }

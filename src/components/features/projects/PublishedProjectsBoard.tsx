@@ -16,12 +16,12 @@ interface PublishedProjectsBoardProps {
 const STATUS_STYLE: Record<EstadoEfectivo, string> = {
   abierto: 'bg-accent/10 text-accent border-accent/20',
   en_evaluacion: 'bg-warning/15 text-warning border-warning/30',
-  adjudicado: 'bg-primary/10 text-primary border-primary/20',
-  en_desarrollo: 'bg-primary/10 text-primary border-primary/20',
+  adjudicado: 'bg-accent/10 text-accent border-accent/20',
+  en_desarrollo: 'bg-accent/10 text-accent border-accent/20',
   finalizado: 'bg-muted text-ink-muted border-border',
   cancelado: 'bg-magenta/10 text-magenta border-magenta/20',
   borrador: 'bg-muted text-ink-muted border-border',
-  en_recepcion: 'bg-primary/10 text-primary border-primary/20',
+  en_recepcion: 'bg-warning/10 text-warning border-warning/20',
 }
 
 export function formatBudget(
@@ -122,7 +122,7 @@ export function PublishedProjectsBoard({
                     </span>
                     {budget && (
                       <span className="flex items-center gap-1.5">
-                        <Coins className="w-3.5 h-3.5 text-ink-muted" />
+                        <Eye className="w-3.5 h-3.5 text-secondary" />
                         <span className="font-semibold text-ink-strong">
                           {budget}
                         </span>
@@ -138,7 +138,7 @@ export function PublishedProjectsBoard({
                     className="bg-muted/30 hover:bg-muted/60 border border-border text-ink-strong font-bold text-xs h-9 rounded-xl cursor-pointer px-4 flex items-center gap-1.5"
                   >
                     <Link href={`/empresario/proyectos/${project.id}/matches`}>
-                      <Target className="w-4 h-4 text-primary" />
+                      <Target className="w-4 h-4 text-accent shrink-0" />
                       {t('viewMatches')}
                     </Link>
                   </Button>

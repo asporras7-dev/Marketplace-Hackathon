@@ -268,7 +268,7 @@ export function ProjectWizard({
       )}
       <h1 className="text-4xl font-extrabold tracking-tight text-foreground font-heading">
         {pageTitleText}
-        <span className="text-secondary">.</span>
+        <span className="text-magenta">.</span>
       </h1>
       <p className="text-muted-foreground text-sm max-w-xl mx-auto font-sans leading-relaxed">
         {pageSubtitleText}
@@ -280,7 +280,7 @@ export function ProjectWizard({
     <div className="flex justify-center mt-8 mb-4">
       <button
         type="button"
-        className="inline-flex items-center gap-2 px-5 py-2.5 bg-ink-strong text-white rounded-full text-sm font-semibold hover:bg-ink-strong/90 transition-all duration-200 shadow-md cursor-pointer"
+        className="inline-flex items-center gap-2 px-5 py-2.5 bg-magenta text-white rounded-full text-sm font-semibold hover:bg-magenta/90 transition-all duration-200 shadow-md cursor-pointer"
         onClick={() => {
           toast.info('Soporte técnico: contacto@fwdcostarica.com')
         }}
@@ -494,7 +494,7 @@ export function ProjectWizard({
               {/* Contexto Operativo Separator */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink-muted">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-warning">
                     CONTEXTO OPERATIVO
                   </span>
                   <div className="flex-1 h-[1px] bg-border/80" />
