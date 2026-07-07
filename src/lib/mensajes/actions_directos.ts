@@ -5,6 +5,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 import { ok, err, type Result } from '@/lib/result'
 
+import { crearNotificacion } from '@/lib/notifications/create'
 import type { ConversacionItem, Mensaje } from './actions'
 
 const CONTENIDO_MAX = 2000
