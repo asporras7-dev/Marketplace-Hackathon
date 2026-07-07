@@ -1631,7 +1631,15 @@
     "ratingsSection": "Received ratings",
     "noRatings": "You have no ratings from companies yet.",
     "ratingAverage": "Average",
-    "ratingFrom": "Company"
+    "ratingFrom": "Company",
+    "portfolioCvTitle": "Curriculum Link",
+    "portfolioCvDesc": "You can add an external link to your CV (Drive, LinkedIn, personal website, etc).",
+    "portfolioCvLabel": "Curriculum URL",
+    "portfolioCvPlaceholder": "https://...",
+    "portfolioCvSave": "Save Curriculum",
+    "portfolioCvSaved": "Curriculum successfully saved",
+    "portfolioCvError": "Error saving curriculum",
+    "portfolioCvView": "View Curriculum"
   },
   "EgresadoMensajes": {
     "title": "My Messages",

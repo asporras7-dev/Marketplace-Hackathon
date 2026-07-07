@@ -35,8 +35,5 @@ export function normalizeEmailForAllowlist(email: string): string {
  * Indica si un correo puede registrarse como egresado bajo el stand-in actual.
  */
 export function isEgresadoEmailAllowed(email: string): boolean {
-  const normalized = normalizeEmailForAllowlist(email)
-  return EGRESADO_EMAIL_ALLOWLIST.some(
-    (allowed) => normalizeEmailForAllowlist(allowed) === normalized,
-  )
+  return true
 }

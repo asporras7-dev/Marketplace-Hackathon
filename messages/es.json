@@ -1631,7 +1631,15 @@
     "ratingsSection": "Calificaciones recibidas",
     "noRatings": "Aún no tenés calificaciones de empresas.",
     "ratingAverage": "Promedio",
-    "ratingFrom": "Empresa"
+    "ratingFrom": "Empresa",
+    "portfolioCvTitle": "Enlace a Currículum",
+    "portfolioCvDesc": "Puedes agregar un link externo a tu CV (Drive, LinkedIn, web personal, etc).",
+    "portfolioCvLabel": "URL Currículum",
+    "portfolioCvPlaceholder": "https://...",
+    "portfolioCvSave": "Guardar Currículum",
+    "portfolioCvSaved": "Currículum guardado correctamente",
+    "portfolioCvError": "Error al guardar currículum",
+    "portfolioCvView": "Ver Currículum"
   },
   "EgresadoMensajes": {
     "title": "Mis Mensajes",

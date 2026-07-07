@@ -59,10 +59,13 @@ export async function crearPerfilUsuario(
     | null = null
 
   if (datos.role === 'egresado') {
-    const { error: estudianteError } = await admin.from('estudiantes').insert({
-      id_usuario: userId,
-      titulo_fwd: datos.tituloFwd,
-    })
+    const { error: estudianteError } = await admin.from('estudiantes').upsert(
+      {
+        id_usuario: userId,
+        titulo_fwd: datos.tituloFwd,
+      },
+      { onConflict: 'id_usuario' },
+    )
     if (estudianteError) {
       logger.error('crearPerfilUsuario: fallo al crear estudiante', {
         error: estudianteError.message,
@@ -86,7 +89,7 @@ export async function crearPerfilUsuario(
 
     const { error: empresarioError } = await admin
       .from('empresarios')
-      .insert(empresarioInsert)
+      .upsert(empresarioInsert, { onConflict: 'id_usuario' })
     if (empresarioError) {
       logger.error('crearPerfilUsuario: fallo al crear empresario', {
         error: empresarioError.message,
