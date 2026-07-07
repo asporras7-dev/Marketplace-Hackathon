@@ -10,11 +10,10 @@ import {
   Database,
   Cloud,
   Palette,
-  PlayCircle,
 } from 'lucide-react'
 import { HeroBgCarousel } from '@/components/ui/HeroBgCarousel'
 import { LandingHeroCtas } from '@/components/features/landing/LandingHeroCtas'
-import Image from 'next/image'
+import { SuccessStories } from '@/components/features/landing/SuccessStories'
 
 const CAROUSEL_SLIDES = [
   { src: '/images/carousel/carousel-1.png', alt: 'Equipo FWD trabajando' },
@@ -291,86 +290,7 @@ export default async function LandingPage() {
         </section>
 
         {/* Success Stories Section */}
-        <section className="py-20 lg:py-32 bg-surface">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-heading text-ink-strong">
-                {tLanding('successStoriesTitle')}
-              </h2>
-              <p className="text-lg text-ink-muted leading-relaxed">
-                {tLanding('successStoriesSubtitle')}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Card 1 */}
-              <div className="space-y-4">
-                <div className="relative group overflow-hidden rounded-2xl aspect-[16/10] bg-surface-sunken shadow-sm border border-border">
-                  <Image
-                    src="/images/valeria.png"
-                    alt={tLanding('successStory1Tag')}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                    <PlayCircle className="w-16 h-16 text-white/90 drop-shadow-md transition-transform duration-300 hover:scale-110 cursor-pointer" />
-                  </div>
-                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold text-ink-strong shadow-sm">
-                    {tLanding('successStory1Tag')}
-                  </div>
-                </div>
-                <p className="text-sm sm:text-base italic text-ink leading-relaxed">
-                  {tLanding('successStory1Quote')}
-                </p>
-              </div>
-
-              {/* Card 2 */}
-              <div className="space-y-4">
-                <div className="relative group overflow-hidden rounded-2xl aspect-[16/10] bg-surface-sunken shadow-sm border border-border">
-                  <Image
-                    src="/images/ricardo.png"
-                    alt={tLanding('successStory2Tag')}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                    <PlayCircle className="w-16 h-16 text-white/90 drop-shadow-md transition-transform duration-300 hover:scale-110 cursor-pointer" />
-                  </div>
-                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold text-ink-strong shadow-sm">
-                    {tLanding('successStory2Tag')}
-                  </div>
-                </div>
-                <p className="text-sm sm:text-base italic text-ink leading-relaxed">
-                  {tLanding('successStory2Quote')}
-                </p>
-              </div>
-
-              {/* Card 3 */}
-              <div className="space-y-4">
-                <div className="relative group overflow-hidden rounded-2xl aspect-[16/10] bg-surface-sunken shadow-sm border border-border">
-                  <Image
-                    src="/images/clara.png"
-                    alt={tLanding('successStory3Tag')}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                    <PlayCircle className="w-16 h-16 text-white/90 drop-shadow-md transition-transform duration-300 hover:scale-110 cursor-pointer" />
-                  </div>
-                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/20 text-xs font-bold text-ink-strong shadow-sm">
-                    {tLanding('successStory3Tag')}
-                  </div>
-                </div>
-                <p className="text-sm sm:text-base italic text-ink leading-relaxed">
-                  {tLanding('successStory3Quote')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <SuccessStories />
 
         {/* Join Section */}
         <section className="py-20 lg:py-32 px-4 sm:px-6 lg:px-8 bg-surface-sunken">

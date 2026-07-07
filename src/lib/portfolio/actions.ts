@@ -545,6 +545,7 @@ export async function getPublicStudentProfile(
         reputacion,
         pais_iso_residencia,
         region_residencia,
+        url_curriculum,
         usuarios!estudiantes_id_usuario_fkey(nombre, apellido_1, apellido_2, foto_perfil),
         habilidades_tecnicas(nivel, id_tecnologia, tecnologias(nombre)),
         proyectos_portafolio(id_portafolio, titulo, descripcion, url_repositorio, url_demo, fecha, portafolio_tecnologias(tecnologias(nombre)))
@@ -634,6 +635,7 @@ export async function getPublicStudentProfile(
         : null,
       skills: skillsList,
       projects: projectsList,
+      urlCurriculum: estudiante.url_curriculum ?? null,
     }
 
     return ok(profile)
