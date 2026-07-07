@@ -51,27 +51,29 @@ export function ProjectCard({
   return (
     <Card className="flex flex-col h-full overflow-hidden border border-border/80 bg-card/60 backdrop-blur-sm hover:shadow-md hover:border-primary/40 transition-all duration-[var(--duration-slow)] ease-[var(--ease-out)] group">
       <CardHeader className="p-6 pb-4">
-        <div className="flex justify-between items-start gap-4 mb-2">
+        <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
           <Badge
             variant="outline"
-            className={`px-2 py-0.5 rounded-full text-xs font-medium border ${modeColors[project.mode]}`}
+            className={`px-2 py-0.5 rounded-full text-xs font-medium border shrink-0 ${modeColors[project.mode]}`}
           >
             <MapPin className="w-3 h-3 mr-1 shrink-0" />
             {tCommon(project.mode)}
           </Badge>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
             {project.matchScore !== undefined && (
               <Badge
                 variant="outline"
-                className="px-2 py-0.5 rounded-full text-xs font-bold border-magenta text-magenta bg-magenta/5"
+                className="px-2 py-0.5 rounded-full text-xs font-bold border-magenta text-magenta bg-magenta/5 shrink-0"
               >
-                <Target className="w-3 h-3 mr-1" />
-                Match: {project.matchScore} pts
+                <Target className="w-3.5 h-3.5 mr-1 shrink-0" />
+                {tCommon('matchScore', { score: project.matchScore })}
               </Badge>
             )}
-            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
-              {project.startDate}
+            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1 shrink-0 whitespace-nowrap">
+              <Calendar className="w-3.5 h-3.5 shrink-0" />
+              {project.startDate
+                ? new Date(project.startDate).toLocaleDateString()
+                : ''}
             </span>
           </div>
         </div>

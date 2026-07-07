@@ -301,7 +301,8 @@
     "minCharsLabel": "Minimum {n} characters",
     "maxCharsLabel": "Maximum {n} characters",
     "optional": "(Optional)",
-    "required": "(Required)"
+    "required": "(Required)",
+    "matchScore": "Match: {score} pts"
   },
   "Egresado": {
     "dashboard": "Graduate Dashboard",
