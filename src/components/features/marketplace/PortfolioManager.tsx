@@ -24,14 +24,6 @@ import {
 } from '@/lib/portfolio/actions'
 import type { ComboboxOption } from '@/components/ui/combobox'
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card'
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -41,7 +33,6 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import {
-  PlusCircle,
   Pencil,
   Trash2,
   ExternalLink,
@@ -51,13 +42,7 @@ import {
   BookOpen,
   Loader2,
   Star,
-  Camera,
-  CheckCircle2,
-  CheckCircle,
-  XCircle,
-  Info,
   MapPin,
-  TrendingUp,
   Award,
   FileText,
 } from 'lucide-react'
@@ -277,7 +262,6 @@ export function PortfolioManager({
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const [localPhotoUrl, setLocalPhotoUrl] = useState<string | null>(null)
-  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false)
   const [isBioEditOpen, setIsBioEditOpen] = useState(false)
   const [isLocationEditOpen, setIsLocationEditOpen] = useState(false)
   const [isCvEditOpen, setIsCvEditOpen] = useState(false)
@@ -411,7 +395,6 @@ export function PortfolioManager({
       toast.success(customMessage || t('toastVisibilityUpdated'), {
         duration: 2000,
       })
-      if (newVis === 'publico') setIsPublishDialogOpen(false)
     } else {
       toast.error('Error al actualizar la visibilidad')
     }
@@ -534,11 +517,6 @@ export function PortfolioManager({
     } else {
       toast.error('Error al eliminar habilidad')
     }
-  }
-
-  const handleEditSkill = (skill: StudentSkill) => {
-    setEditingSkill(skill)
-    setIsSkillDialogOpen(true)
   }
 
   const handleAddNewSkill = () => {
