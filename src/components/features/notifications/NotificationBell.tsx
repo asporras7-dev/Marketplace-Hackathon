@@ -23,7 +23,6 @@ import {
 import { useAuth } from '@/lib/auth/AuthContext'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
-const POLL_INTERVAL_MS = 5_000
 const UNREAD_BADGE_CAP = 99
 
 const TONE_CLASSES: Record<NotificationTone, string> = {

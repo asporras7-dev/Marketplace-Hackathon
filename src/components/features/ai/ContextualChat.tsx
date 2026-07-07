@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Send, X, Bot } from 'lucide-react'
+import { Send, X } from 'lucide-react'
 import Image from 'next/image'
 import {
   Card,

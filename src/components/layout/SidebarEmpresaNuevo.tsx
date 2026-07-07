@@ -1,23 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Link, usePathname, useRouter } from '@/i18n/routing'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
+
 import { SupportTicketDialog } from '@/components/features/shared/SupportTicketDialog'
 import {
-  Loader2,
   Send,
   MessageSquare,
   HelpCircle,

@@ -184,7 +184,7 @@ export function ApplyProjectClient({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-canvas">
       <Navbar />
 
       <main className="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
@@ -257,7 +257,7 @@ export function ApplyProjectClient({
                   <Input
                     id="tituloProyectoMock"
                     placeholder="Ej: Rediseño UX App Pedidos"
-                    className="bg-slate-100/80 border-border/80 text-ink-strong"
+                    className="bg-surface-sunken/80 border-border/80 text-ink-strong"
                     readOnly
                     value={tEgresado('proposalFor', { title: projectTitle })}
                   />
@@ -274,7 +274,7 @@ export function ApplyProjectClient({
                   <div className="relative">
                     <select
                       id="modalidadTrabajoMock"
-                      className="w-full bg-slate-100/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
+                      className="w-full bg-surface-sunken/80 border border-border/80 rounded-lg px-3 py-2 text-sm text-ink-strong appearance-none focus:outline-none cursor-not-allowed"
                       disabled
                       value="remoto"
                     >

@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import Image from 'next/image'
-import { FwdLogo } from '@/components/features/brand/FwdLogo'
+
 import { NotificationBell } from '@/components/features/notifications/NotificationBell'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import {

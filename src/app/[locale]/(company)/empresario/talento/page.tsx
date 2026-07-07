@@ -2,17 +2,7 @@ import { getPublicProfiles } from '@/lib/talento/actions'
 import { CompanyShell } from '@/components/layout/CompanyShell'
 import { PageTitle } from '@/components/features/brand/PageTitle'
 import { getTranslations } from 'next-intl/server'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Star, MapPin, Code2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+
 import { TalentoClientList } from './TalentoClientList'
 
 import { SidebarEmpresaNuevo } from '@/components/layout/SidebarEmpresaNuevo'

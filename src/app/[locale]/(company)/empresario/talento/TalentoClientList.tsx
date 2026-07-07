@@ -1,13 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
   Star,
@@ -25,7 +19,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import type { StudentProfileView } from '@/lib/portfolio/actions'
@@ -44,7 +37,6 @@ export function TalentoClientList({
     useState<StudentProfileView | null>(null)
   const [isContacting, setIsContacting] = useState(false)
   const [contactSuccess, setContactSuccess] = useState(false)
-  const t = useTranslations('EmpresaPerfil')
   const tEgresado = useTranslations('Egresado')
   const router = useRouter()
 
