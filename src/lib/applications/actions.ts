@@ -148,7 +148,7 @@ export async function postularse(formData: FormData): Promise<Result<void>> {
   // patrón que entregables). Se guarda el PATH del objeto, NO una URL: el bucket
   // es privado y la URL de descarga se firma al leer
   // (getSignedUrlDocumentacionTecnica). La carpeta {id_proyecto}/{id_usuario}
-  // satisface la RLS del bucket.
+  // satisface la convención del bucket.
   const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
   const archivoPath = `${parsed.data.id_proyecto}/${userData.user.id}/${uniqueSuffix}.${ext}`
 
@@ -156,8 +156,12 @@ export async function postularse(formData: FormData): Promise<Result<void>> {
   // exige un MIME del allowlist (pdf/zip) y supabase-js, para un File, usa el
   // `file.type` del browser, que en Windows puede llegar vacío u 'octet-stream'
   // y el bucket lo rechazaría con un storage_error no accionable.
+  // Se usa el admin client para el upload (service_role bypasea la RLS del
+  // storage que bloquea sesiones SSR). El control de acceso ya fue verificado
+  // arriba (egresado verificado + proyecto abierto + validación AI).
   const contentType = ext === 'pdf' ? 'application/pdf' : 'application/zip'
-  const { error: uploadError } = await supabase.storage
+  const admin = createSupabaseAdminClient()
+  const { error: uploadError } = await admin.storage
     .from(DOC_TECNICA_BUCKET)
     .upload(archivoPath, file, { contentType })
   if (uploadError) {
@@ -180,7 +184,7 @@ export async function postularse(formData: FormData): Promise<Result<void>> {
   if (insertError) {
     // Insert falló en firme: borrar el archivo recién subido para no dejar
     // huérfanos en el Storage.
-    await supabase.storage.from(DOC_TECNICA_BUCKET).remove([archivoPath])
+    await admin.storage.from(DOC_TECNICA_BUCKET).remove([archivoPath])
     logger.error('postularse failed', { error: insertError.message })
     if (
       insertError.code === 'P0001' ||
