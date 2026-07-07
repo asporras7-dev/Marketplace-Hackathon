@@ -29,10 +29,12 @@ export default function VerifyEmailPage() {
       setEmail(fromQuery)
       return
     }
-    const supabase = createSupabaseBrowserClient()
-    void supabase.auth.getUser().then(({ data }) => {
+    const fetchUserEmail = async () => {
+      const supabase = createSupabaseBrowserClient()
+      const { data } = await supabase.auth.getUser()
       if (data.user?.email) setEmail(data.user.email)
-    })
+    }
+    void fetchUserEmail()
   }, [])
 
   const handleVerify = async (e: React.FormEvent) => {

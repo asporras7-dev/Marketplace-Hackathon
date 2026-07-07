@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link, usePathname } from '@/i18n/routing'
+import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils/cn'
 import { useAuth } from '@/lib/auth/AuthContext'
@@ -12,16 +12,26 @@ import {
   HelpCircle,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from 'lucide-react'
 
 import { SupportTicketDialog } from '@/components/features/shared/SupportTicketDialog'
+import { ConfirmButton } from '@/components/features/shared/ConfirmButton'
 
 export function SidebarEgresado() {
   const t = useTranslations('Nav')
   const pathname = usePathname()
-  const { currentUser } = useAuth()
+  const { currentUser, resetAuth } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const toggleSidebar = () => setIsCollapsed((prev) => !prev)
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    const { signOut } = await import('@/lib/auth/actions')
+    await signOut()
+    resetAuth()
+    router.push('/login')
+  }
 
   const studentName =
     (typeof currentUser?.user_metadata?.['full_name'] === 'string'
@@ -174,6 +184,33 @@ export function SidebarEgresado() {
               </SupportTicketDialog>
             </nav>
           </div>
+        </div>
+
+        {/* Cerrar sesión (mismo patrón con confirmación que el admin/empresario) */}
+        <div
+          className={cn('px-1 pb-4', isCollapsed ? 'flex justify-center' : '')}
+        >
+          <div className="h-px bg-white/10 mb-2 mx-4" />
+          <ConfirmButton
+            onConfirm={handleLogout}
+            title={t('confirmLogoutTitle')}
+            description={t('confirmLogoutDesc')}
+            confirmLabel={t('logout')}
+            variant="ghost"
+            size="default"
+            className={cn(
+              'w-full flex items-center gap-3 rounded-xl py-3 text-sm font-semibold transition-all',
+              isCollapsed
+                ? 'justify-center px-0 text-white/65 hover:bg-white/10 hover:text-white'
+                : 'justify-start px-4 text-white/65 hover:bg-white/10 hover:text-white/90',
+            )}
+          >
+            <LogOut
+              className="w-4 h-4 shrink-0 text-white/55"
+              aria-hidden="true"
+            />
+            {!isCollapsed && t('logout')}
+          </ConfirmButton>
         </div>
       </aside>
 

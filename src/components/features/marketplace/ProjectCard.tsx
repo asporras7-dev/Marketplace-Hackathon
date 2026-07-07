@@ -63,7 +63,7 @@ export function ProjectCard({
             {project.matchScore !== undefined && (
               <Badge
                 variant="outline"
-                className="px-2 py-0.5 rounded-full text-xs font-bold border-primary text-primary bg-primary/5"
+                className="px-2 py-0.5 rounded-full text-xs font-bold border-magenta text-magenta bg-magenta/5"
               >
                 <Target className="w-3 h-3 mr-1" />
                 Match: {project.matchScore} pts
@@ -93,8 +93,8 @@ export function ProjectCard({
           {project.stack.map((tech) => (
             <Badge
               key={tech}
-              variant="secondary"
-              className="text-xs font-medium bg-secondary/5 text-secondary-foreground border border-border/60"
+              variant="outline"
+              className="text-xs font-bold border-primary text-primary bg-primary/5"
             >
               {tech}
             </Badge>
@@ -137,7 +137,7 @@ export function ProjectCard({
         ) : (
           <Link
             href={`/egresado/projects/${project.id}`}
-            className="inline-flex items-center justify-center text-sm font-semibold text-primary hover:text-primary/80 transition-colors group/link w-full py-2"
+            className="inline-flex items-center justify-center text-sm font-semibold text-white bg-secondary hover:bg-secondary/90 shadow-sm transition-colors group/link w-full py-2.5 rounded-full"
           >
             {tCommon('viewDetails')}
             <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover/link:translate-x-1" />

@@ -13,6 +13,9 @@ export interface PostulacionPropia {
   projectTitle: string
   companyName: string
   carta_postulacion: string | null
+  planteamiento_solucion?: string | null
+  prototipo_enlaces?: string[] | null
+  documentacion_tecnica?: string | null
   /** Estado real almacenado en la BD. */
   estado: EstadoParticipacion
   /** Estado EFECTIVO de cara al estudiante (RF-32): si el proyecto ya se cerró,
@@ -26,10 +29,10 @@ const ESTADO_STYLE: Record<EstadoParticipacion, string> = {
   enviada: 'bg-primary/10 text-primary border-primary/20',
   en_revision: 'bg-warning/10 text-warning border-warning/20',
   contratada: 'bg-accent/10 text-accent border-accent/20',
-  no_seleccionada: 'bg-destructive/10 text-destructive border-destructive/20',
+  no_seleccionada: 'bg-magenta/10 text-magenta border-magenta/20',
   retirada: 'bg-muted text-muted-foreground border-border',
   finalizada: 'bg-secondary/10 text-secondary border-secondary/20',
-  cancelada: 'bg-destructive/10 text-destructive border-destructive/20',
+  cancelada: 'bg-magenta/10 text-magenta border-magenta/20',
 }
 
 const RETIRABLE: EstadoParticipacion[] = ['enviada', 'en_revision']
@@ -75,16 +78,67 @@ export function PostulacionCard({
         </span>
       </CardHeader>
 
-      {postulacion.carta_postulacion && (
-        <CardContent className="p-6 pt-0">
-          <div className="bg-muted/30 p-4 rounded-xl border border-border/40">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              {tEgresado('coverLetter')}
-            </p>
-            <p className="text-sm text-foreground leading-relaxed whitespace-pre-line italic">
-              &quot;{postulacion.carta_postulacion}&quot;
-            </p>
-          </div>
+      {(postulacion.carta_postulacion ||
+        postulacion.planteamiento_solucion) && (
+        <CardContent className="p-6 pt-0 space-y-4">
+          {postulacion.carta_postulacion && (
+            <div className="bg-primary/5 p-4 rounded-xl border border-primary/20">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
+                Carta de Presentación
+              </p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-line italic">
+                &quot;{postulacion.carta_postulacion}&quot;
+              </p>
+            </div>
+          )}
+          {postulacion.planteamiento_solucion && (
+            <div className="bg-primary/5 p-4 rounded-xl border border-primary/20">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
+                Propuesta de solución
+              </p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
+                {postulacion.planteamiento_solucion}
+              </p>
+            </div>
+          )}
+          {(postulacion.documentacion_tecnica ||
+            (postulacion.prototipo_enlaces &&
+              postulacion.prototipo_enlaces.length > 0)) && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {postulacion.documentacion_tecnica && (
+                <a
+                  href={postulacion.documentacion_tecnica}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-warning/10 text-warning border border-warning/20 rounded-full hover:bg-warning/20 transition-colors"
+                >
+                  Ver Documentación Técnica
+                </a>
+              )}
+              {postulacion.prototipo_enlaces &&
+                postulacion.prototipo_enlaces.map((enlace, idx) => {
+                  const isPrototipo = idx === 0
+                  return (
+                    <a
+                      key={idx}
+                      href={enlace}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold border rounded-full transition-colors',
+                        isPrototipo
+                          ? 'bg-magenta/10 text-magenta border-magenta/20 hover:bg-magenta/20'
+                          : 'bg-secondary/10 text-secondary border-secondary/20 hover:bg-secondary/20',
+                      )}
+                    >
+                      {isPrototipo
+                        ? 'Ver Prototipo'
+                        : `Ver Enlace Adicional ${idx}`}
+                    </a>
+                  )
+                })}
+            </div>
+          )}
         </CardContent>
       )}
 
@@ -94,7 +148,7 @@ export function PostulacionCard({
             size="sm"
             variant="outline"
             onClick={onWithdraw}
-            className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive flex items-center justify-center gap-1.5 px-4"
+            className="border-magenta/30 text-magenta hover:bg-magenta/10 hover:text-magenta flex items-center justify-center gap-1.5 px-4"
           >
             <X className="w-4 h-4" />
             {tEgresado('withdrawOffer')}

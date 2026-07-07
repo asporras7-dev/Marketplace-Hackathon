@@ -582,16 +582,24 @@ export function CompanyMensajesClient({
                   </div>
                 </div>
                 <div className="flex-1 overflow-y-auto divide-y divide-border/40 bg-surface">
-                  {convs.map((conv) => (
-                    <ConversacionRow
-                      key={conv.idConversacion}
-                      conv={conv}
-                      isActive={
-                        selectedConv?.idConversacion === conv.idConversacion
-                      }
-                      onSelect={() => void handleSelectConv(conv)}
-                    />
-                  ))}
+                  {convs
+                    .filter((conv) => {
+                      if (filter === 'todos') return true
+                      if (filter === 'proyectos')
+                        return conv.tipo === 'proyecto'
+                      if (filter === 'directos') return conv.tipo === 'directo'
+                      return true
+                    })
+                    .map((conv) => (
+                      <ConversacionRow
+                        key={conv.idConversacion}
+                        conv={conv}
+                        isActive={
+                          selectedConv?.idConversacion === conv.idConversacion
+                        }
+                        onSelect={() => void handleSelectConv(conv)}
+                      />
+                    ))}
                   {/* Skeleton placeholder row to match screenshot */}
                   <div className="px-4 py-4 border-t border-border/40 opacity-40 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-muted shrink-0 animate-pulse" />
@@ -619,6 +627,9 @@ export function CompanyMensajesClient({
                         <div className="flex items-center gap-2.5 flex-wrap">
                           <p className="font-bold text-sm text-ink-strong truncate">
                             {selectedConv.tituloProyecto}
+                            <span className="ml-2 text-[9px] bg-red-100 text-red-600 px-1 rounded uppercase">
+                              {selectedConv.tipo ?? 'UNDEFINED'}
+                            </span>
                           </p>
                           <EstadoBadge estado={selectedConv.estado} />
                         </div>

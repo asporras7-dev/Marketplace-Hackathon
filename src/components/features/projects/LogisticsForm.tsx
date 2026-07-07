@@ -126,7 +126,7 @@ export function LogisticsForm({
           type="text"
           disabled={disabled}
           placeholder="Ej. Arquitectura Microservicios Next.js"
-          className="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
+          className="bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
           {...register('titulo')}
         />
         <FieldError code={errors.titulo?.message} />
@@ -150,7 +150,7 @@ export function LogisticsForm({
             >
               <SelectTrigger
                 id="modalidad"
-                className="w-full bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
+                className="w-full bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
               >
                 <SelectValue placeholder={t('fieldModalityPlaceholder')} />
               </SelectTrigger>
@@ -185,7 +185,7 @@ export function LogisticsForm({
             regionId="region"
             disabled={disabled}
             countryInvalid={Boolean(errors.paisIso)}
-            comboboxClassName="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
+            comboboxClassName="bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
           />
           <FieldError code={errors.paisIso?.message} />
         </div>
@@ -210,7 +210,7 @@ export function LogisticsForm({
               >
                 <SelectTrigger
                   id="moneda"
-                  className="w-full bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
+                  className="w-full bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
                 >
                   <SelectValue />
                 </SelectTrigger>
@@ -239,7 +239,7 @@ export function LogisticsForm({
             step={montoStep}
             disabled={disabled}
             placeholder="0.00"
-            className="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
+            className="bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
             {...register('presupuestoMin')}
           />
           <FieldError code={errors.presupuestoMin?.message} />
@@ -258,7 +258,7 @@ export function LogisticsForm({
             step={montoStep}
             disabled={disabled}
             placeholder="0.00"
-            className="bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
+            className="bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus-visible:ring-secondary focus-visible:border-secondary shadow-sm transition-all placeholder:text-ink-subtle"
             {...register('presupuestoMax')}
           />
           <FieldError code={errors.presupuestoMax?.message} />
@@ -283,7 +283,7 @@ export function LogisticsForm({
             >
               <SelectTrigger
                 id="plazoDias"
-                className="w-full bg-white border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
+                className="w-full bg-surface-sunken border-border/80 rounded-2xl h-11 px-4 text-sm focus:ring-secondary focus:border-secondary shadow-sm transition-all"
               >
                 <SelectValue placeholder="Definir ventana de tiempo" />
               </SelectTrigger>

@@ -14,6 +14,7 @@ export const FWD_STORAGE_KEYS = {
   STUDENT_SKILLS: 'fwd_student_skills',
   STUDENT_PORTFOLIO: 'fwd_student_portfolio',
   ROLE: 'fwd_role',
+  AVATAR_URL: 'fwd_avatar_url',
 } as const
 
 interface AuthContextType {
@@ -23,6 +24,7 @@ interface AuthContextType {
   avatarUrl: string | null
   setUserRole: (role: UserRole) => void
   resetAuth: () => void
+  updateAvatarUrl: (url: string | null) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -37,7 +39,26 @@ export function AuthProvider({
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [userRole, setUserRoleState] = useState<UserRole | null>(initialRole)
   const [displayName, setDisplayName] = useState<string | null>(null)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrlState] = useState<string | null>(null)
+
+  // Hydrate from localStorage on client-side mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedAvatar = localStorage.getItem(FWD_STORAGE_KEYS.AVATAR_URL)
+      if (storedAvatar) {
+        setAvatarUrlState(storedAvatar)
+      }
+    }
+  }, [])
+
+  const setAvatarUrl = (url: string | null) => {
+    setAvatarUrlState(url)
+    if (url) {
+      localStorage.setItem(FWD_STORAGE_KEYS.AVATAR_URL, url)
+    } else {
+      localStorage.removeItem(FWD_STORAGE_KEYS.AVATAR_URL)
+    }
+  }
 
   // Rol autoritativo provisto por el servidor (layout raíz). Se re-afirma
   // cuando cambia entre navegaciones para ganar sobre el valor en memoria o el
@@ -105,21 +126,21 @@ export function AuthProvider({
     setUserRoleState(role)
   }
 
-  const resetAuth = () => {
+  const resetAuth = async () => {
     const supabase = createSupabaseBrowserClient()
-    void supabase.auth.signOut().then(() => {
-      Object.values(FWD_STORAGE_KEYS).forEach((key) =>
-        localStorage.removeItem(key),
-      )
-      if (typeof window !== 'undefined') {
-        document.cookie =
-          'fwd_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-      }
-      setCurrentUser(null)
-      setUserRoleState(null)
-      setDisplayName(null)
-      setAvatarUrl(null)
-    })
+    await supabase.auth.signOut()
+
+    Object.values(FWD_STORAGE_KEYS).forEach((key) =>
+      localStorage.removeItem(key),
+    )
+    if (typeof window !== 'undefined') {
+      document.cookie =
+        'fwd_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    }
+    setCurrentUser(null)
+    setUserRoleState(null)
+    setDisplayName(null)
+    setAvatarUrl(null)
   }
 
   return (
@@ -131,6 +152,7 @@ export function AuthProvider({
         avatarUrl,
         setUserRole,
         resetAuth,
+        updateAvatarUrl: setAvatarUrl,
       }}
     >
       {children}

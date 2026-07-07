@@ -43,11 +43,11 @@ function ChatBubble({
     return (
       <div className="flex items-start gap-4 mr-12 mr-auto text-left w-full">
         {/* Purple Sparkles icon container */}
-        <div className="w-9 h-9 flex items-center justify-center bg-secondary/10 text-secondary rounded-xl shrink-0 mt-1 shadow-sm">
+        <div className="w-9 h-9 flex items-center justify-center bg-primary/10 text-primary rounded-xl shrink-0 mt-1 shadow-sm border border-primary/20">
           <Sparkles className="h-4.5 w-4.5" />
         </div>
         {/* White message bubble with border */}
-        <div className="border border-border/80 bg-surface rounded-2xl rounded-tl-none p-4 text-sm text-ink-strong leading-relaxed max-w-[85%] shadow-sm">
+        <div className="border border-primary/20 bg-primary/5 rounded-2xl rounded-tl-none p-4 text-sm text-ink-strong leading-relaxed max-w-[85%] shadow-sm">
           <p className="whitespace-pre-wrap">{contenido}</p>
         </div>
       </div>
@@ -57,11 +57,11 @@ function ChatBubble({
   return (
     <div className="flex items-start gap-3 ml-12 justify-end ml-auto text-right w-full">
       {/* Purple message bubble */}
-      <div className="bg-secondary text-white rounded-2xl rounded-tr-none px-4 py-3 text-sm font-medium max-w-[85%] text-left shadow-sm">
+      <div className="bg-magenta text-white rounded-2xl rounded-tr-none px-4 py-3 text-sm font-medium max-w-[85%] text-left shadow-sm">
         <p className="whitespace-pre-wrap">{contenido}</p>
       </div>
       {/* Light blue/cyan user icon container */}
-      <div className="w-8 h-8 flex items-center justify-center bg-warning/20 text-warning rounded-xl shrink-0 mt-1 shadow-sm">
+      <div className="w-8 h-8 flex items-center justify-center bg-magenta/10 text-magenta rounded-xl shrink-0 mt-1 shadow-sm border border-magenta/20">
         <User className="h-4.5 w-4.5" />
       </div>
     </div>
@@ -162,7 +162,7 @@ export function ProjectChat({
           type="button"
           onClick={() => void onSend()}
           disabled={ocupado || text.trim().length === 0}
-          className="bg-warning hover:bg-warning/90 text-white w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-md shrink-0 disabled:opacity-50"
+          className="bg-primary hover:bg-primary/90 text-white w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-md shrink-0 disabled:opacity-50"
           aria-label={t('chatSend')}
           size="icon"
         >
@@ -181,7 +181,7 @@ export function ProjectChat({
               type="button"
               onClick={onArmarPropuesta}
               disabled={ocupado}
-              className="inline-flex items-center gap-1.5 bg-warning hover:bg-warning/95 text-white font-bold px-6 py-3 rounded-2xl shadow-md transition-all hover:scale-[1.01]"
+              className="inline-flex items-center gap-1.5 bg-magenta hover:bg-magenta/95 text-white font-bold px-6 py-3 rounded-2xl shadow-md transition-all hover:scale-[1.01]"
             >
               <Wand2 className="h-4.5 w-4.5" />
               {armando ? t('generating') : t('buildProposal')}

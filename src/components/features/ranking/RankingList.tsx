@@ -189,7 +189,7 @@ export function RankingList({
             </div>
             <Link
               href={`${pathname}/${heroTalent.idEstudiante}`}
-              className="mt-6 w-full py-2.5 bg-surface border border-primary text-primary text-center text-xs font-semibold rounded-full hover:bg-primary/5 transition-all duration-200 shadow-sm block"
+              className="mt-6 w-full py-2.5 bg-secondary hover:bg-secondary/90 text-white text-center text-xs font-bold rounded-full transition-all duration-200 shadow-sm block"
             >
               {t('highlightButton')}
             </Link>
@@ -396,7 +396,7 @@ export function RankingList({
 
                     <Link
                       href={`${pathname}/${talent.idEstudiante}`}
-                      className="px-5 py-2 border border-primary text-primary text-xs font-semibold rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-200 whitespace-nowrap"
+                      className="px-5 py-2 bg-secondary hover:bg-secondary/90 text-white text-xs font-bold rounded-full transition-all duration-200 whitespace-nowrap shadow-sm"
                     >
                       {t('viewProfile')}
                     </Link>

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils/cn'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/auth/AuthContext'
 import {
   saveStudentProfile,
   addStudentSkill,
@@ -45,6 +46,7 @@ import {
   MapPin,
   Award,
   FileText,
+  Upload,
 } from 'lucide-react'
 import type { PortfolioProject, StudentSkill } from '@/types'
 import type { CalificacionRecibida } from '@/lib/evaluaciones/actions'
@@ -232,7 +234,9 @@ export function PortfolioManager({
   initialRegions?: ComboboxOption[]
   calificaciones?: CalificacionRecibida[]
 }) {
+  const { updateAvatarUrl } = useAuth()
   const router = useRouter()
+  const t = useTranslations('Portfolio')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSkillDialogOpen, setIsSkillDialogOpen] = useState(false)
   const [availableTechnologies, setAvailableTechnologies] = useState<
@@ -278,12 +282,12 @@ export function PortfolioManager({
   } | null>(null)
   const [isCropModalOpen, setIsCropModalOpen] = useState(false)
 
-  const t = useTranslations('Portfolio')
-
   useEffect(() => {
-    getActiveTechnologies().then((res) => {
+    const fetchTechnologies = async () => {
+      const res = await getActiveTechnologies()
       if (res.ok) setAvailableTechnologies(res.data)
-    })
+    }
+    void fetchTechnologies()
   }, [])
 
   useEffect(() => {
@@ -572,28 +576,6 @@ export function PortfolioManager({
               {initialProfile?.firstName || 'Ronny'}{' '}
               {initialProfile?.lastName1 || 'Fernández'}
             </span>
-            <div className="hidden sm:flex items-center gap-6 text-[11px] font-bold text-ink-muted">
-              <span className="text-primary border-b-2 border-primary py-1">
-                Biography
-              </span>
-              <span>Skills</span>
-              <span>Projects</span>
-              <span>Contact</span>
-            </div>
-            <Button
-              size="sm"
-              variant="default"
-              className="h-8 text-[10px] font-bold tracking-wider uppercase rounded-lg px-4"
-              asChild
-            >
-              <a
-                href={initialProfile?.urlCurriculum || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Resume
-              </a>
-            </Button>
           </div>
 
           {/* Preview Body */}
@@ -601,85 +583,34 @@ export function PortfolioManager({
             {/* Profile Card / Header Info */}
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 bg-surface p-6 rounded-2xl border border-border/40 shadow-sm">
               {/* Avatar Container */}
-              <div className="relative shrink-0">
-                <Dialog
-                  open={isPhotoModalOpen}
-                  onOpenChange={setIsPhotoModalOpen}
+              <div className="relative shrink-0 flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative w-24 h-24 rounded-full border-4 border-surface shadow-md bg-muted overflow-hidden group transition-transform hover:scale-[1.02]"
                 >
-                  <DialogTrigger asChild>
-                    <button className="relative group rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-transform hover:scale-105 active:scale-95 cursor-pointer ring-2 ring-primary/20 ring-offset-2">
-                      {localPhotoUrl || initialProfile?.profilePhoto ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={
-                            (localPhotoUrl ||
-                              initialProfile?.profilePhoto) as string
-                          }
-                          alt="Profile"
-                          className={cn(
-                            'w-24 h-24 rounded-full object-cover',
-                            isUploadingPhoto && 'opacity-50',
-                          )}
-                        />
-                      ) : (
-                        <div className="w-24 h-24 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-4xl shadow-inner">
-                          {initialProfile?.firstName?.charAt(0) || 'R'}
-                        </div>
+                  {localPhotoUrl || initialProfile?.profilePhoto ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={
+                        (localPhotoUrl ||
+                          initialProfile?.profilePhoto) as string
+                      }
+                      alt="Profile"
+                      className={cn(
+                        'w-24 h-24 rounded-full object-cover',
+                        isUploadingPhoto && 'opacity-50',
                       )}
-                      <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="w-4 h-4" />
-                      </div>
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] flex flex-col items-center text-center p-8 gap-6">
-                    {localPhotoUrl || initialProfile?.profilePhoto ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={
-                          (localPhotoUrl ||
-                            initialProfile?.profilePhoto) as string
-                        }
-                        alt="Profile preview"
-                        className={cn(
-                          'w-32 h-32 rounded-full object-cover border shadow-sm',
-                          isUploadingPhoto && 'opacity-50',
-                        )}
-                      />
-                    ) : (
-                      <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center border text-primary font-bold text-4xl shadow-sm">
-                        {initialProfile?.firstName?.charAt(0) || 'U'}
-                      </div>
-                    )}
-                    <div className="space-y-2">
-                      <DialogTitle className="text-xl font-semibold">
-                        Editar foto de perfil
-                      </DialogTitle>
-                      <p className="text-sm text-muted-foreground">
-                        Selecciona una nueva imagen para actualizar tu identidad
-                        visual en la plataforma.
-                      </p>
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-4xl shadow-inner">
+                      {initialProfile?.firstName?.charAt(0) || 'U'}
                     </div>
-                    <div className="flex w-full justify-end bg-muted/20 p-4 -mx-8 -mb-8 mt-2 rounded-b-xl gap-2">
-                      <DialogClose asChild>
-                        <Button
-                          variant="ghost"
-                          className="font-semibold text-muted-foreground hover:text-foreground"
-                        >
-                          Cancelar
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6"
-                        onClick={() => {
-                          fileInputRef.current?.click()
-                          setIsPhotoModalOpen(false)
-                        }}
-                      >
-                        Aceptar
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                  )}
+                  <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="w-4 h-4" />
+                  </div>
+                </button>
                 <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-surface rounded-full shadow-sm" />
               </div>
 
@@ -779,8 +710,9 @@ export function PortfolioManager({
                               await uploadAndSaveProfilePhoto(formData)
 
                             if (result.ok) {
-                              // @ts-expect-error cloudinary result contains secureUrl in data but typing might vary
-                              setLocalPhotoUrl(result.data || result.value)
+                              const newUrl = result.data
+                              setLocalPhotoUrl(newUrl)
+                              updateAvatarUrl(newUrl)
                               toast.success(
                                 'Foto de perfil actualizada exitosamente.',
                                 { id: toastId },
@@ -829,10 +761,12 @@ export function PortfolioManager({
                     className="focus:outline-none"
                   >
                     <Badge
-                      variant={
-                        visibility === 'publico' ? 'default' : 'secondary'
-                      }
-                      className="gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shrink-0 cursor-pointer hover:bg-primary/20 transition-colors"
+                      variant="outline"
+                      className={`gap-1.5 rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shrink-0 cursor-pointer transition-colors ${
+                        visibility === 'publico'
+                          ? 'bg-primary/10 text-primary border-primary/20 hover:bg-primary/20'
+                          : 'bg-secondary/10 text-secondary border-secondary/20 hover:bg-secondary/20'
+                      }`}
                     >
                       {visibility === 'publico' ? (
                         <Globe className="h-3 w-3" />
@@ -903,7 +837,7 @@ export function PortfolioManager({
               <div className="space-y-6">
                 {/* Curriculum Card */}
                 <div className="bg-surface p-6 rounded-2xl border border-border/40 shadow-sm flex items-start gap-3">
-                  <div className="p-2.5 bg-primary/10 rounded-xl text-primary shrink-0">
+                  <div className="p-2.5 bg-magenta/10 rounded-xl text-magenta shrink-0">
                     <FileText className="h-5 w-5" />
                   </div>
                   <div className="space-y-1 flex-grow">
@@ -939,7 +873,7 @@ export function PortfolioManager({
 
                 {/* Ubicación Card */}
                 <div className="bg-surface p-6 rounded-2xl border border-border/40 shadow-sm flex items-start gap-3">
-                  <div className="p-2.5 bg-primary/10 rounded-xl text-primary shrink-0">
+                  <div className="p-2.5 bg-warning/10 rounded-xl text-warning shrink-0">
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div className="space-y-1 flex-grow">
@@ -972,14 +906,6 @@ export function PortfolioManager({
                   Proyectos del Portafolio
                 </h3>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <button
-                      onClick={handleAddNew}
-                      className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-4 py-1 text-[10px] font-bold uppercase tracking-wider shrink-0 transition-colors cursor-pointer"
-                    >
-                      + Agregar
-                    </button>
-                  </DialogTrigger>
                   <DialogContent
                     id="portfolio-dialog"
                     className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
@@ -1046,7 +972,7 @@ export function PortfolioManager({
                               <Badge
                                 key={tech}
                                 variant="outline"
-                                className="px-2 py-0.5 text-[9px] font-bold font-sans bg-primary/5 text-primary border-primary/20"
+                                className="px-2 py-0.5 text-[9px] font-bold font-sans bg-primary/10 text-primary border-primary/20 rounded-full"
                               >
                                 {tech}
                               </Badge>
@@ -1076,7 +1002,7 @@ export function PortfolioManager({
                           )}
                           <button
                             onClick={() => handleEdit(proj)}
-                            className="text-primary hover:underline flex items-center gap-1 font-bold text-[9px] uppercase ml-auto"
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[9px] font-bold bg-warning/10 text-warning border border-warning/20 rounded-full hover:bg-warning/20 transition-colors uppercase tracking-wider ml-auto"
                           >
                             <Pencil className="h-2.5 w-2.5" /> {t('edit')}
                           </button>
@@ -1090,7 +1016,7 @@ export function PortfolioManager({
                                 handleDelete(proj.id)
                               }
                             }}
-                            className="text-destructive hover:underline flex items-center gap-1 font-bold text-[9px] uppercase"
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[9px] font-bold bg-destructive/10 text-destructive border border-destructive/20 rounded-full hover:bg-destructive/20 transition-colors uppercase tracking-wider"
                           >
                             <Trash2 className="h-2.5 w-2.5" /> {t('delete')}
                           </button>
@@ -1184,7 +1110,7 @@ export function PortfolioManager({
                       <Badge
                         key={skill.id}
                         variant="secondary"
-                        className="px-2.5 py-1 text-xs font-medium font-sans gap-1.5 hover:bg-destructive/10 hover:text-destructive transition-colors group relative cursor-pointer"
+                        className="px-2.5 py-1 text-xs font-medium font-sans bg-secondary/10 text-secondary border border-secondary/20 rounded-full gap-1.5 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-colors group relative cursor-pointer"
                         onClick={() => {
                           if (
                             window.confirm(
@@ -1216,7 +1142,7 @@ export function PortfolioManager({
               {/* Calificaciones Card */}
               <div className="bg-surface p-6 rounded-2xl border border-border/40 shadow-sm space-y-4 flex flex-col justify-between min-h-[160px]">
                 <h3 className="text-sm font-bold text-ink-strong flex items-center gap-2 border-b border-border/40 pb-2">
-                  <Star className="h-4 w-4 text-primary" />
+                  <Star className="h-4 w-4 text-magenta" />
                   Calificaciones
                 </h3>
                 {calificaciones.length === 0 ? (
@@ -1291,11 +1217,6 @@ export function PortfolioManager({
                 precision and architectural clarity.
               </p>
             </div>
-            <div className="flex items-center gap-4 font-bold text-ink-strong">
-              <span>LinkedIn</span>
-              <span>GitHub</span>
-              <span>Source Code</span>
-            </div>
           </div>
         </div>
       </div>
@@ -1334,7 +1255,11 @@ export function PortfolioManager({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSavingBio}>
+              <Button
+                type="submit"
+                disabled={isSavingBio}
+                className="bg-magenta hover:bg-magenta/90 text-white font-bold rounded-full shadow-sm"
+              >
                 {t('saveBio')}
               </Button>
             </div>
@@ -1380,7 +1305,11 @@ export function PortfolioManager({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSavingLocation}>
+              <Button
+                type="submit"
+                disabled={isSavingLocation}
+                className="bg-magenta hover:bg-magenta/90 text-white font-bold rounded-full shadow-sm"
+              >
                 Guardar Ubicación
               </Button>
             </div>
@@ -1422,7 +1351,11 @@ export function PortfolioManager({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSavingCv}>
+              <Button
+                type="submit"
+                disabled={isSavingCv}
+                className="bg-magenta hover:bg-magenta/90 text-white font-bold rounded-full shadow-sm"
+              >
                 {t('portfolioCvSave')}
               </Button>
             </div>

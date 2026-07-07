@@ -30,9 +30,9 @@ export async function StrikeAuditHistory() {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+    <div className="rounded-2xl border border-border/50 bg-surface shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="border-b border-gray-100 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+      <div className="border-b border-border/50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-ink-muted">
         Historial de Auditoría de Moderación ({logs.length} registros)
       </div>
 
@@ -62,7 +62,7 @@ export async function StrikeAuditHistory() {
 
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-foreground">
                       {log.nombre_usuario}
                     </span>
                     <span

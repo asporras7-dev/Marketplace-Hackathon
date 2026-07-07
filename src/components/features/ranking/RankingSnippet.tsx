@@ -29,7 +29,7 @@ export function RankingSnippet({
           <Award className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">{t('snippetTitle')}</h3>
+          <h3 className="font-semibold text-foreground">{t('snippetTitle')}</h3>
           <p className="text-sm text-muted-foreground">
             {t('snippetSubtitle')}
           </p>
@@ -83,7 +83,7 @@ export function RankingSnippet({
 
       <Link
         href={rankingUrl}
-        className="px-6 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
+        className="px-6 py-2 bg-magenta text-white text-sm font-medium rounded-lg hover:bg-magenta/90 transition-colors whitespace-nowrap"
       >
         {t('viewAll')}
       </Link>

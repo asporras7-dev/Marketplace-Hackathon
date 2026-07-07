@@ -5,6 +5,7 @@ import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { useLocale, useTranslations } from 'next-intl'
 import type { UserRole } from '@/types'
 import { useAuth } from '@/lib/auth/AuthContext'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -60,7 +61,42 @@ export function Navbar({
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
-  const { userRole: role, resetAuth, displayName, avatarUrl } = useAuth()
+  const {
+    userRole: role,
+    resetAuth,
+    displayName,
+    avatarUrl: authAvatarUrl,
+    currentUser,
+  } = useAuth()
+
+  const [actualAvatar, setActualAvatar] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!currentUser) {
+      setActualAvatar(null)
+      return
+    }
+
+    // First fallback to the one from AuthContext (from usuarios table)
+    setActualAvatar(authAvatarUrl)
+
+    // Then try to fetch role-specific ones
+    const fetchRoleAvatar = async () => {
+      const supabase = createSupabaseBrowserClient()
+      if (role === 'empresario') {
+        const { data } = await supabase
+          .from('empresarios')
+          .select('logo')
+          .eq('id_usuario', currentUser.id)
+          .maybeSingle()
+        if (data?.logo) setActualAvatar(data.logo)
+      } else {
+        // Egresado or Admin just use the base user foto_perfil
+        setActualAvatar(authAvatarUrl)
+      }
+    }
+    void fetchRoleAvatar()
+  }, [currentUser, role, authAvatarUrl])
 
   const initials = displayName
     ? displayName
@@ -345,55 +381,44 @@ export function Navbar({
               </button>
             </div>
 
-            {/* Logout solo para egresado; empresario y admin lo tienen en su sidebar */}
-            {role === 'egresado' ? (
-              <button
-                type="button"
-                onClick={() => setLogoutOpen(true)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] shrink-0 ${
-                  isHero
-                    ? 'border-white/25 bg-white/15 text-white hover:bg-white/25'
-                    : 'border-border/60 bg-muted/30 text-muted-foreground hover:border-destructive/40 hover:text-destructive hover:bg-destructive/5'
-                }`}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                {t('logout')}
-              </button>
-            ) : (
-              <div className="relative group shrink-0">
-                {role === 'empresario' ? (
-                  <Link
-                    href="/empresario/perfil"
-                    className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
-                    aria-label={t('profile')}
-                  >
-                    {avatarUrl ? (
-                      <Image
-                        src={avatarUrl}
-                        alt={displayName ?? ''}
-                        width={36}
-                        height={36}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : initials ? (
-                      <span className="text-xs font-bold leading-none">
-                        {initials}
-                      </span>
-                    ) : (
-                      <User className="w-5 h-5" />
-                    )}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
-                    aria-label={t('profile')}
-                  >
+            {/* Avatar de Perfil para empresario y egresado */}
+            <div className="relative group shrink-0">
+              {role === 'empresario' || role === 'egresado' ? (
+                <Link
+                  href={
+                    role === 'empresario'
+                      ? '/empresario/perfil'
+                      : '/egresado/portfolio'
+                  }
+                  className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+                  aria-label={t('profile')}
+                >
+                  {actualAvatar ? (
+                    <Image
+                      src={actualAvatar}
+                      alt={displayName ?? ''}
+                      width={36}
+                      height={36}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : initials ? (
+                    <span className="text-xs font-bold leading-none">
+                      {initials}
+                    </span>
+                  ) : (
                     <User className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-            )}
+                  )}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className={`flex items-center justify-center w-9 h-9 rounded-full shadow-sm transition-all duration-500 hover:scale-105 active:scale-95 ${isHero ? 'bg-white/15 hover:bg-white/25 border border-white/25 text-white' : 'bg-muted hover:bg-muted-foreground/10 border border-border text-muted-foreground'}`}
+                  aria-label={t('profile')}
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Mobile Controls */}

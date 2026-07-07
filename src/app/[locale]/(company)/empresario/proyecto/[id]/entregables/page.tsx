@@ -56,11 +56,10 @@ export default async function ProjectEntregablesPage({
     ? contratacionResult.data
     : null
 
-  const existingRating = contratacionData?.id_contratacion
-    ? await getEgresadoRatingForContract(contratacionData.id_contratacion).then(
-        (r) => (r.ok ? r.data : null),
-      )
+  const ratingRes = contratacionData?.id_contratacion
+    ? await getEgresadoRatingForContract(contratacionData.id_contratacion)
     : null
+  const existingRating = ratingRes?.ok ? ratingRes.data : null
 
   const contratado = participationsResult.ok
     ? participationsResult.data.find(

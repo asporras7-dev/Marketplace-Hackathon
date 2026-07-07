@@ -728,7 +728,7 @@ export function EntregablesClient({
                               toast.error(res.error)
                             }
                           }}
-                          className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs flex items-center gap-1.5"
+                          className="bg-highlight hover:bg-highlight/90 text-primary font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 rounded-full px-4 py-2 shadow-md"
                         >
                           {submittingRating && (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -825,7 +825,7 @@ export function EntregablesClient({
                                   toast.error(tEgresado('replyError'))
                                 }
                               }}
-                              className="text-xs font-semibold flex items-center gap-1.5"
+                              className="bg-primary hover:bg-primary/90 text-white rounded-full px-4 py-2 shadow-sm text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
                             >
                               {submittingReply && (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />

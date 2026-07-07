@@ -3,6 +3,7 @@
 import { useMemo, useState, type ChangeEvent, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter, Link } from '@/i18n/routing'
+import { useAuth } from '@/lib/auth/AuthContext'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -27,7 +28,7 @@ import {
 import { maxBirthDateForMinAge } from '@/lib/utils/age'
 import { saveCompanyProfile } from '@/lib/company/actions'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { compressImage } from '@/lib/utils/image'
+import imageCompression from 'browser-image-compression'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -71,6 +72,7 @@ export function CompanyProfileForm({
   const tValidation = useTranslations('Validation')
   const router = useRouter()
 
+  const { updateAvatarUrl } = useAuth()
   const [loading, setLoading] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(
@@ -160,7 +162,14 @@ export function CompanyProfileForm({
     file: File,
     userId: string,
   ): Promise<string> => {
-    const compressedFile = await compressImage(file)
+    // Comprimir la imagen antes de subirla
+    const options = {
+      maxSizeMB: 0.5, // 500KB máximo
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    }
+    const compressedFile = await imageCompression(file, options)
+
     const ext = compressedFile.name.split('.').pop() ?? 'jpg'
     const path = `${userId}/${bucket}-${Date.now()}.${ext}`
     const { error } = await supabase.storage
@@ -208,6 +217,10 @@ export function CompanyProfileForm({
         }
       }
 
+      if (photoUrl) {
+        updateAvatarUrl(photoUrl)
+      }
+
       toast.success(tEmpresa('profileSaved'))
       router.push('/empresario/perfil')
     } catch (err) {
@@ -222,9 +235,9 @@ export function CompanyProfileForm({
   const verif = initialProfile.verificationStatus
 
   return (
-    <Card className="border border-border/85 bg-white rounded-3xl shadow-xl mt-6 overflow-hidden">
+    <Card className="border border-border/85 bg-surface rounded-3xl shadow-xl mt-6 overflow-hidden">
       {/* Estado de verificación (solo lectura) */}
-      <div className="bg-[#f8fafd] px-6 py-5 border-b border-border/80 flex items-center justify-between gap-3">
+      <div className="bg-surface-sunken px-6 py-5 border-b border-border/80 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-warning/15 flex items-center justify-center text-warning">
             <ShieldCheck className="w-5.5 h-5.5" />
@@ -274,7 +287,7 @@ export function CompanyProfileForm({
                   id="firstName"
                   type="text"
                   placeholder={tEmpresa('fieldFirstNamePlaceholder')}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('firstName')}
                 />
               </Field>
@@ -287,7 +300,7 @@ export function CompanyProfileForm({
                   id="lastName1"
                   type="text"
                   placeholder={tEmpresa('fieldLastName1Placeholder')}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('lastName1')}
                 />
               </Field>
@@ -301,7 +314,7 @@ export function CompanyProfileForm({
                   id="lastName2"
                   type="text"
                   placeholder={tEmpresa('fieldLastName2Placeholder')}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('lastName2')}
                 />
               </Field>
@@ -317,7 +330,7 @@ export function CompanyProfileForm({
                   id="birthDate"
                   type="date"
                   max={maxBirthDate}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('birthDate')}
                 />
               </Field>
@@ -355,7 +368,7 @@ export function CompanyProfileForm({
                 id="name"
                 type="text"
                 placeholder={tEmpresa('fieldNamePlaceholder')}
-                className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                 {...register('name')}
               />
             </Field>
@@ -371,7 +384,7 @@ export function CompanyProfileForm({
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
+                      <SelectTrigger className="w-full bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
                         <SelectValue
                           placeholder={tEmpresa('selectTypePlaceholder')}
                         />
@@ -397,7 +410,7 @@ export function CompanyProfileForm({
                   id="sector"
                   type="text"
                   placeholder={tEmpresa('fieldSectorPlaceholder')}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('sector')}
                 />
               </Field>
@@ -417,7 +430,7 @@ export function CompanyProfileForm({
                   id="cedula"
                   type="text"
                   placeholder={tEmpresa('fieldCedulaPlaceholder')}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('cedula')}
                 />
               </Field>
@@ -435,7 +448,7 @@ export function CompanyProfileForm({
                       value={field.value ?? ''}
                       onValueChange={field.onChange}
                     >
-                      <SelectTrigger className="w-full bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
+                      <SelectTrigger className="w-full bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
                         <SelectValue
                           placeholder={tEmpresa('selectScopePlaceholder')}
                         />
@@ -472,7 +485,7 @@ export function CompanyProfileForm({
               countryId="country"
               regionId="city"
               countryInvalid={Boolean(errors.country)}
-              comboboxClassName="bg-[#f1f3fd] border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all"
+              comboboxClassName="bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all"
             />
 
             <Field
@@ -486,7 +499,7 @@ export function CompanyProfileForm({
                   id="website"
                   type="url"
                   placeholder={tEmpresa('fieldWebsitePlaceholder')}
-                  className="bg-[#f1f3fd] border-transparent rounded-2xl h-11 pl-10 focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 pl-10 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                   {...register('website')}
                 />
                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60">
@@ -506,7 +519,7 @@ export function CompanyProfileForm({
                 id="description"
                 rows={4}
                 placeholder={tEmpresa('fieldDescriptionPlaceholder')}
-                className="bg-[#f1f3fd] border-transparent rounded-2xl focus-visible:ring-primary focus-visible:bg-white text-foreground font-medium transition-all"
+                className="bg-surface-sunken border-transparent rounded-2xl focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
                 {...register('description')}
               />
             </Field>
@@ -545,7 +558,7 @@ export function CompanyProfileForm({
               disabled={loading}
               className="bg-magenta hover:bg-magenta/95 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-white">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-surface/20 text-white">
                 {loading ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
@@ -637,7 +650,7 @@ function ReadonlyField({
           value={value}
           readOnly
           disabled
-          className="bg-[#f1f3fd] border-transparent text-foreground/60 rounded-2xl h-11 pr-10 cursor-not-allowed select-none"
+          className="bg-surface-sunken border-transparent text-foreground/60 rounded-2xl h-11 pr-10 cursor-not-allowed select-none"
         />
         <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60">
           <Lock className="w-4 h-4" />
@@ -674,8 +687,8 @@ function ImageUploadField({
       </Label>
 
       {variant === 'avatar' ? (
-        <div className="flex flex-col sm:flex-row gap-5 items-center p-5 bg-[#f1f4fe]/45 border border-dashed border-magenta/20 rounded-3xl transition-colors duration-200">
-          <div className="w-20 h-20 bg-white flex items-center justify-center shrink-0 border border-magenta/15 rounded-full overflow-hidden relative shadow-sm">
+        <div className="flex flex-col sm:flex-row gap-5 items-center p-5 bg-surface-sunken/45 border border-dashed border-magenta/20 rounded-3xl transition-colors duration-200">
+          <div className="w-20 h-20 bg-surface flex items-center justify-center shrink-0 border border-magenta/15 rounded-full overflow-hidden relative shadow-sm">
             {preview ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -687,7 +700,7 @@ function ImageUploadField({
                 />
               </>
             ) : (
-              <div className="w-full h-full bg-[#f1f3fd] flex items-center justify-center text-magenta">
+              <div className="w-full h-full bg-surface-sunken flex items-center justify-center text-magenta">
                 <User className="w-9 h-9" />
               </div>
             )}
@@ -703,7 +716,7 @@ function ImageUploadField({
               {tEmpresa('uploadFormats')}
             </p>
             <label className="inline-block mt-1">
-              <span className="cursor-pointer inline-flex items-center gap-1.5 px-5 py-2 bg-white hover:bg-[#eff3fd] border border-magenta text-magenta hover:border-magenta/80 text-xs font-extrabold rounded-full shadow-sm transition-all duration-200">
+              <span className="cursor-pointer inline-flex items-center gap-1.5 px-5 py-2 bg-surface hover:bg-surface-sunken border border-magenta text-magenta hover:border-magenta/80 text-xs font-extrabold rounded-full shadow-sm transition-all duration-200">
                 <Upload className="w-3.5 h-3.5" />
                 {tEmpresa('selectFile')}
               </span>
@@ -718,7 +731,7 @@ function ImageUploadField({
           </div>
         </div>
       ) : (
-        <div className="border border-dashed border-secondary/30 rounded-3xl bg-white p-8 text-center hover:border-secondary/60 transition-colors duration-200">
+        <div className="border border-dashed border-secondary/30 rounded-3xl bg-surface p-8 text-center hover:border-secondary/60 transition-colors duration-200">
           {preview ? (
             <div className="w-24 h-24 mx-auto mb-4 bg-muted flex items-center justify-center border border-border rounded-2xl overflow-hidden relative shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -734,7 +747,7 @@ function ImageUploadField({
               )}
             </div>
           ) : (
-            <div className="w-14 h-14 bg-[#f1f4fe] flex items-center justify-center rounded-2xl mx-auto mb-3 text-secondary shadow-sm">
+            <div className="w-14 h-14 bg-surface-sunken flex items-center justify-center rounded-2xl mx-auto mb-3 text-secondary shadow-sm">
               <ImageIcon className="w-7 h-7 text-secondary" />
             </div>
           )}

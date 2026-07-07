@@ -48,8 +48,7 @@
 }
 
 /* 
- * Modo oscuro (solo para el panel de empresario de momento, 
- * inyectado aislando la clase .dark).
+ * Modo oscuro (ahora de alcance global para toda la aplicación).
  * Neutrales oscurecidos pero tintados a 245 hue (FWD blue). 
  * Se prohíbe negro puro.
  */
@@ -129,6 +128,7 @@
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -140,6 +140,7 @@
     opacity: 0;
     transform: translateY(-12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -150,23 +151,70 @@
 /* Uses CSS token variables so they respond to theme changes.        */
 /* Formerly inlined as hex literals in DashboardStats / AdminProjectCharts */
 @keyframes borderRainbow {
-  0%   { border-color: var(--primary);   box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--primary) 6%, transparent),   0 2px 4px -1px color-mix(in oklch, var(--primary) 3%, transparent); }
-  17%  { border-color: var(--secondary); box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--secondary) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--secondary) 3%, transparent); }
-  33%  { border-color: var(--accent);    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--accent) 6%, transparent),    0 2px 4px -1px color-mix(in oklch, var(--accent) 3%, transparent); }
-  50%  { border-color: var(--highlight); box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--highlight) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--highlight) 3%, transparent); }
-  67%  { border-color: var(--warning);   box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--warning) 6%, transparent),   0 2px 4px -1px color-mix(in oklch, var(--warning) 3%, transparent); }
-  83%  { border-color: var(--magenta);   box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--magenta) 6%, transparent),   0 2px 4px -1px color-mix(in oklch, var(--magenta) 3%, transparent); }
-  100% { border-color: var(--primary);   box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--primary) 6%, transparent),   0 2px 4px -1px color-mix(in oklch, var(--primary) 3%, transparent); }
+  0% {
+    border-color: var(--primary);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--primary) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--primary) 3%, transparent);
+  }
+
+  17% {
+    border-color: var(--secondary);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--secondary) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--secondary) 3%, transparent);
+  }
+
+  33% {
+    border-color: var(--accent);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--accent) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--accent) 3%, transparent);
+  }
+
+  50% {
+    border-color: var(--highlight);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--highlight) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--highlight) 3%, transparent);
+  }
+
+  67% {
+    border-color: var(--warning);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--warning) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--warning) 3%, transparent);
+  }
+
+  83% {
+    border-color: var(--magenta);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--magenta) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--magenta) 3%, transparent);
+  }
+
+  100% {
+    border-color: var(--primary);
+    box-shadow: 0 4px 6px -1px color-mix(in oklch, var(--primary) 6%, transparent), 0 2px 4px -1px color-mix(in oklch, var(--primary) 3%, transparent);
+  }
 }
 
 @keyframes barHoverRainbow {
-  0%   { background-color: var(--primary); }
-  17%  { background-color: var(--secondary); }
-  33%  { background-color: var(--accent); }
-  50%  { background-color: var(--highlight); }
-  67%  { background-color: var(--warning); }
-  83%  { background-color: var(--magenta); }
-  100% { background-color: var(--primary); }
+  0% {
+    background-color: var(--primary);
+  }
+
+  17% {
+    background-color: var(--secondary);
+  }
+
+  33% {
+    background-color: var(--accent);
+  }
+
+  50% {
+    background-color: var(--highlight);
+  }
+
+  67% {
+    background-color: var(--warning);
+  }
+
+  83% {
+    background-color: var(--magenta);
+  }
+
+  100% {
+    background-color: var(--primary);
+  }
 }
 
 @utility animate-border-rainbow {
@@ -178,9 +226,17 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
 }
 
 @utility animate-float {
@@ -188,8 +244,15 @@
 }
 
 @keyframes flap {
-  0%, 100% { transform: scaleX(1); }
-  50% { transform: scaleX(0.6); }
+
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+
+  50% {
+    transform: scaleX(0.6);
+  }
 }
 
 @utility animate-flap {
@@ -248,11 +311,9 @@ body {
 .fwd-carousel__vignette {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 55%,
-    oklch(0.12 0.01 245 / 0.35) 100%
-  );
+  background: linear-gradient(to bottom,
+      transparent 55%,
+      oklch(0.12 0.01 245 / 0.35) 100%);
   pointer-events: none;
 }
 

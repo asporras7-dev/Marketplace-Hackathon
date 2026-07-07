@@ -103,7 +103,7 @@ export function AdminRegisterForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+    <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-8">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-1.5">
           <Label

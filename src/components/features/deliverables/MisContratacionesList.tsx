@@ -139,9 +139,8 @@ export function MisContratacionesList({
                     <div className="mt-auto flex flex-col gap-2">
                       <Button
                         asChild
-                        variant="outline"
                         size="sm"
-                        className="w-full font-semibold gap-1.5"
+                        className="w-full font-bold gap-1.5 bg-primary text-white hover:bg-primary/90 rounded-full"
                       >
                         <Link
                           href={`/egresado/projects/${c.id_proyecto}/entregables`}

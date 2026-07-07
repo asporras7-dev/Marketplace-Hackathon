@@ -48,14 +48,14 @@ export function ProjectDetailClient({
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative bg-fwd-page-gradient">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="mb-6 flex items-center justify-between gap-3">
           <Link
             href="/egresado/projects"
-            className="inline-flex items-center text-sm font-semibold text-muted-foreground hover:text-primary transition-colors"
+            className="inline-flex items-center text-sm font-semibold text-secondary hover:text-secondary/80 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             {tEgresado('backToMarketplace')}
@@ -91,8 +91,8 @@ export function ProjectDetailClient({
                     {project.stack.map((tech) => (
                       <Badge
                         key={tech}
-                        variant="secondary"
-                        className="text-sm bg-accent/15 text-accent border border-accent/40"
+                        variant="outline"
+                        className="text-sm font-bold bg-primary/10 text-primary border-primary/20"
                       >
                         {tech}
                       </Badge>
@@ -193,9 +193,9 @@ export function ProjectDetailClient({
                   ) : (
                     <Link
                       href={`/egresado/projects/${project.id}/apply`}
-                      className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-semibold h-11 shadow-md hover:scale-[1.02] transition-transform inline-flex items-center justify-center rounded-lg text-sm cursor-pointer"
+                      className="w-full bg-secondary hover:bg-secondary/90 text-white font-semibold h-11 flex items-center justify-center gap-2 rounded-md transition-colors"
                     >
-                      <FileText className="w-4 h-4 mr-2" />
+                      <FileText className="w-4 h-4 mr-1" />
                       {tEgresado('applyBtn')}
                     </Link>
                   )}
@@ -207,7 +207,7 @@ export function ProjectDetailClient({
             {project.matchScore !== undefined && project.matchScore > 0 && (
               <Card className="border border-border/80 bg-card/60 backdrop-blur-sm overflow-hidden mt-6">
                 <CardContent className="p-6 space-y-4">
-                  <h3 className="text-sm font-bold text-primary flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-magenta flex items-center gap-2">
                     <Star className="w-4 h-4" />
                     {tEgresado('matchWithProject') || 'Match con el Proyecto'}
                   </h3>
@@ -266,7 +266,7 @@ export function ProjectDetailClient({
                     <span className="text-xs font-bold text-muted-foreground">
                       Puntaje Total
                     </span>
-                    <span className="text-lg font-extrabold text-primary">
+                    <span className="text-lg font-extrabold text-magenta">
                       {project.matchScore} pts
                     </span>
                   </div>

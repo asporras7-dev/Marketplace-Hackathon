@@ -35,8 +35,8 @@ export default async function AdminRatingsPage() {
             icon={Star}
           />
         ) : (
-          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
-            <div className="border-b border-gray-100 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <div className="rounded-2xl border border-border/50 bg-surface shadow-sm overflow-hidden">
+            <div className="border-b border-border/50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-ink-muted">
               {t('totalApplications')}: {ratings.length}
             </div>
             <Table>

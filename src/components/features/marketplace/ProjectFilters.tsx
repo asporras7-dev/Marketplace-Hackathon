@@ -49,7 +49,7 @@ export function ProjectFilters({
     <div className="flex flex-col gap-4 p-4 border border-border rounded-xl bg-card/40 backdrop-blur-sm shadow-sm">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <label className="text-xs font-semibold text-primary uppercase tracking-wider">
             {tEgresado('selectStack')}
           </label>
           <Select
@@ -73,7 +73,7 @@ export function ProjectFilters({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <label className="text-xs font-semibold text-primary uppercase tracking-wider">
             {tEgresado('selectMode')}
           </label>
           <Select
@@ -97,7 +97,7 @@ export function ProjectFilters({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <label className="text-xs font-semibold text-primary uppercase tracking-wider">
             {tEgresado('selectDuration')}
           </label>
           <Select
@@ -125,7 +125,7 @@ export function ProjectFilters({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <label className="text-xs font-semibold text-primary uppercase tracking-wider">
             {tEgresado('selectBudget')}
           </label>
           <Select

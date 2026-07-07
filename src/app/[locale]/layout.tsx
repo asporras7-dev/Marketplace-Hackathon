@@ -30,6 +30,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 import { GlobalLoaderProvider } from '@/components/layout/GlobalLoaderProvider'
+import { LocalThemeProvider } from '@/components/layout/ThemeContext'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -68,12 +69,14 @@ export default async function LocaleLayout({
       className={`${archivoNarrow.variable} ${figtree.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+      <body className="font-sans">
         <NextIntlClientProvider messages={messages}>
           <AuthProvider initialRole={initialRole}>
-            <GlobalLoaderProvider>{children}</GlobalLoaderProvider>
-            <Toaster richColors position="top-right" />
-            <FloatingButterfly />
+            <LocalThemeProvider>
+              <GlobalLoaderProvider>{children}</GlobalLoaderProvider>
+              <Toaster richColors position="top-right" />
+              <FloatingButterfly />
+            </LocalThemeProvider>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>
