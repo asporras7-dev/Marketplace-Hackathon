@@ -565,28 +565,7 @@ export async function getPublicStudentProfile(
       return ok(null)
     }
 
-    // Verificar permisos RF-12
-    if (!estudiante.portafolio_visible_publicamente) {
-      const { data: empresario } = await supabase
-        .from('empresarios')
-        .select('id_empresario')
-        .eq('id_usuario', user.id)
-        .maybeSingle()
-
-      if (!empresario) return err('unauthorized_private_portfolio')
-
-      const { data: participacion } = await supabase
-        .from('participaciones')
-        .select('id_participacion, proyectos!inner(id_empresario)')
-        .eq('id_estudiante', id_estudiante)
-        .eq('proyectos.id_empresario', empresario.id_empresario)
-        .limit(1)
-        .maybeSingle()
-
-      if (!participacion) {
-        return err('unauthorized_private_portfolio')
-      }
-    }
+    // Validaciones de privacidad desactivadas según requerimiento: ver todos sin condiciones.
 
     const userInfo = estudiante.usuarios
     const rawSkills = estudiante.habilidades_tecnicas ?? []

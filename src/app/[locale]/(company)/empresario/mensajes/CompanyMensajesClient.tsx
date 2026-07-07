@@ -393,11 +393,14 @@ export function CompanyMensajesClient({
     )
   }, [conversaciones, selectedConv])
 
+  const lastInitialId = useRef(initialConversacionId)
+
   useEffect(() => {
     if (
       initialConversacionId &&
-      initialConversacionId !== selectedConv?.idConversacion
+      initialConversacionId !== lastInitialId.current
     ) {
+      lastInitialId.current = initialConversacionId
       const newSelected = conversaciones.find(
         (c) => c.idConversacion === initialConversacionId,
       )
@@ -407,12 +410,7 @@ export function CompanyMensajesClient({
         setPuedeEnviar(initialMensajes?.puedeEnviar ?? false)
       }
     }
-  }, [
-    initialConversacionId,
-    conversaciones,
-    selectedConv?.idConversacion,
-    initialMensajes,
-  ])
+  }, [initialConversacionId, conversaciones, initialMensajes])
 
   useEffect(() => {
     scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' })

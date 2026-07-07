@@ -1,6 +1,7 @@
 'use server'
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/dal'
 import { ok, err, type Result } from '@/lib/result'
 import { logger } from '@/lib/logger'
@@ -208,6 +209,8 @@ export async function saveCompanyProfile(
       return err('unauthorized')
     }
 
+    const admin = createSupabaseAdminClient()
+
     const data = parsed.data
 
     // 1. Datos de la empresa (tabla empresarios). La BD congela la verificación.
@@ -229,7 +232,7 @@ export async function saveCompanyProfile(
         alcance_operativo: data.operatingScope ?? null,
       }
 
-    const { error: empresaError } = await supabase
+    const { error: empresaError } = await admin
       .from('empresarios')
       .upsert(empresaProfile, { onConflict: 'id_usuario' })
 
@@ -263,7 +266,7 @@ export async function saveCompanyProfile(
     }
 
     if (Object.keys(personales).length > 0) {
-      const { error: usuarioError } = await supabase
+      const { error: usuarioError } = await admin
         .from('usuarios')
         .update(personales)
         .eq('id_usuario', user.id)

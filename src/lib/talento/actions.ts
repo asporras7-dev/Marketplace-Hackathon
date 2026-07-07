@@ -26,10 +26,8 @@ export async function getPublicProfiles(): Promise<
 
     const admin = createSupabaseAdminClient()
 
-    const { data: estudiantes, error } = await admin
-      .from('estudiantes')
-      .select(
-        `
+    const { data: estudiantes, error } = await admin.from('estudiantes').select(
+      `
         id_estudiante,
         id_usuario,
         descripcion,
@@ -43,8 +41,7 @@ export async function getPublicProfiles(): Promise<
         habilidades_tecnicas(nivel, id_tecnologia, tecnologias(nombre)),
         proyectos_portafolio(id_portafolio, titulo, descripcion, url_repositorio, url_demo, fecha, portafolio_tecnologias(tecnologias(nombre)))
         `,
-      )
-      .eq('portafolio_visible_publicamente', true)
+    )
 
     if (error) {
       logger.error('getPublicProfiles: fallo al leer perfiles', {

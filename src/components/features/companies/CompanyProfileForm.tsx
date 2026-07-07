@@ -27,6 +27,7 @@ import {
 import { maxBirthDateForMinAge } from '@/lib/utils/age'
 import { saveCompanyProfile } from '@/lib/company/actions'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { compressImage } from '@/lib/utils/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -159,11 +160,12 @@ export function CompanyProfileForm({
     file: File,
     userId: string,
   ): Promise<string> => {
-    const ext = file.name.split('.').pop() ?? 'jpg'
+    const compressedFile = await compressImage(file)
+    const ext = compressedFile.name.split('.').pop() ?? 'jpg'
     const path = `${userId}/${bucket}-${Date.now()}.${ext}`
     const { error } = await supabase.storage
       .from(bucket)
-      .upload(path, file, { upsert: true })
+      .upload(path, compressedFile, { upsert: true })
     if (error) {
       throw new Error(error.message)
     }

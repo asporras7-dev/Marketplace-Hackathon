@@ -35,19 +35,16 @@ export async function getTalentRanking({
   try {
     const supabase = createSupabaseAdminClient()
 
-    let query = supabase
-      .from('estudiantes')
-      .select(
-        `
+    let query = supabase.from('estudiantes').select(
+      `
         id_estudiante,
         reputacion,
         titulo_fwd,
         usuarios!estudiantes_id_usuario_fkey!inner(nombre, apellido_1, apellido_2, foto_perfil),
         habilidades_tecnicas(tecnologias(nombre))
       `,
-        { count: 'exact' },
-      )
-      .eq('portafolio_visible_publicamente', true)
+      { count: 'exact' },
+    )
 
     if (categoria) {
       query = query.eq('titulo_fwd', categoria)
