@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { AuthCard } from '@/components/features/auth/AuthCard'
 import { AuthHeader } from '@/components/features/auth/AuthHeader'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import imageCompression from 'browser-image-compression'
 import { completarOnboarding } from '@/lib/auth/actions'
 import { CountryRegionFields } from '@/components/features/geo/CountryRegionFields'
 import type { ComboboxOption } from '@/components/ui/combobox'
@@ -127,12 +128,21 @@ export function EmpresarioOnboardingForm({
     setPhotoUploading(true)
 
     const supabase = createSupabaseBrowserClient()
-    const ext = file.name.split('.').pop() ?? 'jpg'
+
+    // Comprimir imagen
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    }
+    const compressedFile = await imageCompression(file, options)
+
+    const ext = compressedFile.name.split('.').pop() ?? 'jpg'
     const path = `${userId}/${Date.now()}.${ext}`
 
     const { error } = await supabase.storage
       .from('fotos-perfil')
-      .upload(path, file, { upsert: true })
+      .upload(path, compressedFile, { upsert: true })
 
     if (error) {
       toast.error(tO('fotoError'))
