@@ -298,7 +298,7 @@ export function LogisticsForm({
           )}
         />
         <FieldError code={errors.plazoDias?.message} />
-        <p className="text-[9px] font-extrabold text-secondary tracking-widest uppercase mt-1.5">
+        <p className="text-[9px] font-extrabold text-warning tracking-widest uppercase mt-1.5">
           RANGO SUGERIDO: {PLAZO_MIN_DIAS} - {PLAZO_MAX_DIAS} DÍAS
         </p>
         {cierreEstimado && (

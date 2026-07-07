@@ -67,7 +67,7 @@ export function CompanyPerfilClient({
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] border cursor-pointer select-none ${
                     selected
-                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      ? 'bg-accent text-accent-foreground border-accent shadow-sm'
                       : 'bg-transparent text-ink-muted border-transparent hover:bg-muted/40 hover:text-ink'
                   }`}
                 >

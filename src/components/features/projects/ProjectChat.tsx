@@ -61,7 +61,7 @@ function ChatBubble({
         <p className="whitespace-pre-wrap">{contenido}</p>
       </div>
       {/* Light blue/cyan user icon container */}
-      <div className="w-8 h-8 flex items-center justify-center bg-accent/20 text-accent rounded-xl shrink-0 mt-1 shadow-sm">
+      <div className="w-8 h-8 flex items-center justify-center bg-warning/20 text-warning rounded-xl shrink-0 mt-1 shadow-sm">
         <User className="h-4.5 w-4.5" />
       </div>
     </div>
@@ -142,7 +142,7 @@ export function ProjectChat({
         )}
       </div>
 
-      <div className="flex gap-3 items-center border border-border/80 bg-surface rounded-2xl p-2 pl-4 shadow-sm w-full transition-all focus-within:border-secondary/40 focus-within:ring-2 focus-within:ring-secondary/10">
+      <div className="flex gap-3 items-center border border-border/80 bg-surface rounded-2xl p-2 pl-4 shadow-sm w-full transition-all focus-within:border-warning/40 focus-within:ring-2 focus-within:ring-warning/10">
         <Paperclip className="h-5 w-5 text-ink-muted shrink-0 cursor-pointer hover:text-ink transition-colors" />
         <Textarea
           value={text}
@@ -162,7 +162,7 @@ export function ProjectChat({
           type="button"
           onClick={() => void onSend()}
           disabled={ocupado || text.trim().length === 0}
-          className="bg-secondary hover:bg-secondary/90 text-white w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-md shrink-0 disabled:opacity-50"
+          className="bg-warning hover:bg-warning/90 text-white w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-md shrink-0 disabled:opacity-50"
           aria-label={t('chatSend')}
           size="icon"
         >
@@ -173,7 +173,7 @@ export function ProjectChat({
       <div className="flex flex-col gap-2 pt-1 items-center w-full">
         {completo ? (
           <>
-            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent mb-2">
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-warning mb-2">
               <Sparkles className="h-3.5 w-3.5 animate-pulse" />
               {t('readyCue')}
             </p>
@@ -181,14 +181,14 @@ export function ProjectChat({
               type="button"
               onClick={onArmarPropuesta}
               disabled={ocupado}
-              className="inline-flex items-center gap-1.5 bg-secondary hover:bg-secondary/95 text-white font-bold px-6 py-3 rounded-2xl shadow-md transition-all hover:scale-[1.01]"
+              className="inline-flex items-center gap-1.5 bg-warning hover:bg-warning/95 text-white font-bold px-6 py-3 rounded-2xl shadow-md transition-all hover:scale-[1.01]"
             >
               <Wand2 className="h-4.5 w-4.5" />
               {armando ? t('generating') : t('buildProposal')}
             </Button>
           </>
         ) : (
-          <p className="text-[10px] font-extrabold text-accent/60 tracking-widest uppercase my-2 text-center">
+          <p className="text-[10px] font-extrabold text-warning/60 tracking-widest uppercase my-2 text-center">
             • {t('notReadyHint').toUpperCase().replace('.', '')} •
           </p>
         )}

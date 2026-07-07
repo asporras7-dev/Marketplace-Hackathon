@@ -275,7 +275,7 @@ function ChatEmptyState() {
 
       {/* Center Icon */}
       <div className="relative">
-        <div className="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center shadow-inner">
+        <div className="w-20 h-20 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shadow-inner">
           <MessageSquare className="w-9 h-9 stroke-[2.5]" />
         </div>
         {/* Cursor badge on bottom right of the icon */}
@@ -303,7 +303,7 @@ function ChatEmptyState() {
 
       {/* Typography */}
       <div className="space-y-2 max-w-sm">
-        <h3 className="font-heading text-2xl font-black text-primary tracking-wide">
+        <h3 className="font-heading text-2xl font-black text-magenta tracking-wide">
           Selecciona una conversación
         </h3>
         <p className="text-sm text-ink leading-relaxed font-sans">
@@ -336,8 +336,8 @@ function ChatEmptyState() {
 
       {/* Footer Info */}
       <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-sans text-ink-muted border-t border-border/30 pt-3">
-        <div className="flex items-center gap-1.5 text-primary font-bold">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+        <div className="flex items-center gap-1.5 text-warning font-bold">
+          <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
           Soporte en línea disponible
         </div>
         <span className="font-mono text-[10px]">v2.4.0 Messaging Module</span>
@@ -530,7 +530,7 @@ export function CompanyMensajesClient({
 
           {conversaciones.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-20">
-              <div className="p-5 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-primary animate-fade-in">
+              <div className="p-5 bg-gradient-to-br from-primary/15 to-secondary/10 rounded-full text-accent animate-fade-in">
                 <MessageSquare className="w-10 h-10" />
               </div>
               <p className="font-semibold text-lg text-foreground">
@@ -545,7 +545,7 @@ export function CompanyMensajesClient({
               {/* Panel izquierdo — lista de conversaciones en su propia tarjeta */}
               <div className="w-full lg:w-80 shrink-0 border border-border/80 bg-surface rounded-2xl shadow-sm flex flex-col overflow-hidden">
                 <div className="px-4 py-4 border-b border-border/60 bg-surface shrink-0">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">
                     Proyectos Recientes
                   </p>
                   <div className="flex bg-background/60 p-1 rounded-lg border border-border/40">

@@ -80,7 +80,7 @@ export function TalentoClientList({
         {initialProfiles.map((profile) => (
           <Card
             key={profile.id_estudiante}
-            className="flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 border-gray-100 bg-white"
+            className="flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 border-primary/20"
             onClick={() => setSelectedProfile(profile)}
           >
             <CardHeader className="relative pb-4">
@@ -102,7 +102,7 @@ export function TalentoClientList({
                   <CardTitle className="text-lg font-bold font-display leading-tight truncate">
                     {profile.firstName} {profile.lastName1} {profile.lastName2}
                   </CardTitle>
-                  <p className="text-xs font-semibold text-primary capitalize truncate">
+                  <p className="text-xs font-semibold text-magenta capitalize truncate">
                     {profile.tituloFwd || 'Egresado'}
                   </p>
                 </div>
@@ -187,7 +187,7 @@ export function TalentoClientList({
                       {selectedProfile.firstName} {selectedProfile.lastName1}{' '}
                       {selectedProfile.lastName2}
                     </DialogTitle>
-                    <p className="text-sm font-semibold text-primary capitalize">
+                    <p className="text-sm font-semibold text-magenta capitalize">
                       {selectedProfile.tituloFwd || 'Egresado'}
                     </p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -236,7 +236,7 @@ export function TalentoClientList({
               <div className="py-6 space-y-8">
                 {/* About */}
                 <div className="space-y-3">
-                  <h3 className="text-[12px] font-bold tracking-widest text-primary/70 uppercase font-display flex items-center gap-2">
+                  <h3 className="text-[12px] font-bold tracking-widest text-accent/70 uppercase font-display flex items-center gap-2">
                     <MessageSquare className="w-4 h-4" /> Sobre mí
                   </h3>
                   <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
@@ -248,7 +248,7 @@ export function TalentoClientList({
                 {/* Skills */}
                 {selectedProfile.skills.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-[12px] font-bold tracking-widest text-primary/70 uppercase font-display flex items-center gap-2">
+                    <h3 className="text-[12px] font-bold tracking-widest text-accent/70 uppercase font-display flex items-center gap-2">
                       <Code2 className="w-4 h-4" /> Habilidades Técnicas
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -271,7 +271,7 @@ export function TalentoClientList({
                 {/* Projects */}
                 {selectedProfile.projects.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-[12px] font-bold tracking-widest text-primary/70 uppercase font-display">
+                    <h3 className="text-[12px] font-bold tracking-widest text-accent/70 uppercase font-display">
                       Proyectos Destacados
                     </h3>
                     <div className="grid gap-3 md:grid-cols-2">
@@ -303,7 +303,7 @@ export function TalentoClientList({
                                   href={proj.repositoryUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[11px] font-medium text-primary hover:underline flex items-center gap-1"
+                                  className="text-[11px] font-medium text-secondary hover:underline flex items-center gap-1"
                                 >
                                   <GitBranch className="w-3 h-3" />
                                   Repositorio
@@ -314,7 +314,7 @@ export function TalentoClientList({
                                   href={proj.demoUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[11px] font-medium text-primary hover:underline flex items-center gap-1"
+                                  className="text-[11px] font-medium text-secondary hover:underline flex items-center gap-1"
                                 >
                                   <ExternalLink className="w-3 h-3" />
                                   Demo

@@ -16,12 +16,12 @@ interface PublishedProjectsBoardProps {
 const STATUS_STYLE: Record<EstadoEfectivo, string> = {
   abierto: 'bg-accent/10 text-accent border-accent/20',
   en_evaluacion: 'bg-warning/15 text-warning border-warning/30',
-  adjudicado: 'bg-primary/10 text-primary border-primary/20',
-  en_desarrollo: 'bg-primary/10 text-primary border-primary/20',
+  adjudicado: 'bg-accent/10 text-accent border-accent/20',
+  en_desarrollo: 'bg-accent/10 text-accent border-accent/20',
   finalizado: 'bg-muted text-ink-muted border-border',
   cancelado: 'bg-magenta/10 text-magenta border-magenta/20',
   borrador: 'bg-muted text-ink-muted border-border',
-  en_recepcion: 'bg-primary/10 text-primary border-primary/20',
+  en_recepcion: 'bg-warning/10 text-warning border-warning/20',
 }
 
 export function formatBudget(
@@ -59,7 +59,7 @@ export function PublishedProjectsBoard({
 
   if (projects.length === 0) {
     return (
-      <div className="p-8 border border-dashed border-gray-200 rounded-xl text-center text-muted-foreground bg-white">
+      <div className="p-8 border border-dashed border-border rounded-xl text-center text-muted-foreground bg-card/20">
         <p className="font-semibold text-foreground">{t('empty')}</p>
         <p className="text-sm mt-1">{t('emptyDesc')}</p>
       </div>
@@ -69,11 +69,11 @@ export function PublishedProjectsBoard({
   return (
     <div className="space-y-5">
       {/* Segmented Filter Control */}
-      <div className="flex justify-between items-center gap-4 flex-wrap bg-white border border-gray-100 px-5 py-3 rounded-xl shadow-sm">
+      <div className="flex justify-between items-center gap-4 flex-wrap bg-surface border border-border px-5 py-3 rounded-xl shadow-sm">
         <span className="text-xs text-ink-muted font-bold font-sans uppercase tracking-wider">
           {t('filterLabel')}
         </span>
-        <div className="flex bg-gray-50 p-1 rounded-xl gap-0.5 border border-gray-100">
+        <div className="flex bg-muted/60 p-1 rounded-xl gap-0.5 border border-border/10">
           <FilterButton
             active={filter === 'all'}
             onClick={() => setFilter('all')}
@@ -102,7 +102,7 @@ export function PublishedProjectsBoard({
           return (
             <Card
               key={project.id}
-              className="border border-gray-100 bg-white shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all duration-[var(--duration-fast)]"
+              className="border border-border/80 bg-surface shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-all duration-[var(--duration-fast)]"
             >
               <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-2.5 min-w-0 flex-1">
@@ -122,7 +122,7 @@ export function PublishedProjectsBoard({
                     </span>
                     {budget && (
                       <span className="flex items-center gap-1.5">
-                        <Coins className="w-3.5 h-3.5 text-ink-muted" />
+                        <Eye className="w-3.5 h-3.5 text-secondary" />
                         <span className="font-semibold text-ink-strong">
                           {budget}
                         </span>
@@ -138,7 +138,7 @@ export function PublishedProjectsBoard({
                     className="bg-muted/30 hover:bg-muted/60 border border-border text-ink-strong font-bold text-xs h-9 rounded-xl cursor-pointer px-4 flex items-center gap-1.5"
                   >
                     <Link href={`/empresario/proyectos/${project.id}/matches`}>
-                      <Target className="w-4 h-4 text-primary" />
+                      <Target className="w-4 h-4 text-accent shrink-0" />
                       {t('viewMatches')}
                     </Link>
                   </Button>
@@ -180,7 +180,7 @@ function FilterButton({
       className={cn(
         'rounded-lg px-3 py-1.5 text-xs font-bold transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer font-sans border-none select-none',
         active
-          ? 'bg-white text-ink-strong shadow-sm'
+          ? 'bg-surface text-ink-strong shadow-sm'
           : 'bg-transparent text-ink-muted hover:text-ink',
       )}
     >

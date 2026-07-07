@@ -56,10 +56,10 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
       <DialogContent className="p-0 overflow-hidden sm:max-w-[760px] gap-0 border-border bg-surface">
         <div className="grid grid-cols-1 md:grid-cols-3 w-full h-full min-h-[480px]">
           {/* Columna Izquierda: Información de Soporte */}
-          <div className="bg-gradient-to-b from-primary/10 to-primary/5 p-8 flex flex-col justify-between border-r border-border/40">
+          <div className="bg-gradient-to-b from-warning/10 to-magenta/5 p-8 flex flex-col justify-between border-r border-border/40">
             <div>
               {/* Bot Icon */}
-              <div className="w-12 h-12 rounded-xl bg-primary/15 text-primary flex items-center justify-center mb-6 shadow-sm/5">
+              <div className="w-12 h-12 rounded-xl bg-warning/15 text-warning flex items-center justify-center mb-6 shadow-sm/5">
                 <Headphones className="w-6 h-6 stroke-[2.2]" />
               </div>
 
@@ -75,7 +75,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
             {/* Info Cards */}
             <div className="space-y-3 mt-6 font-sans">
               <div className="bg-surface/90 border border-border/30 rounded-xl p-3 flex items-center gap-3 shadow-sm/5">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                <div className="p-2 rounded-lg bg-accent/10 text-accent shrink-0">
                   <Clock className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
@@ -89,7 +89,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
               </div>
 
               <div className="bg-surface/90 border border-border/30 rounded-xl p-3 flex items-center gap-3 shadow-sm/5">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                <div className="p-2 rounded-lg bg-magenta/10 text-magenta shrink-0">
                   <MessageSquare className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
@@ -113,7 +113,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
               <div>
                 {/* Header Solicitud */}
                 <div className="mb-6">
-                  <span className="text-primary font-bold text-[10px] tracking-widest uppercase font-sans">
+                  <span className="text-secondary font-bold text-[10px] tracking-widest uppercase font-sans">
                     {t('supportNewRequest')}
                   </span>
                   <h2 className="font-heading text-xl font-black text-ink-strong mt-1">
@@ -133,7 +133,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                       className={cn(
                         'flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer font-sans',
                         ticketType === 'tecnico'
-                          ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                          ? 'border-warning bg-warning/5 text-warning shadow-sm'
                           : 'border-border bg-surface text-ink-muted hover:text-ink hover:border-border-hover',
                       )}
                     >
@@ -146,7 +146,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                       className={cn(
                         'flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer font-sans',
                         ticketType === 'negocio'
-                          ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                          ? 'border-magenta bg-magenta/5 text-magenta shadow-sm'
                           : 'border-border bg-surface text-ink-muted hover:text-ink hover:border-border-hover',
                       )}
                     >
@@ -191,7 +191,7 @@ export function SupportTicketDialog({ children }: SupportTicketDialogProps) {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-primary hover:bg-primary/95 text-primary-foreground font-bold py-2.5 px-6 rounded-xl flex items-center gap-1.5 transition-all text-sm cursor-pointer"
+                  className="bg-secondary hover:bg-secondary/95 text-white font-bold py-2.5 px-6 rounded-xl flex items-center gap-1.5 transition-all text-sm cursor-pointer"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

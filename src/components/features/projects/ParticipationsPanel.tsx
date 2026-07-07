@@ -99,7 +99,7 @@ interface ParticipationsPanelProps {
 const ESTADO_STYLE: Record<EstadoParticipacion, string> = {
   enviada: 'bg-accent/10 text-accent border-accent/20',
   en_revision: 'bg-muted text-muted-foreground border-border',
-  contratada: 'bg-primary/10 text-primary border-primary/20',
+  contratada: 'bg-accent/10 text-accent border-accent/20',
   no_seleccionada: 'bg-magenta/10 text-magenta border-magenta/20',
   retirada: 'bg-muted text-muted-foreground border-border',
   finalizada: 'bg-secondary/10 text-secondary border-secondary/20',
@@ -419,7 +419,7 @@ export function ParticipationsPanel({
                 </Button>
                 <Button
                   type="button"
-                  variant="default"
+                  variant="warning"
                   onClick={() => void runOpen(openTarget)}
                   disabled={mutatingId !== null}
                   className="font-semibold"
@@ -447,7 +447,7 @@ export function ParticipationsPanel({
                 href={iframeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-magenta hover:underline"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 {t('iframeOpenNewTab')}
@@ -511,12 +511,12 @@ function ParticipationCard({
   const effectiveProjectId = participacion.proyecto?.id ?? projectId
 
   return (
-    <Card className="border border-gray-100 bg-white shadow-sm rounded-xl">
+    <Card className="border border-border bg-surface shadow-sm rounded-xl">
       <CardContent className="p-6 space-y-5">
         {participacion.proyecto && (
           <Link
             href={`/empresario/proyecto/${participacion.proyecto.id}`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-warning transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]"
           >
             <Briefcase className="w-3.5 h-3.5" />
             {participacion.proyecto.titulo}
@@ -566,7 +566,7 @@ function ParticipationCard({
               <Link
                 href={`/empresario/mensajes?proyecto=${effectiveProjectId}`}
                 title={t('contactarBtn')}
-                className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)]"
+                className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-accent transition-colors duration-[var(--duration-fast)]"
               >
                 <Mail className="w-5 h-5" />
               </Link>
@@ -576,7 +576,7 @@ function ParticipationCard({
                 onClick={() =>
                   toast.info('No hay un proyecto asignado para chatear')
                 }
-                className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)]"
+                className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-accent transition-colors duration-[var(--duration-fast)]"
               >
                 <Mail className="w-5 h-5" />
               </button>
@@ -585,7 +585,7 @@ function ParticipationCard({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-primary transition-colors duration-[var(--duration-fast)]"
+                  className="p-2 rounded-full hover:bg-muted text-ink-muted hover:text-accent transition-colors duration-[var(--duration-fast)]"
                   aria-label="Acciones"
                 >
                   <MoreVertical className="w-5 h-5" />
@@ -593,7 +593,7 @@ function ParticipationCard({
               </PopoverTrigger>
               <PopoverContent
                 align="end"
-                className="w-40 p-1.5 bg-white border border-gray-100 shadow-soft rounded-lg"
+                className="w-40 p-1.5 bg-surface border border-border shadow-soft rounded-lg"
               >
                 <div className="flex flex-col gap-0.5">
                   <Link
@@ -625,8 +625,8 @@ function ParticipationCard({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {participacion.cartaPostulacion && (
                   <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-3 shadow-inner/5">
-                    <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                      <FileText className="w-4.5 h-4.5 text-primary shrink-0" />
+                    <div className="flex items-center gap-2 text-secondary font-bold text-sm">
+                      <FileText className="w-4.5 h-4.5 text-secondary shrink-0" />
                       <span>{t('coverLetterLabel')}</span>
                     </div>
                     <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap font-sans">
@@ -636,8 +636,8 @@ function ParticipationCard({
                 )}
                 {participacion.planteamientoSolucion && (
                   <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-3 shadow-inner/5">
-                    <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                      <Lightbulb className="w-4.5 h-4.5 text-primary shrink-0" />
+                    <div className="flex items-center gap-2 text-warning font-bold text-sm">
+                      <Lightbulb className="w-4.5 h-4.5 text-warning shrink-0" />
                       <span>{t('solutionLabel')}</span>
                     </div>
                     <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap font-sans">
@@ -731,13 +731,9 @@ function ParticipationCard({
             {acciones.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-3 border-t border-border/40">
                 {isPending ? (
-                  <span
-                    aria-disabled="true"
-                    title={pendingTitle}
-                    className="text-xs text-muted-foreground/70 italic font-sans"
-                  >
+                  <p className="text-sm font-semibold text-magenta capitalize font-sans">
                     {pendingTitle}
-                  </span>
+                  </p>
                 ) : (
                   acciones.map((accion) => (
                     <ActionButton
@@ -824,7 +820,7 @@ function SealedEnvelopeBody({
             {adjuntos.map((adjunto) => (
               <span
                 key={adjunto.key}
-                className="inline-flex items-center gap-1 rounded-full border border-accent/20 bg-accent/10 px-2.5 py-0.5 text-[11px] font-semibold text-accent"
+                className="inline-flex items-center gap-1 rounded-full border border-magenta/20 bg-magenta/10 px-2.5 py-0.5 text-[11px] font-semibold text-magenta"
               >
                 {adjunto.icon}
                 {adjunto.label}
@@ -857,7 +853,7 @@ function SealedEnvelopeBody({
           <Button
             type="button"
             size="sm"
-            variant="default"
+            variant="magenta"
             disabled={isMutating}
             onClick={onOpen}
             className="font-semibold"
@@ -956,13 +952,13 @@ function StarRating({
           onMouseEnter={() => setHovered(n)}
           onMouseLeave={() => setHovered(0)}
           aria-label={String(n)}
-          className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded disabled:cursor-not-allowed"
+          className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded disabled:cursor-not-allowed"
         >
           <Star
             className={cn(
               'w-5 h-5 transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]',
               active >= n
-                ? 'text-highlight fill-highlight'
+                ? 'text-accent fill-accent'
                 : 'text-muted-foreground/30',
             )}
           />
@@ -980,9 +976,7 @@ function StarReadOnly({ value }: { value: number }) {
           key={n}
           className={cn(
             'w-4 h-4',
-            value >= n
-              ? 'text-highlight fill-highlight'
-              : 'text-muted-foreground/30',
+            value >= n ? 'text-accent fill-accent' : 'text-muted-foreground/30',
           )}
         />
       ))}
@@ -1007,7 +1001,7 @@ function RatingCollapsible({
         onClick={() => setOpen(!open)}
         className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)]"
       >
-        <Star className="w-3.5 h-3.5 text-highlight" />
+        <Star className="w-3.5 h-3.5 text-accent" />
         {t('prototypeRatingLabel')}: {calificacion}/5
         <ChevronDown
           className={cn(
@@ -1131,7 +1125,7 @@ function EstadoFilter({
           <ListFilter className="w-3.5 h-3.5" />
           {t('filterStateTrigger')}
           {count > 0 ? (
-            <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[10px] font-bold text-primary">
+            <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent/10 px-1.5 text-[10px] font-bold text-accent">
               {count}
             </span>
           ) : (
@@ -1157,13 +1151,13 @@ function EstadoFilter({
                 role="checkbox"
                 aria-checked={checked}
                 onClick={() => onToggle(estado)}
-                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
               >
                 <span
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
                     checked
-                      ? 'border-primary bg-primary text-primary-foreground'
+                      ? 'border-accent bg-accent text-accent-foreground'
                       : 'border-border',
                   )}
                 >
@@ -1287,7 +1281,7 @@ function ExternalAnchor({
       target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-foreground hover:bg-primary/10 border border-primary/20 bg-primary/5 rounded px-2.5 py-1.5 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer font-sans"
+      className="inline-flex items-center gap-1.5 text-xs font-semibold text-magenta hover:text-magenta-foreground hover:bg-magenta/90 border border-magenta/20 bg-magenta/10 rounded px-2.5 py-1.5 transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] cursor-pointer font-sans"
     >
       {icon}
       {label}
@@ -1305,7 +1299,7 @@ function InitialsAvatar({
   const iniciales =
     `${nombre.charAt(0)}${apellidos.charAt(0)}`.toUpperCase() || '?'
   return (
-    <div className="w-14 h-14 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-base shadow-inner font-sans">
+    <div className="w-16 h-16 shrink-0 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-2xl shadow-inner border border-secondary/20">
       {iniciales}
     </div>
   )

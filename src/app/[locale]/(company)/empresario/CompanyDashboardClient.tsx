@@ -60,7 +60,7 @@ export function CompanyDashboardClient({
       value: activeRealCount,
       icon: Briefcase,
       description: tEmpresa('statsActiveProjectsDesc'),
-      colorClass: 'text-primary bg-primary/10',
+      colorClass: 'text-warning bg-warning/10',
     },
     {
       title: tEmpresa('statsTotalApplications'),
@@ -74,7 +74,7 @@ export function CompanyDashboardClient({
       value: participationStats.hired,
       icon: UserCheck,
       description: tEmpresa('statsHiredDesc'),
-      colorClass: 'text-accent bg-accent/10',
+      colorClass: 'text-magenta bg-magenta/10',
     },
   ]
 
@@ -87,7 +87,7 @@ export function CompanyDashboardClient({
           <PageTitle
             title={tEmpresa('dashboard')}
             description={tEmpresa('dashboardDesc')}
-            dotColor="text-secondary"
+            dotColor="text-magenta"
             action={
               <div className="flex items-center gap-2">
                 {isPending ? (
@@ -102,7 +102,7 @@ export function CompanyDashboardClient({
                 ) : (
                   <Link
                     href="/empresario/new-project"
-                    className="bg-primary hover:bg-primary/95 text-primary-foreground font-semibold flex items-center justify-center gap-1.5 shadow-md rounded-lg text-sm h-8 px-3 cursor-pointer"
+                    className="bg-magenta hover:bg-magenta/95 text-magenta-foreground font-semibold flex items-center justify-center gap-1.5 shadow-md rounded-lg text-sm h-8 px-3 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     {tEmpresa('publishProject')}
@@ -122,7 +122,7 @@ export function CompanyDashboardClient({
           <div className="space-y-6">
             <h2 className="text-xl font-bold tracking-tight text-foreground font-heading pb-2 border-b border-border/60">
               {tEmpresa('myPublishedProjects')}
-              <span className="text-secondary">.</span>
+              <span className="text-magenta">.</span>
             </h2>
 
             <DashboardCharts
