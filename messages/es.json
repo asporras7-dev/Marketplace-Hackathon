@@ -300,7 +300,8 @@
     "minCharsLabel": "Mínimo {n} caracteres",
     "maxCharsLabel": "Máximo {n} caracteres",
     "optional": "(Opcional)",
-    "required": "(Obligatorio)"
+    "required": "(Obligatorio)",
+    "matchScore": "Match: {score} pts"
   },
   "Egresado": {
     "dashboard": "Panel Egresado",
