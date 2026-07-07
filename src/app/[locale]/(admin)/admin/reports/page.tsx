@@ -64,6 +64,49 @@ const EMPTY_PROJECT_STATS: AdminProjectStats = {
   cancelado: 0,
 }
 
+// ── Visual design helpers (badge maps + avatar) ─────────────────────────────
+
+const STATUS_BADGE_CLASS: Record<AdminAccountStatus, string> = {
+  activa: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  pendiente: 'bg-amber-50 text-amber-700 border-amber-200',
+  suspendida: 'bg-rose-50 text-rose-700 border-rose-200',
+  suspendida_severa: 'bg-red-100 text-red-800 border-red-300',
+}
+
+const ROLE_BADGE_CLASS: Record<string, string> = {
+  administrador: 'bg-violet-100 text-violet-800 border-violet-200',
+  egresado: 'bg-blue-50 text-blue-700 border-blue-200',
+  empresario: 'bg-amber-50 text-amber-700 border-amber-200',
+}
+
+const PROJECT_STATUS_CLASS: Record<string, string> = {
+  borrador: 'bg-gray-100 text-gray-600 border-gray-200',
+  abierto: 'bg-blue-50 text-blue-700 border-blue-200',
+  en_recepcion: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  adjudicado: 'bg-violet-50 text-violet-700 border-violet-200',
+  en_desarrollo: 'bg-amber-50 text-amber-700 border-amber-200',
+  finalizado: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  cancelado: 'bg-rose-50 text-rose-700 border-rose-200',
+}
+
+const AVATAR_COLORS = [
+  'bg-violet-200 text-violet-800',
+  'bg-blue-200 text-blue-800',
+  'bg-emerald-200 text-emerald-800',
+  'bg-amber-200 text-amber-800',
+  'bg-rose-200 text-rose-800',
+  'bg-indigo-200 text-indigo-800',
+  'bg-cyan-200 text-cyan-800',
+]
+
+function getAvatarColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash + name.charCodeAt(i)) % AVATAR_COLORS.length
+  }
+  return AVATAR_COLORS[hash] ?? AVATAR_COLORS[0]!
+}
+
 export default async function AdminReportsPage() {
   const t = await getTranslations('Admin')
   const tBoard = await getTranslations('ProjectsBoard')
@@ -230,50 +273,91 @@ export default async function AdminReportsPage() {
 
         <DashboardStats stats={userCards} className="xl:grid-cols-4" />
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>{t('colName')}</TableHead>
-                <TableHead>{t('colEmail')}</TableHead>
-                <TableHead>{t('colRole')}</TableHead>
-                <TableHead>{t('colStatus')}</TableHead>
-                <TableHead>{t('colRegistered')}</TableHead>
+              <TableRow className="border-border/40 bg-surface-sunken/30">
+                <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                  {t('colName')}
+                </TableHead>
+                <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                  {t('colEmail')}
+                </TableHead>
+                <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                  {t('colRole')}
+                </TableHead>
+                <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                  {t('colStatus')}
+                </TableHead>
+                <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                  {t('colRegistered')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id_usuario}>
-                  <TableCell className="font-semibold text-ink-strong">
-                    {user.nombre} {user.apellido_1}
-                    {user.apellido_2 ? ` ${user.apellido_2}` : ''}
-                  </TableCell>
-                  <TableCell className="text-xs text-ink-muted">
-                    {user.correo}
-                  </TableCell>
-                  <TableCell>{roleLabel(user.nombre_rol)}</TableCell>
-                  <TableCell>
-                    {user.is_active ? (
-                      <Badge
-                        variant="outline"
-                        className="rounded-full px-2 text-[10px] font-semibold"
-                      >
-                        {statusLabel(user.estado_cuenta)}
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="outline"
-                        className="rounded-full border-magenta/20 bg-magenta/10 px-2 text-[10px] font-semibold text-magenta"
-                      >
-                        {t('accountInactive')}
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap text-xs text-ink-muted">
-                    {formatDate(user.fecha_registro)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {users.map((user) => {
+                const fullName = `${user.nombre} ${user.apellido_1}`
+                const initials =
+                  `${user.nombre[0] ?? ''}${user.apellido_1[0] ?? ''}`.toUpperCase()
+                const avatarColor = getAvatarColor(fullName)
+                return (
+                  <TableRow
+                    key={user.id_usuario}
+                    className="border-border/30 hover:bg-surface-sunken/30 transition-colors"
+                  >
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 ${avatarColor}`}
+                        >
+                          {initials}
+                        </div>
+                        <p className="font-semibold text-sm text-ink-strong leading-tight">
+                          {fullName}
+                          {user.apellido_2 ? ` ${user.apellido_2}` : ''}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-ink-muted">
+                      {user.correo}
+                    </TableCell>
+                    <TableCell>
+                      {user.nombre_rol ? (
+                        <Badge
+                          variant="outline"
+                          className={`rounded-full border px-2.5 text-[10px] font-bold capitalize ${ROLE_BADGE_CLASS[user.nombre_rol] ?? 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                        >
+                          {roleLabel(user.nombre_rol)}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-ink-muted italic">
+                          {roleLabel(null)}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {user.is_active ? (
+                        <Badge
+                          variant="outline"
+                          className={`rounded-full border px-2.5 text-[10px] font-bold ${STATUS_BADGE_CLASS[user.estado_cuenta]}`}
+                        >
+                          {statusLabel(user.estado_cuenta)}
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="rounded-full border border-rose-200 bg-rose-50 px-2.5 text-[10px] font-bold text-rose-700"
+                        >
+                          {t('accountInactive')}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-sm text-ink-muted">
+                      {formatDate(user.fecha_registro)}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </div>
@@ -302,34 +386,45 @@ export default async function AdminReportsPage() {
             <p className="text-xs text-ink-muted">
               {t('projectsCount', { count: projects.length })}
             </p>
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('reportColTitle')}</TableHead>
-                    <TableHead>{t('reportColCompany')}</TableHead>
-                    <TableHead>{t('colStatus')}</TableHead>
-                    <TableHead>{t('reportColPublished')}</TableHead>
+                  <TableRow className="border-border/40 bg-surface-sunken/30">
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColTitle')}
+                    </TableHead>
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColCompany')}
+                    </TableHead>
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('colStatus')}
+                    </TableHead>
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColPublished')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {projects.map((project) => (
-                    <TableRow key={project.id_proyecto}>
-                      <TableCell className="font-semibold text-ink-strong">
+                    <TableRow
+                      key={project.id_proyecto}
+                      className="border-border/30 hover:bg-surface-sunken/30 transition-colors"
+                    >
+                      <TableCell className="font-semibold text-sm text-ink-strong">
                         {project.titulo}
                       </TableCell>
-                      <TableCell className="text-ink-muted">
+                      <TableCell className="text-sm text-ink-muted">
                         {project.nombre_empresa ?? t('companyUnknown')}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className="rounded-full px-2 text-[10px] font-semibold"
+                          className={`rounded-full border px-2.5 text-[10px] font-bold ${PROJECT_STATUS_CLASS[project.estado] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}
                         >
                           {tBoard(`status_${project.estado}`)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-xs text-ink-muted">
+                      <TableCell className="whitespace-nowrap text-sm text-ink-muted">
                         {project.fecha_publicacion
                           ? formatDate(project.fecha_publicacion)
                           : t('notPublished')}
@@ -357,32 +452,43 @@ export default async function AdminReportsPage() {
           />
         ) : (
           <>
-            <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('reportColDate')}</TableHead>
-                    <TableHead>{t('reportColActor')}</TableHead>
-                    <TableHead>{t('reportColAction')}</TableHead>
-                    <TableHead>{t('reportColEntity')}</TableHead>
+                  <TableRow className="border-border/40 bg-surface-sunken/30">
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColDate')}
+                    </TableHead>
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColActor')}
+                    </TableHead>
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColAction')}
+                    </TableHead>
+                    <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                      {t('reportColEntity')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {auditEvents.map((event) => (
-                    <TableRow key={event.id_auditoria}>
-                      <TableCell className="whitespace-nowrap text-xs text-ink-muted">
+                    <TableRow
+                      key={event.id_auditoria}
+                      className="border-border/30 hover:bg-surface-sunken/30 transition-colors"
+                    >
+                      <TableCell className="whitespace-nowrap text-sm text-ink-muted">
                         {formatDate(event.ocurrida_at)}
                       </TableCell>
-                      <TableCell className="text-ink-strong">
+                      <TableCell className="font-semibold text-sm text-ink-strong">
                         {event.actor_nombre ?? t('reportAuditSystem')}
                       </TableCell>
-                      <TableCell className="text-xs text-ink">
+                      <TableCell className="text-sm text-ink">
                         {event.accion}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className="rounded-full px-2 text-[10px] font-semibold"
+                          className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 text-[10px] font-bold text-indigo-700"
                         >
                           {event.entidad}
                         </Badge>

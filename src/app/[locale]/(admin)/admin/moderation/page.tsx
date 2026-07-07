@@ -49,27 +49,51 @@ const RISK_CONFIG: Record<
   salvable: {
     label: 'Se puede salvar',
     icon: ShieldCheck,
-    className: 'bg-accent/10 text-accent border-accent/20',
+    className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   },
   suspendido: {
     label: 'Suspendido',
     icon: ShieldAlert,
-    className: 'bg-warning/10 text-warning border-warning/20',
+    className: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   expulsion: {
     label: 'Expulsión',
     icon: ShieldX,
-    className: 'bg-destructive/10 text-destructive border-destructive/20',
+    className: 'bg-rose-50 text-rose-700 border-rose-200',
   },
 }
 
-// ── Status badge ──────────────────────────────────────────────────────────────
+// ── Status + role badge maps ──────────────────────────────────────────────────
 
 const STATUS_BADGE_CLASS: Record<AdminAccountStatus, string> = {
-  activa: 'bg-accent/10 text-accent border-accent/20',
-  pendiente: 'bg-warning/10 text-warning border-warning/20',
-  suspendida: 'bg-magenta/10 text-magenta border-magenta/20',
-  suspendida_severa: 'bg-destructive/10 text-destructive border-destructive/20',
+  activa: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  pendiente: 'bg-amber-50 text-amber-700 border-amber-200',
+  suspendida: 'bg-rose-50 text-rose-700 border-rose-200',
+  suspendida_severa: 'bg-red-100 text-red-800 border-red-300',
+}
+
+const ROLE_BADGE_CLASS: Record<string, string> = {
+  administrador: 'bg-violet-100 text-violet-800 border-violet-200',
+  egresado: 'bg-blue-50 text-blue-700 border-blue-200',
+  empresario: 'bg-amber-50 text-amber-700 border-amber-200',
+}
+
+const AVATAR_COLORS = [
+  'bg-violet-200 text-violet-800',
+  'bg-blue-200 text-blue-800',
+  'bg-emerald-200 text-emerald-800',
+  'bg-amber-200 text-amber-800',
+  'bg-rose-200 text-rose-800',
+  'bg-indigo-200 text-indigo-800',
+  'bg-cyan-200 text-cyan-800',
+]
+
+function getAvatarColor(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash + name.charCodeAt(i)) % AVATAR_COLORS.length
+  }
+  return AVATAR_COLORS[hash] ?? AVATAR_COLORS[0]!
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -158,24 +182,23 @@ export default async function AdminModerationPage() {
                 icon={AlertTriangle}
               />
             ) : (
-              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
-                {/* Sub-header */}
-                <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <div className="rounded-2xl border border-border/50 bg-card shadow-sm overflow-hidden">
+                <div className="flex items-center justify-between border-b border-border/40 px-5 py-3">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink-muted">
                     {t('usersCount', { count: users.length })} con strikes
                     activos
                   </span>
                   <span className="flex items-center gap-3 text-[10px] text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <span className="h-2 w-2 rounded-full bg-accent" /> Se
-                      puede salvar (1–{MAX_STRIKES_LIMIT - 1})
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />{' '}
+                      Se puede salvar (1–{MAX_STRIKES_LIMIT - 1})
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="h-2 w-2 rounded-full bg-warning" />{' '}
+                      <span className="h-2 w-2 rounded-full bg-amber-500" />{' '}
                       Suspendido (≥{MAX_STRIKES_LIMIT})
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="h-2 w-2 rounded-full bg-destructive" />{' '}
+                      <span className="h-2 w-2 rounded-full bg-rose-500" />{' '}
                       Expulsión
                     </span>
                   </span>
@@ -183,21 +206,39 @@ export default async function AdminModerationPage() {
 
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('colName')}</TableHead>
-                      <TableHead>{t('colEmail')}</TableHead>
-                      <TableHead>{t('colRole')}</TableHead>
-                      <TableHead>{t('colStatus')}</TableHead>
-                      <TableHead className="text-center">
+                    <TableRow className="border-border/40 bg-surface-sunken/30">
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colName')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colEmail')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colRole')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colStatus')}
+                      </TableHead>
+                      <TableHead className="text-center font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
                         {t('colStrikes')}
                       </TableHead>
-                      <TableHead>Nivel de riesgo</TableHead>
-                      <TableHead>{t('colRegistered')}</TableHead>
-                      <TableHead>{t('colActions')}</TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        Nivel de riesgo
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colRegistered')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colActions')}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {users.map((user) => {
+                      const fullName = `${user.nombre} ${user.apellido_1}`
+                      const initials =
+                        `${user.nombre[0] ?? ''}${user.apellido_1[0] ?? ''}`.toUpperCase()
+                      const avatarColor = getAvatarColor(fullName)
                       const riskLevel = getRiskLevel(
                         user.cantidad_strikes,
                         user.estado_cuenta,
@@ -206,59 +247,77 @@ export default async function AdminModerationPage() {
                       const RiskIcon = risk.icon
 
                       return (
-                        <TableRow key={user.id_usuario}>
-                          {/* Nombre */}
-                          <TableCell className="font-semibold text-foreground">
-                            {user.nombre} {user.apellido_1}
-                            {user.apellido_2 ? ` ${user.apellido_2}` : ''}
+                        <TableRow
+                          key={user.id_usuario}
+                          className="border-border/30 hover:bg-surface-sunken/30 transition-colors"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 ${avatarColor}`}
+                              >
+                                {initials}
+                              </div>
+                              <p className="font-semibold text-sm text-ink-strong leading-tight">
+                                {fullName}
+                                {user.apellido_2 ? ` ${user.apellido_2}` : ''}
+                              </p>
+                            </div>
                           </TableCell>
 
-                          {/* Correo */}
-                          <TableCell className="text-muted-foreground text-xs">
+                          <TableCell className="text-sm text-ink-muted">
                             {user.correo}
                           </TableCell>
 
-                          {/* Rol */}
-                          <TableCell>{roleLabel(user.nombre_rol)}</TableCell>
+                          <TableCell>
+                            {user.nombre_rol ? (
+                              <Badge
+                                variant="outline"
+                                className={`rounded-full border px-2.5 text-[10px] font-bold capitalize ${ROLE_BADGE_CLASS[user.nombre_rol] ?? 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                              >
+                                {roleLabel(user.nombre_rol)}
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-ink-muted italic">
+                                {roleLabel(null)}
+                              </span>
+                            )}
+                          </TableCell>
 
-                          {/* Estado de cuenta */}
                           <TableCell>
                             {user.is_active ? (
                               <Badge
                                 variant="outline"
-                                className={`rounded-full border px-2 text-[10px] font-semibold ${STATUS_BADGE_CLASS[user.estado_cuenta]}`}
+                                className={`rounded-full border px-2.5 text-[10px] font-bold ${STATUS_BADGE_CLASS[user.estado_cuenta]}`}
                               >
                                 {statusLabel(user.estado_cuenta)}
                               </Badge>
                             ) : (
                               <Badge
                                 variant="outline"
-                                className="rounded-full border border-magenta/20 bg-magenta/10 px-2 text-[10px] font-semibold text-magenta"
+                                className="rounded-full border border-rose-200 bg-rose-50 px-2.5 text-[10px] font-bold text-rose-700"
                               >
                                 {t('accountInactive')}
                               </Badge>
                             )}
                           </TableCell>
 
-                          {/* Cantidad strikes */}
                           <TableCell className="text-center">
-                            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-warning/10 text-sm font-bold tabular-nums text-warning">
+                            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-100 text-sm font-extrabold tabular-nums text-amber-700">
                               {user.cantidad_strikes}
                             </span>
                           </TableCell>
 
-                          {/* Nivel de riesgo */}
                           <TableCell>
                             <span
-                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${risk.className}`}
+                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${risk.className}`}
                             >
                               <RiskIcon className="h-3.5 w-3.5 shrink-0" />
                               {risk.label}
                             </span>
                           </TableCell>
 
-                          {/* Fecha registro */}
-                          <TableCell className="text-muted-foreground text-xs">
+                          <TableCell className="text-sm text-ink-muted whitespace-nowrap">
                             {new Date(user.fecha_registro).toLocaleDateString(
                               locale,
                               {
@@ -269,11 +328,10 @@ export default async function AdminModerationPage() {
                             )}
                           </TableCell>
 
-                          {/* Acciones */}
                           <TableCell>
                             <StrikeActions
                               userId={user.id_usuario}
-                              userName={`${user.nombre} ${user.apellido_1}`}
+                              userName={fullName}
                               cantidadStrikes={user.cantidad_strikes}
                               isSelf={user.id_usuario === currentUserId}
                               isExpelled={
@@ -304,36 +362,53 @@ export default async function AdminModerationPage() {
                 icon={Flag}
               />
             ) : (
-              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-                <div className="border-b border-border px-5 py-3">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
+                <div className="border-b border-border/40 px-5 py-3">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink-muted">
                     {t('reportQueueCount', { count: reportes.length })}
                   </span>
                 </div>
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('reportColReporter')}</TableHead>
-                      <TableHead>{t('reportColTarget')}</TableHead>
-                      <TableHead>{t('reportColType')}</TableHead>
-                      <TableHead>{t('reportColDescription')}</TableHead>
-                      <TableHead>{t('reportColDate')}</TableHead>
-                      <TableHead>{t('colActions')}</TableHead>
+                    <TableRow className="border-border/40 bg-surface-sunken/30">
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('reportColReporter')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('reportColTarget')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('reportColType')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('reportColDescription')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('reportColDate')}
+                      </TableHead>
+                      <TableHead className="font-extrabold text-[11px] uppercase tracking-wide text-ink-muted">
+                        {t('colActions')}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {reportes.map((reporte) => (
-                      <TableRow key={reporte.id_reporte}>
-                        <TableCell className="text-ink-strong">
+                      <TableRow
+                        key={reporte.id_reporte}
+                        className="border-border/30 hover:bg-surface-sunken/30 transition-colors"
+                      >
+                        <TableCell className="font-semibold text-sm text-ink-strong">
                           {reporte.reportante_nombre}
                         </TableCell>
                         <TableCell className="font-semibold text-ink-strong">
                           {reporte.target ? (
                             <span className="flex flex-col">
-                              <span className="text-[10px] font-semibold uppercase tracking-wide text-ink-muted">
+                              <span className="text-[10px] font-extrabold uppercase tracking-wide text-ink-muted">
                                 {t(`targetTipo_${reporte.target.tipo}`)}
                               </span>
-                              <span>{reporte.target.nombre}</span>
+                              <span className="text-sm">
+                                {reporte.target.nombre}
+                              </span>
                             </span>
                           ) : (
                             '—'
@@ -342,7 +417,7 @@ export default async function AdminModerationPage() {
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className="rounded-full px-2 text-[10px] font-semibold"
+                            className="rounded-full border border-violet-200 bg-violet-50 px-2.5 text-[10px] font-bold text-violet-800"
                           >
                             {t(`tipoReporte_${reporte.tipo_reporte}`)}
                           </Badge>
@@ -350,7 +425,7 @@ export default async function AdminModerationPage() {
                         <TableCell className="max-w-xs whitespace-pre-wrap text-sm text-ink">
                           {reporte.descripcion}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap text-xs text-ink-muted">
+                        <TableCell className="whitespace-nowrap text-sm text-ink-muted">
                           {new Date(reporte.reportado_at).toLocaleDateString(
                             locale,
                             { year: 'numeric', month: 'short', day: 'numeric' },

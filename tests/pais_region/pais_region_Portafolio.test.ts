@@ -8,15 +8,17 @@ vi.mock('../../src/lib/supabase/server', () => ({
 }))
 
 describe('saveStudentProfile - Pais y Región', () => {
-  let mockUpsert: Mock
+  let mockUpdate: Mock
+  let mockEq: Mock
   let mockFrom: Mock
   let mockGetUser: Mock
 
   beforeEach(() => {
     vi.clearAllMocks()
 
-    mockUpsert = vi.fn().mockResolvedValue({ error: null })
-    mockFrom = vi.fn().mockReturnValue({ upsert: mockUpsert })
+    mockEq = vi.fn().mockResolvedValue({ error: null })
+    mockUpdate = vi.fn().mockReturnValue({ eq: mockEq })
+    mockFrom = vi.fn().mockReturnValue({ update: mockUpdate })
     mockGetUser = vi.fn().mockResolvedValue({
       data: { user: { id: 'user-123' } },
       error: null,
@@ -37,14 +39,14 @@ describe('saveStudentProfile - Pais y Región', () => {
 
     expect(result.ok).toBe(true)
     expect(mockFrom).toHaveBeenCalledWith('estudiantes')
-    expect(mockUpsert).toHaveBeenCalledWith(
+    expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         id_usuario: 'user-123',
         pais_iso_residencia: 'CR',
         region_residencia: 'San José',
       }),
-      { onConflict: 'id_usuario' },
     )
+    expect(mockEq).toHaveBeenCalledWith('id_usuario', 'user-123')
   })
 
   it('no debe sobreescribir pais_iso_residencia ni region_residencia con nulos si no se envian', async () => {
@@ -55,21 +57,18 @@ describe('saveStudentProfile - Pais y Región', () => {
     const result = await saveStudentProfile(profile)
 
     expect(result.ok).toBe(true)
-    expect(mockUpsert).toHaveBeenCalledWith(
+    expect(mockUpdate).toHaveBeenCalledWith(
       expect.not.objectContaining({
         pais_iso_residencia: expect.anything(),
         region_residencia: expect.anything(),
       }),
-      { onConflict: 'id_usuario' },
     )
 
     // Validar que solo envía lo que está definido
-    expect(mockUpsert).toHaveBeenCalledWith(
-      {
-        id_usuario: 'user-123',
-        descripcion: 'Nueva bio',
-      },
-      { onConflict: 'id_usuario' },
-    )
+    expect(mockUpdate).toHaveBeenCalledWith({
+      id_usuario: 'user-123',
+      descripcion: 'Nueva bio',
+    })
+    expect(mockEq).toHaveBeenCalledWith('id_usuario', 'user-123')
   })
 })

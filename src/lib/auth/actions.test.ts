@@ -16,6 +16,10 @@ vi.mock('@/lib/supabase/server', () => ({
   createSupabaseServerClient: vi.fn(),
 }))
 
+vi.mock('@/lib/auth/egresado-allowlist', () => ({
+  isEgresadoEmailAllowed: vi.fn((email) => email === 'fwd@gmail.com'),
+}))
+
 import { signInWithPassword, signUpWithPassword } from './actions'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
