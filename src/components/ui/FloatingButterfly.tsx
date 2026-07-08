@@ -68,10 +68,16 @@ export function FloatingButterfly() {
     // Solo mostramos la animación si el usuario está logueado y no está en una página de login/registro.
     // También verificamos que esté en la raíz ('/es' o '/en') si queremos limitarlo al landing page,
     // pero como el usuario especificó "en la dirección ''", nos aseguramos de que corra.
-    const isLanding =
-      pathname === '/' || pathname === '/es' || pathname === '/en'
+    // Ahora también incluimos las rutas de los paneles (admin, egresado, empresario).
+    const isLandingOrDashboard =
+      pathname === '/' ||
+      pathname === '/es' ||
+      pathname === '/en' ||
+      pathname.includes('/admin') ||
+      pathname.includes('/egresado') ||
+      pathname.includes('/empresario')
 
-    if (currentUser && isLanding && !isAuthPage) {
+    if (currentUser && isLandingOrDashboard && !isAuthPage) {
       // Usamos una nueva clave en sessionStorage (v4) para asegurar que el intento fallido anterior
       // (por la falta de imagen) no impida que se ejecute ahora.
       const hasSeenIntro = sessionStorage.getItem('fwd_intro_played_v4')
