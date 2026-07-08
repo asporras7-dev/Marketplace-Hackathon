@@ -26,6 +26,11 @@ export async function POST(req: Request) {
     const openai = new OpenAI({
       apiKey,
       baseURL,
+      defaultHeaders: {
+        'HTTP-Referer':
+          req.headers.get('referer') || 'https://fwd-marketplace.vercel.app',
+        'X-Title': 'FWD Talent',
+      },
     })
 
     const languageStr = locale === 'en' ? 'inglés' : 'español'
