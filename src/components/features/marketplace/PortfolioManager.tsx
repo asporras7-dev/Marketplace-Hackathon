@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { PortfolioProjectForm } from './PortfolioProjectForm'
 import { CountryRegionFields } from '@/components/features/geo/CountryRegionFields'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -31,7 +31,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-  DialogClose,
 } from '@/components/ui/dialog'
 import {
   Pencil,
@@ -46,7 +45,6 @@ import {
   MapPin,
   Award,
   FileText,
-  Upload,
 } from 'lucide-react'
 import type { PortfolioProject, StudentSkill } from '@/types'
 import type { CalificacionRecibida } from '@/lib/evaluaciones/actions'
@@ -237,6 +235,7 @@ export function PortfolioManager({
   const { updateAvatarUrl } = useAuth()
   const router = useRouter()
   const t = useTranslations('Portfolio')
+  const locale = useLocale()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSkillDialogOpen, setIsSkillDialogOpen] = useState(false)
   const [availableTechnologies, setAvailableTechnologies] = useState<
@@ -263,7 +262,6 @@ export function PortfolioManager({
     initialProfile?.regionNombre || '',
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const [localPhotoUrl, setLocalPhotoUrl] = useState<string | null>(null)
   const [isBioEditOpen, setIsBioEditOpen] = useState(false)
@@ -490,11 +488,6 @@ export function PortfolioManager({
     setIsDialogOpen(true)
   }
 
-  const handleAddNew = () => {
-    setEditingProject(undefined)
-    setIsDialogOpen(true)
-  }
-
   const handleSaveSkill = async (skill: StudentSkill) => {
     setIsSavingBio(true)
     const res = await addStudentSkill(skill.name, skill.level)
@@ -642,7 +635,6 @@ export function PortfolioManager({
                   reader.onload = () => {
                     setImageToCrop(reader.result as string)
                     setIsCropModalOpen(true)
-                    setIsPhotoModalOpen(false)
                   }
 
                   e.target.value = ''
@@ -953,9 +945,9 @@ export function PortfolioManager({
                           <span>{proj.title}</span>
                           {proj.completionDate && (
                             <span className="text-[10px] text-ink-muted font-normal font-sans">
-                              {new Date(
-                                proj.completionDate,
-                              ).toLocaleDateString()}
+                              {new Date(proj.completionDate).toLocaleDateString(
+                                locale,
+                              )}
                             </span>
                           )}
                         </div>

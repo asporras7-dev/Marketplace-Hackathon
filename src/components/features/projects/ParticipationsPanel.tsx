@@ -3,6 +3,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { type CotizacionConProyecto } from '@/lib/cotizaciones/queries'
 import {
   ArrowDown,
   ArrowDownUp,
@@ -24,10 +25,14 @@ import {
   Star,
   Users,
   XCircle,
+  Calculator,
+  Sparkles,
+  DollarSign,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -137,6 +142,22 @@ export function ParticipationsPanel({
   const [mutatingId, setMutatingId] = useState<string | null>(null)
   const [ratingMutatingId, setRatingMutatingId] = useState<string | null>(null)
   const [iframeUrl, setIframeUrl] = useState<string | null>(null)
+  const [viewingCotizacion, setViewingCotizacion] =
+    useState<CotizacionConProyecto | null>(null)
+
+  const handleViewQuotation = async (idCotizacion: string) => {
+    try {
+      const { getCotizacionById } = await import('@/lib/cotizaciones/queries')
+      const res = await getCotizacionById(idCotizacion)
+      if (res.ok) {
+        setViewingCotizacion(res.data)
+      } else {
+        toast.error('No se pudo cargar el desglose de la cotización')
+      }
+    } catch {
+      toast.error('Error al cargar la cotización')
+    }
+  }
 
   // Sin estado de proyecto (vista cross-project) dejamos abrir: ahí no hay
   // ciclo de vida de proyecto a la mano.
@@ -333,6 +354,7 @@ export function ParticipationsPanel({
                 runRate(participacion, calificacion, comentario)
               }
               onOpenIframe={setIframeUrl}
+              onViewQuotation={handleViewQuotation}
             />
           ))}
         </div>
@@ -356,9 +378,28 @@ export function ParticipationsPanel({
                       })}
                 </DialogTitle>
                 <DialogDescription className="text-sm text-muted-foreground">
-                  {confirm.accion === 'contratar'
-                    ? t('confirmContratarDesc')
-                    : t('confirmRechazarDesc')}
+                  {confirm.accion === 'contratar' ? (
+                    <div className="space-y-2">
+                      <p>{t('confirmContratarDesc')}</p>
+                      {confirm.participacion.montoPropuesto && (
+                        <p className="font-semibold text-foreground p-3 rounded-xl bg-primary/5 border border-primary/20">
+                          Monto Acordado del Contrato:{' '}
+                          <span className="font-extrabold text-primary">
+                            {new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                              maximumFractionDigits: 0,
+                            }).format(
+                              confirm.participacion.montoPropuesto,
+                            )}{' '}
+                            USD
+                          </span>
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    t('confirmRechazarDesc')
+                  )}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter className="flex gap-2 sm:justify-end pt-4 border-t border-border/40">
@@ -434,6 +475,182 @@ export function ParticipationsPanel({
       </Dialog>
 
       <Dialog
+        open={viewingCotizacion !== null}
+        onOpenChange={(open) => !open && setViewingCotizacion(null)}
+      >
+        <DialogContent className="sm:max-w-lg border border-border bg-card/95 backdrop-blur-md max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold font-heading text-primary flex items-center gap-1.5">
+              <Calculator className="w-5 h-5" />
+              Detalle de Cotización
+            </DialogTitle>
+            <DialogDescription className="text-sm text-ink-muted">
+              {viewingCotizacion?.nombre_cotizacion}
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingCotizacion && (
+            <div className="space-y-4 py-4 text-xs font-semibold">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-background/50 border border-border/40 p-3 rounded-xl space-y-1">
+                  <div className="text-ink-muted text-[10px] uppercase">
+                    Tiempo y Esfuerzo
+                  </div>
+                  <div className="text-foreground text-sm font-extrabold">
+                    {viewingCotizacion.horas_estimadas} Horas
+                  </div>
+                  <div className="text-ink-muted text-[10px]">
+                    ({viewingCotizacion.duracion_semanas} Semanas)
+                  </div>
+                </div>
+
+                <div className="bg-background/50 border border-border/40 p-3 rounded-xl space-y-1">
+                  <div className="text-ink-muted text-[10px] uppercase">
+                    Tarifa y Complejidad
+                  </div>
+                  <div className="text-foreground text-sm font-extrabold">
+                    {viewingCotizacion.tarifa_base_hora} USD / hr
+                  </div>
+                  <div className="text-ink-muted text-[10px]">
+                    Complejidad: {viewingCotizacion.complejidad.toUpperCase()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-background/50 border border-border/40 p-3 rounded-xl space-y-1">
+                  <div className="text-ink-muted text-[10px] uppercase">
+                    Modalidad de Trabajo
+                  </div>
+                  <div className="text-foreground text-sm font-bold">
+                    {viewingCotizacion.modalidad.toUpperCase()}
+                  </div>
+                </div>
+
+                <div className="bg-background/50 border border-border/40 p-3 rounded-xl space-y-1">
+                  <div className="text-ink-muted text-[10px] uppercase">
+                    Impuestos (IVA)
+                  </div>
+                  <div className="text-foreground text-sm font-bold">
+                    {viewingCotizacion.incluye_iva
+                      ? '13% Incluido'
+                      : 'No incluido'}
+                  </div>
+                </div>
+              </div>
+
+              {viewingCotizacion.stack &&
+                viewingCotizacion.stack.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="text-ink-muted text-[10px] uppercase">
+                      Stack Técnico
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {viewingCotizacion.stack.map((s: string, i: number) => (
+                        <Badge
+                          key={i}
+                          variant="outline"
+                          className="bg-primary/5 border-primary/20 text-foreground py-0.5 px-2 text-[10px] rounded-full"
+                        >
+                          {s}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              {viewingCotizacion.funcionalidades &&
+                viewingCotizacion.funcionalidades.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="text-ink-muted text-[10px] uppercase">
+                      Funcionalidades Principales
+                    </div>
+                    <ul className="space-y-1">
+                      {viewingCotizacion.funcionalidades.map(
+                        (f: string, i: number) => (
+                          <li
+                            key={i}
+                            className="flex items-center gap-1.5 p-2 rounded-lg bg-background/30 border border-border/20 text-[11px] text-foreground"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-accent shrink-0" />
+                            {f}
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+              <div className="border-t border-border pt-3 space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-ink-muted">Subtotal:</span>
+                  <span>
+                    {new Intl.NumberFormat('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                    }).format(viewingCotizacion.subtotal_usd)}{' '}
+                    USD
+                  </span>
+                </div>
+                {viewingCotizacion.incluye_iva && (
+                  <div className="flex justify-between text-magenta">
+                    <span>IVA (13%):</span>
+                    <span>
+                      +
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      }).format(viewingCotizacion.iva_usd)}{' '}
+                      USD
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t border-dashed pt-2 font-extrabold text-sm text-foreground">
+                  <span>Total Cotizado:</span>
+                  <div className="text-right">
+                    <div>
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      }).format(viewingCotizacion.total_usd)}{' '}
+                      USD
+                    </div>
+                    <div className="text-xs text-primary/80 font-bold">
+                      ≈{' '}
+                      {new Intl.NumberFormat('es-CR', {
+                        style: 'currency',
+                        currency: 'CRC',
+                        maximumFractionDigits: 0,
+                      }).format(viewingCotizacion.total_crc)}{' '}
+                      CRC
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {viewingCotizacion.explicacion_ia && (
+                <div className="p-3 bg-accent/5 border border-accent/20 rounded-xl space-y-1.5 mt-2">
+                  <div className="text-accent text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Justificación IA
+                  </div>
+                  <p className="text-[11px] text-ink leading-relaxed whitespace-pre-line italic">
+                    {viewingCotizacion.explicacion_ia}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter className="pt-2 border-t border-border/40">
+            <Button type="button" onClick={() => setViewingCotizacion(null)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
         open={iframeUrl !== null}
         onOpenChange={(open) => !open && setIframeUrl(null)}
       >
@@ -487,6 +704,7 @@ interface ParticipationCardProps {
     comentario: string | undefined,
   ) => Promise<void>
   onOpenIframe: (url: string) => void
+  onViewQuotation: (id: string) => void
 }
 
 function ParticipationCard({
@@ -502,6 +720,7 @@ function ParticipationCard({
   onRechazar,
   onRate,
   onOpenIframe,
+  onViewQuotation,
 }: ParticipationCardProps) {
   const t = useTranslations('ProjectDetail')
   const sealed = isParticipacionSealed(participacion.estado)
@@ -647,6 +866,44 @@ function ParticipationCard({
                 )}
               </div>
 
+              {/* Propuesta Económica Abierta */}
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+                <div className="flex justify-between items-center flex-wrap gap-2">
+                  <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                    <DollarSign className="w-4.5 h-4.5 text-primary shrink-0" />
+                    <span>Propuesta Económica</span>
+                  </div>
+                  <div className="text-base font-extrabold text-foreground">
+                    {participacion.montoPropuesto
+                      ? `${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(participacion.montoPropuesto)} USD`
+                      : 'No especificado'}
+                    <span className="text-xs font-bold text-primary/80 ml-2">
+                      (≈{' '}
+                      {participacion.montoPropuesto
+                        ? new Intl.NumberFormat('es-CR', {
+                            style: 'currency',
+                            currency: 'CRC',
+                            maximumFractionDigits: 0,
+                          }).format(participacion.montoPropuesto * 515)
+                        : '0'}{' '}
+                      CRC)
+                    </span>
+                  </div>
+                </div>
+                {participacion.idCotizacion && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onViewQuotation(participacion.idCotizacion!)}
+                    className="border-primary/20 text-primary hover:bg-primary/10 text-xs font-bold py-1 px-3"
+                  >
+                    <Calculator className="w-3.5 h-3.5 text-primary shrink-0" />
+                    Ver Desglose de Cotización
+                  </Button>
+                )}
+              </div>
+
               {/* Attachments & Meta Info Footer */}
               <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-border/40">
                 <div className="flex flex-wrap gap-2">
@@ -784,7 +1041,18 @@ function SealedEnvelopeBody({
 }: SealedEnvelopeBodyProps) {
   const t = useTranslations('ProjectDetail')
 
-  const adjuntos: { key: string; label: string; icon: ReactNode }[] = []
+  const adjuntos: {
+    key: string
+    label: string
+    icon: ReactNode
+    className?: string
+  }[] = []
+  adjuntos.push({
+    key: 'presupuesto_sellado',
+    label: 'Propuesta Económica Sellada',
+    icon: <Lock className="w-3 h-3" />,
+    className: 'border-primary/20 bg-primary/10 text-primary',
+  })
   if (participacion.tienePrototipo) {
     adjuntos.push({
       key: 'prototipo',
@@ -820,7 +1088,11 @@ function SealedEnvelopeBody({
             {adjuntos.map((adjunto) => (
               <span
                 key={adjunto.key}
-                className="inline-flex items-center gap-1 rounded-full border border-magenta/20 bg-magenta/10 px-2.5 py-0.5 text-[11px] font-semibold text-magenta"
+                className={cn(
+                  'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
+                  adjunto.className ||
+                    'border-magenta/20 bg-magenta/10 text-magenta',
+                )}
               >
                 {adjunto.icon}
                 {adjunto.label}
