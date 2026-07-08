@@ -8,17 +8,20 @@ import OpenAI from 'openai'
 import { type GuardarCotizacionInput } from './schema'
 import { calcularCotizacion } from './calculator'
 
-
 /**
  * Guarda una cotización en la base de datos asociada al egresado logueado.
  */
-export async function guardarCotizacion(input: GuardarCotizacionInput): Promise<Result<string>> {
+export async function guardarCotizacion(
+  input: GuardarCotizacionInput,
+): Promise<Result<string>> {
   try {
     const roleResult = await requireRole('egresado')
     if (!roleResult.ok) return err('unauthorized')
 
     const supabase = await createSupabaseServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) return err('unauthenticated')
 
     const { data: estudiante, error: estError } = await supabase
@@ -35,7 +38,7 @@ export async function guardarCotizacion(input: GuardarCotizacionInput): Promise<
       tarifa_base_hora: input.tarifa_base_hora,
       complejidad: input.complejidad,
       modalidad: input.modalidad,
-      incluye_iva: input.incluye_iva
+      incluye_iva: input.incluye_iva,
     })
 
     const desgloseCalculo = {
@@ -44,7 +47,7 @@ export async function guardarCotizacion(input: GuardarCotizacionInput): Promise<
       adicionalComplejidad: calc.adicionalComplejidad,
       adicionalModalidad: calc.adicionalModalidad,
       multComplejidad: calc.multComplejidad,
-      multModalidad: calc.multModalidad
+      multModalidad: calc.multModalidad,
     }
 
     const { data, error } = await supabase
@@ -73,7 +76,7 @@ export async function guardarCotizacion(input: GuardarCotizacionInput): Promise<
         rango_min_crc: calc.minCrc,
         rango_max_crc: calc.maxCrc,
         desglose_calculo: desgloseCalculo,
-        explicacion_ia: input.explicacion_ia ?? null
+        explicacion_ia: input.explicacion_ia ?? null,
       })
       .select('id_cotizacion')
       .single()
@@ -92,14 +95,16 @@ export async function guardarCotizacion(input: GuardarCotizacionInput): Promise<
  */
 export async function estimarConIA(
   descripcionProyecto: string,
-  stackProyecto: string[] = []
-): Promise<Result<{
-  semanas: number
-  horas_semanales: number
-  complejidad: 'baja' | 'media' | 'alta'
-  funcionalidades: string[]
-  explicacion: string
-}>> {
+  stackProyecto: string[] = [],
+): Promise<
+  Result<{
+    semanas: number
+    horas_semanales: number
+    complejidad: 'baja' | 'media' | 'alta'
+    funcionalidades: string[]
+    explicacion: string
+  }>
+> {
   try {
     const aiConfig = getAiConfig()
     const openai = new OpenAI({
@@ -123,8 +128,12 @@ Genera una respuesta en formato JSON con la siguiente estructura (estricta, resp
     const completion = await openai.chat.completions.create({
       model: aiConfig.model,
       messages: [
-        { role: 'system', content: 'Sos un asistente experto en estimación de proyectos de software para desarrolladores junior. Tu salida debe ser únicamente JSON válido y limpio sin formato Markdown.' },
-        { role: 'user', content: prompt }
+        {
+          role: 'system',
+          content:
+            'Sos un asistente experto en estimación de proyectos de software para desarrolladores junior. Tu salida debe ser únicamente JSON válido y limpio sin formato Markdown.',
+        },
+        { role: 'user', content: prompt },
       ],
       temperature: 0.2,
       max_tokens: 1500,
@@ -143,9 +152,13 @@ Genera una respuesta en formato JSON con la siguiente estructura (estricta, resp
     return ok({
       semanas: Number(result.semanas) || 4,
       horas_semanales: Number(result.horas_semanales) || 20,
-      complejidad: ['baja', 'media', 'alta'].includes(result.complejidad) ? result.complejidad : 'media',
-      funcionalidades: Array.isArray(result.funcionalidades) ? result.funcionalidades : [],
-      explicacion: result.explicacion || 'No se pudo generar explicación.'
+      complejidad: ['baja', 'media', 'alta'].includes(result.complejidad)
+        ? result.complejidad
+        : 'media',
+      funcionalidades: Array.isArray(result.funcionalidades)
+        ? result.funcionalidades
+        : [],
+      explicacion: result.explicacion || 'No se pudo generar explicación.',
     })
   } catch {
     return err('ai_failed')
@@ -156,14 +169,14 @@ Genera una respuesta en formato JSON con la siguiente estructura (estricta, resp
  * Sugiere una tarifa por hora razonable en USD basada en el stack técnico provisto,
  * orientada a desarrolladores junior/iniciantes en el mercado local/global.
  */
-export async function sugerirTarifaConIA(
-  stack: string[]
-): Promise<Result<{
-  tarifaSugerida: number
-  rangoMin: number
-  rangoMax: number
-  explicacion: string
-}>> {
+export async function sugerirTarifaConIA(stack: string[]): Promise<
+  Result<{
+    tarifaSugerida: number
+    rangoMin: number
+    rangoMax: number
+    explicacion: string
+  }>
+> {
   try {
     const aiConfig = getAiConfig()
     const openai = new OpenAI({
@@ -191,8 +204,12 @@ Genera una respuesta en formato JSON con la siguiente estructura (estricta, resp
     const completion = await openai.chat.completions.create({
       model: aiConfig.model,
       messages: [
-        { role: 'system', content: 'Sos un asistente mentor de desarrolladores junior. Tu salida debe ser únicamente JSON válido y limpio sin formato Markdown.' },
-        { role: 'user', content: prompt }
+        {
+          role: 'system',
+          content:
+            'Sos un asistente mentor de desarrolladores junior. Tu salida debe ser únicamente JSON válido y limpio sin formato Markdown.',
+        },
+        { role: 'user', content: prompt },
       ],
       temperature: 0.3,
       max_tokens: 1000,
@@ -212,7 +229,7 @@ Genera una respuesta en formato JSON con la siguiente estructura (estricta, resp
       tarifaSugerida: Number(result.tarifaSugerida) || 15,
       rangoMin: Number(result.rangoMin) || 12,
       rangoMax: Number(result.rangoMax) || 20,
-      explicacion: result.explicacion || 'No se pudo generar explicación.'
+      explicacion: result.explicacion || 'No se pudo generar explicación.',
     })
   } catch {
     return err('ai_failed')

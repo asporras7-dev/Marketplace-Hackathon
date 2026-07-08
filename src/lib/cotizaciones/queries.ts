@@ -5,11 +5,14 @@ import { ok, err, type Result } from '@/lib/result'
 import { getCurrentUser } from '@/lib/auth/dal'
 import type { Database } from '@/types/database'
 
-export type CotizacionConProyecto = Database['public']['Tables']['cotizaciones']['Row'] & {
-  proyectos: { titulo: string } | null
-}
+export type CotizacionConProyecto =
+  Database['public']['Tables']['cotizaciones']['Row'] & {
+    proyectos: { titulo: string } | null
+  }
 
-export async function getMisCotizaciones(): Promise<Result<CotizacionConProyecto[]>> {
+export async function getMisCotizaciones(): Promise<
+  Result<CotizacionConProyecto[]>
+> {
   try {
     const user = await getCurrentUser()
     if (!user) return err('unauthorized')
@@ -39,7 +42,9 @@ export async function getMisCotizaciones(): Promise<Result<CotizacionConProyecto
   }
 }
 
-export async function getCotizacionById(idCotizacion: string): Promise<Result<CotizacionConProyecto>> {
+export async function getCotizacionById(
+  idCotizacion: string,
+): Promise<Result<CotizacionConProyecto>> {
   try {
     const user = await getCurrentUser()
     if (!user) return err('unauthorized')

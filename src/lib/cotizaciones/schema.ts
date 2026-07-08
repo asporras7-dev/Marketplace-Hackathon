@@ -13,7 +13,7 @@ export const GuardarCotizacionSchema = z.object({
   tarifa_base_hora: z.number().min(1),
   modalidad: z.enum(['remoto', 'hibrido', 'presencial']),
   incluye_iva: z.boolean(),
-  explicacion_ia: z.string().optional().nullable()
+  explicacion_ia: z.string().optional().nullable(),
 })
 
 export type GuardarCotizacionInput = z.infer<typeof GuardarCotizacionSchema>

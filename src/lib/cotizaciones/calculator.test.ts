@@ -8,7 +8,7 @@ describe('calcularCotizacion', () => {
       tarifa_base_hora: 20,
       complejidad: 'baja',
       modalidad: 'remoto',
-      incluye_iva: false
+      incluye_iva: false,
     })
 
     expect(res.costoBase).toBe(200)
@@ -24,7 +24,7 @@ describe('calcularCotizacion', () => {
       tarifa_base_hora: 10,
       complejidad: 'alta',
       modalidad: 'presencial',
-      incluye_iva: true
+      incluye_iva: true,
     })
 
     // costoBase = 1000
@@ -45,7 +45,7 @@ describe('calcularCotizacion', () => {
       tarifa_base_hora: 25,
       complejidad: 'media',
       modalidad: 'hibrido',
-      incluye_iva: true
+      incluye_iva: true,
     })
 
     // costoBase = 2000
