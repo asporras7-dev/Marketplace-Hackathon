@@ -1,0 +1,77 @@
+# Resumen Técnico: Proyecto Marketplace Hackathon
+
+## 1. Stack Tecnológico
+
+El proyecto está construido utilizando un stack moderno, enfocado en el rendimiento, la escalabilidad y la experiencia del desarrollador (DX). Se basa en el ecosistema de JavaScript/TypeScript, utilizando tecnologías de vanguardia.
+
+### Frontend
+* **Framework:** Next.js 15 (usando App Router).
+* **Librería UI:** React 19.
+* **Estilos:** Tailwind CSS v4.
+* **Componentes:** Radix UI (primitivas accesibles), integrados con utilidades como `clsx` y `tailwind-merge`.
+* **Manejo de Formularios:** React Hook Form junto con Zod (para validación de esquemas).
+* **Internacionalización (i18n):** Next-Intl (soporte nativo para múltiples idiomas).
+* **Iconos y Animaciones:** Lucide React y `tw-animate-css`.
+
+### Backend
+* **Entorno:** Node.js integrado dentro del mismo proyecto mediante Next.js (Server Components, Server Actions y API Routes).
+* **IA:** OpenAI API.
+* **Manejo de Archivos/Imágenes:** Cloudinary.
+* **Emails:** Nodemailer.
+
+### Base de Datos y Autenticación
+* **BaaS (Backend as a Service):** Supabase.
+* **Base de Datos Relacional:** PostgreSQL (proveído por Supabase).
+* **Autenticación:** Supabase Auth (integrado con `@supabase/ssr` para manejo de sesiones en el servidor).
+
+### Despliegue (Deployment)
+* **Plataforma:** Vercel.
+
+---
+
+## 2. Análisis de las Herramientas: Características, Ventajas y Desventajas
+
+### Next.js (React Framework)
+* **Características Únicas:** Renderizado del lado del servidor (SSR), Generación Estática (SSG), y React Server Components (RSC) por defecto a través del App Router.
+* **Ventajas:** Excelente SEO, carga de página extremadamente rápida, unificación de frontend y backend en un solo repositorio (monorepo).
+* **Desventajas:** Curva de aprendizaje más alta respecto a React puro (Vite). Mayor complejidad en el manejo del estado entre el servidor y el cliente.
+
+### Tailwind CSS
+* **Características Únicas:** Framework CSS de utilidades ("utility-first"). Los estilos se aplican directamente usando clases en el HTML/JSX.
+* **Ventajas:** Desarrollo súper rápido, no hay que pensar en nombres de clases, el bundle CSS final es minúsculo (solo incluye lo que usas).
+* **Desventajas vs Otras Opciones (SASS / Styled Components):** El HTML puede verse desordenado ("sopa de clases"). Curva de aprendizaje inicial para memorizar utilidades.
+
+### Supabase (PostgreSQL)
+* **Características Únicas:** Es la alternativa Open Source a Firebase. Expone una base de datos PostgreSQL real y proporciona APIs REST/GraphQL automáticas, autenticación y storage.
+* **Ventajas:** Al usar SQL (Postgres), se evitan los problemas de escalabilidad y relaciones complejas que tienen las bases de datos NoSQL como MongoDB o Firebase. Tiene control de acceso a nivel de fila (RLS - Row Level Security) para mayor seguridad.
+* **Desventajas:** Menos maduro que AWS RDS o Firebase en algunos servicios de nicho. Requiere conocimientos de SQL y diseño relacional.
+
+### Vercel (Deployment)
+* **Características Únicas:** Los creadores de Next.js. Es una plataforma "Zero-config" (cero configuración) para proyectos Next.js.
+* **Ventajas:** Despliegue automático desde GitHub. Edge networks (CDNs globales), CI/CD integrado, Serverless Functions automáticas.
+* **Desventajas vs AWS / Heroku:** Puede volverse costoso muy rápido si hay alto tráfico o si se abusa del ancho de banda y Serverless Functions. Menor control sobre la infraestructura subyacente que un VPS tradicional o AWS EC2.
+
+---
+
+## 3. Arquitectura y Flujo de Trabajo del Proyecto
+
+El proyecto tiene una arquitectura monolítica (Fullstack) apalancada por Next.js App Router, pero con separación lógica de responsabilidades.
+
+### Composición y Estructura de Directorios
+* `src/app/[locale]/`: Aquí vive el App Router. El `[locale]` indica que toda la aplicación está internacionalizada. Las rutas son definidas por carpetas (ej. `/app/[locale]/login/page.tsx`).
+* `src/components/`: Componentes reutilizables de UI (botones, inputs) y componentes de características específicas (features) que se ensamblan en las páginas.
+* `src/lib/`: Código utilitario, clientes de bases de datos (Supabase cliente), consultas (queries) y Server Actions. Aquí se maneja la lógica de negocio pura y la conexión con el exterior.
+* `src/hooks/`: Custom Hooks de React para abstraer lógica del cliente.
+* `src/middleware.ts`: El punto de entrada interceptor. Se usa principalmente para verificar el idioma del usuario (i18n) y proteger rutas privadas verificando los tokens de sesión de Supabase antes de que la página renderice.
+
+### Flujo de Trabajo (Workflow)
+1. **Renderizado (RSC):** Por defecto, Next.js usa Server Components. Las páginas se construyen en el servidor (obteniendo datos de Supabase de forma segura sin exponer APIs al navegador) y envían HTML puro al cliente.
+2. **Interactividad (Client Components):** Cuando un componente necesita interactividad (ej. `onClick`, formularios con `react-hook-form`), se marca con `"use client"`.
+3. **Mutaciones de Datos (Server Actions):** Cuando un usuario envía un formulario (ej. crear una postulación en el Marketplace), el cliente llama a una Server Action (funciones asíncronas en `src/lib/actions.ts` o similares). Estas funciones se ejecutan de manera segura en el servidor de Vercel y se comunican con Supabase.
+4. **Validación:** Se usa Zod tanto en el cliente (para dar feedback en tiempo real sin recargar) como en el servidor (para asegurar que los datos maliciosos no entren a la base de datos).
+5. **Autenticación y Seguridad:** El flujo de autenticación usa Supabase. Cuando un usuario inicia sesión, Supabase establece una cookie segura (`httpOnly`). El `middleware.ts` intercepta cada navegación para asegurar que los usuarios no autenticados sean redirigidos a la página de login.
+
+### Detalles Significativos
+* **Seguridad RLS (Row Level Security):** La base de datos está protegida desde Supabase, asegurando que un usuario solo pueda leer/editar sus propios proyectos o postulaciones en el Marketplace, reforzando la seguridad de las Server Actions.
+* **Internacionalización:** El uso agresivo de `next-intl` indica que el proyecto está diseñado desde cero para múltiples mercados/idiomas.
+* **Turbopack:** En el `package.json`, los scripts usan `--turbopack`, el nuevo empaquetador basado en Rust de Vercel, lo que demuestra un enfoque en tener tiempos de compilación y de desarrollo (HMR) extremadamente rápidos.
