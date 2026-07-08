@@ -100,7 +100,14 @@ export function AuthProvider({
 
         if (profile) {
           setDisplayName(`${profile.nombre} ${profile.apellido_1}`.trim())
-          setAvatarUrl(profile.foto_perfil ?? null)
+
+          // Solo sobrescribir el avatar si la BD tiene uno. Si la BD tiene null
+          // pero tenemos uno en memoria (recién subido pero no guardado en BD o
+          // desincronizado), mantenemos el que está en memoria para evitar
+          // que la foto desaparezca al navegar entre módulos.
+          if (profile.foto_perfil) {
+            setAvatarUrl(profile.foto_perfil)
+          }
         }
       } else {
         setUserRoleState(null)

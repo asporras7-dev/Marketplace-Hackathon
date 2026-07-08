@@ -34,7 +34,7 @@ export function CompanyProfileBanner({ company }: CompanyProfileBannerProps) {
   return (
     <div className="relative rounded-3xl overflow-hidden border border-border bg-gradient-to-r from-secondary via-primary to-accent p-6 md:p-8 pt-20 md:pt-28 flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 z-10">
-        <div className="w-20 h-20 bg-surface border-4 border-surface shadow-lg rounded-2xl flex items-center justify-center shrink-0 overflow-hidden">
+        <div className="w-32 h-32 sm:w-40 sm:h-40 bg-surface border-4 border-surface shadow-lg rounded-2xl flex items-center justify-center shrink-0 overflow-hidden">
           {company?.logo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -43,8 +43,8 @@ export function CompanyProfileBanner({ company }: CompanyProfileBannerProps) {
               className="w-full h-full object-cover rounded-xl"
             />
           ) : (
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-primary-foreground font-extrabold text-2xl tracking-tighter">
+            <div className="w-full h-full bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-extrabold text-4xl sm:text-5xl tracking-tighter">
                 {company?.name
                   ? company.name.substring(0, 3).toUpperCase()
                   : 'FWD'}
