@@ -29,6 +29,8 @@ import { maxBirthDateForMinAge } from '@/lib/utils/age'
 import { saveCompanyProfile } from '@/lib/company/actions'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import imageCompression from 'browser-image-compression'
+import { ImageCropperDialog } from '@/components/features/ui/ImageCropperDialog'
+import { uploadImageToCloudinary } from '@/lib/upload/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -84,6 +86,10 @@ export function CompanyProfileForm({
     initialProfile.logo || null,
   )
   const [uploadingLogo, setUploadingLogo] = useState(false)
+
+  // Cropper state
+  const [cropperOpen, setCropperOpen] = useState(false)
+  const [tempPhotoFile, setTempPhotoFile] = useState<File | null>(null)
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), [])
   const profileSchema = useMemo(
@@ -144,9 +150,54 @@ export function CompanyProfileForm({
   const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && validateImage(file)) {
-      setPhotoFile(file)
-      setPhotoPreview(URL.createObjectURL(file))
+      setTempPhotoFile(file)
+      setCropperOpen(true)
     }
+    event.target.value = '' // Allow selecting the same file again
+  }
+
+  const handleCropSubmit = async (croppedFile: File) => {
+    setPhotoFile(croppedFile)
+    const localUrl = URL.createObjectURL(croppedFile)
+    setPhotoPreview(localUrl)
+    setCropperOpen(false)
+    setTempPhotoFile(null)
+
+    // Auto-upload the photo to Cloudinary and update AuthContext immediately
+    try {
+      setUploadingPhoto(true)
+      const photoFormData = new FormData()
+      photoFormData.append('file', croppedFile)
+
+      // We import this dynamically or it's already imported
+      const { uploadImageToCloudinary } = await import('@/lib/upload/actions')
+      const photoUploadRes = await uploadImageToCloudinary(
+        photoFormData,
+        'imagenes',
+      )
+
+      if (photoUploadRes.ok && photoUploadRes.data) {
+        // Set the actual cloudinary URL to the form so it saves if they click Save later
+        setValue('profilePhoto', photoUploadRes.data)
+        // Immediately update Navbar
+        updateAvatarUrl(photoUploadRes.data)
+        // Immediately update DB so it persists across hard reloads and navigations
+        const { updateProfilePhotoAction } =
+          await import('@/lib/auth/navbarAction')
+        await updateProfilePhotoAction(photoUploadRes.data)
+        // Clear the photo file so we don't upload it again on submit
+        setPhotoFile(null)
+      }
+    } catch (e) {
+      console.error('Auto-upload failed', e)
+    } finally {
+      setUploadingPhoto(false)
+    }
+  }
+
+  const handleCropCancel = () => {
+    setCropperOpen(false)
+    setTempPhotoFile(null)
   }
 
   const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +239,17 @@ export function CompanyProfileForm({
       let photoUrl = values.profilePhoto
       if (photoFile) {
         setUploadingPhoto(true)
-        photoUrl = await uploadImage('fotos-perfil', photoFile, userId)
+        const photoFormData = new FormData()
+        photoFormData.append('file', photoFile)
+        const photoUploadRes = await uploadImageToCloudinary(
+          photoFormData,
+          'imagenes',
+        )
+
+        if (!photoUploadRes.ok) {
+          throw new Error(photoUploadRes.error)
+        }
+        photoUrl = photoUploadRes.data
         setUploadingPhoto(false)
       }
 
@@ -235,342 +296,355 @@ export function CompanyProfileForm({
   const verif = initialProfile.verificationStatus
 
   return (
-    <Card className="border border-border/85 bg-surface rounded-3xl shadow-xl mt-6 overflow-hidden">
-      {/* Estado de verificación (solo lectura) */}
-      <div className="bg-surface-sunken px-6 py-5 border-b border-border/80 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-warning/15 flex items-center justify-center text-warning">
-            <ShieldCheck className="w-5.5 h-5.5" />
-          </div>
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-              {tEmpresa('verificationLabel')}
-            </p>
-            <p className="text-[11px] text-muted-foreground">
-              {tEmpresa('verificationHint')}
-            </p>
-          </div>
-        </div>
-        {verif ? (
-          <span
-            className={cn(
-              'text-xs font-extrabold px-5 py-2 rounded-full text-white bg-warning shadow-sm',
-            )}
-          >
-            {verif === 'verificado'
-              ? tEmpresa('selloConfianza')
-              : tEmpresa(VERIF_KEY[verif])}
-          </span>
-        ) : (
-          <span className="text-xs font-bold px-4 py-1.5 rounded-full border border-border bg-muted text-muted-foreground">
-            {tEmpresa('verifNone')}
-          </span>
-        )}
-      </div>
+    <>
+      <ImageCropperDialog
+        open={cropperOpen}
+        onOpenChange={setCropperOpen}
+        imageFile={tempPhotoFile}
+        onCropSubmit={handleCropSubmit}
+        onCancel={handleCropCancel}
+      />
 
-      <CardContent className="p-6 sm:p-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Sección: datos personales */}
-          <section className="space-y-6">
-            <SectionHeading
-              icon={<User className="w-5 h-5" />}
-              title={tEmpresa('sectionPersonalTitle')}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Field
-                id="firstName"
-                label={tEmpresa('fieldFirstName')}
-                error={errors.firstName?.message}
-              >
-                <Input
-                  id="firstName"
-                  type="text"
-                  placeholder={tEmpresa('fieldFirstNamePlaceholder')}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('firstName')}
-                />
-              </Field>
-              <Field
-                id="lastName1"
-                label={tEmpresa('fieldLastName1')}
-                error={errors.lastName1?.message}
-              >
-                <Input
-                  id="lastName1"
-                  type="text"
-                  placeholder={tEmpresa('fieldLastName1Placeholder')}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('lastName1')}
-                />
-              </Field>
-              <Field
-                id="lastName2"
-                label={tEmpresa('fieldLastName2')}
-                optional={tEmpresa('optionalTag')}
-                error={errors.lastName2?.message}
-              >
-                <Input
-                  id="lastName2"
-                  type="text"
-                  placeholder={tEmpresa('fieldLastName2Placeholder')}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('lastName2')}
-                />
-              </Field>
+      <Card className="border border-border/85 bg-surface rounded-3xl shadow-xl mt-6 overflow-hidden">
+        {/* Estado de verificación (solo lectura) */}
+        <div className="bg-surface-sunken px-6 py-5 border-b border-border/80 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-warning/15 flex items-center justify-center text-warning">
+              <ShieldCheck className="w-5.5 h-5.5" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field
-                id="birthDate"
-                label={tEmpresa('fieldBirthDate')}
-                error={errors.birthDate?.message}
-              >
-                <Input
-                  id="birthDate"
-                  type="date"
-                  max={maxBirthDate}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('birthDate')}
-                />
-              </Field>
-              <ReadonlyField
-                label={tEmpresa('emailReadonly')}
-                value={initialProfile.contactEmail}
-                hint={tEmpresa('emailReadonlyHint')}
-              />
-            </div>
-
-            <ImageUploadField
-              label={tEmpresa('fieldPhoto')}
-              title={tEmpresa('uploadPhotoTitle')}
-              preview={photoPreview}
-              uploading={uploadingPhoto}
-              disabled={loading}
-              variant="avatar"
-              onSelect={handlePhotoChange}
-            />
-          </section>
-
-          {/* Sección: datos de la empresa */}
-          <section className="space-y-6 pt-6 border-t border-border/40">
-            <SectionHeading
-              icon={<Building2 className="w-5 h-5" />}
-              title={tEmpresa('sectionCompanyTitle')}
-            />
-
-            <Field
-              id="name"
-              label={tEmpresa('fieldName')}
-              error={errors.name?.message}
-            >
-              <Input
-                id="name"
-                type="text"
-                placeholder={tEmpresa('fieldNamePlaceholder')}
-                className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                {...register('name')}
-              />
-            </Field>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field
-                id="companyType"
-                label={tEmpresa('fieldType')}
-                error={errors.companyType?.message}
-              >
-                <Controller
-                  name="companyType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
-                        <SelectValue
-                          placeholder={tEmpresa('selectTypePlaceholder')}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="formal">
-                          {tEmpresa('typeFormal')}
-                        </SelectItem>
-                        <SelectItem value="emprendedor">
-                          {tEmpresa('typeEmprendedor')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </Field>
-              <Field
-                id="sector"
-                label={tEmpresa('fieldSector')}
-                error={errors.sector?.message}
-              >
-                <Input
-                  id="sector"
-                  type="text"
-                  placeholder={tEmpresa('fieldSectorPlaceholder')}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('sector')}
-                />
-              </Field>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field
-                id="cedula"
-                label={
-                  watchedType === 'emprendedor'
-                    ? tEmpresa('fieldCedulaIdentidad')
-                    : tEmpresa('fieldCedulaJuridica')
-                }
-                error={errors.cedula?.message}
-              >
-                <Input
-                  id="cedula"
-                  type="text"
-                  placeholder={tEmpresa('fieldCedulaPlaceholder')}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('cedula')}
-                />
-              </Field>
-
-              <Field
-                id="operatingScope"
-                label={tEmpresa('fieldScope')}
-                error={errors.operatingScope?.message}
-              >
-                <Controller
-                  name="operatingScope"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      value={field.value ?? ''}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="w-full bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
-                        <SelectValue
-                          placeholder={tEmpresa('selectScopePlaceholder')}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="nacional">
-                          {tEmpresa('scopeNacional')}
-                        </SelectItem>
-                        <SelectItem value="internacional">
-                          {tEmpresa('scopeInternacional')}
-                        </SelectItem>
-                        <SelectItem value="ambos">
-                          {tEmpresa('scopeAmbos')}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </Field>
-            </div>
-
-            <CountryRegionFields
-              countries={countries}
-              initialRegions={initialRegions}
-              countryValue={watch('country') ?? ''}
-              regionValue={watch('city') ?? ''}
-              onCountryChange={(code) =>
-                setValue('country', code, { shouldValidate: true })
-              }
-              onRegionChange={(code) =>
-                setValue('city', code, { shouldValidate: true })
-              }
-              countryLabel={tEmpresa('fieldCountry')}
-              countryId="country"
-              regionId="city"
-              countryInvalid={Boolean(errors.country)}
-              comboboxClassName="bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all"
-            />
-
-            <Field
-              id="website"
-              label={tEmpresa('fieldWebsite')}
-              optional={tEmpresa('optionalTag')}
-              error={errors.website?.message}
-            >
-              <div className="relative">
-                <Input
-                  id="website"
-                  type="url"
-                  placeholder={tEmpresa('fieldWebsitePlaceholder')}
-                  className="bg-surface-sunken border-transparent rounded-2xl h-11 pl-10 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                  {...register('website')}
-                />
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60">
-                  <Globe className="w-4 h-4" />
-                </div>
-              </div>
-            </Field>
-
-            <Field
-              id="description"
-              label={tEmpresa('fieldDescription')}
-              optional={tEmpresa('optionalTag')}
-              hint={tCommon('minCharsLabel', { n: 20 })}
-              error={errors.description?.message}
-            >
-              <Textarea
-                id="description"
-                rows={4}
-                placeholder={tEmpresa('fieldDescriptionPlaceholder')}
-                className="bg-surface-sunken border-transparent rounded-2xl focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
-                {...register('description')}
-              />
-            </Field>
-
-            <input type="hidden" {...register('logo')} />
-            <ImageUploadField
-              label={tEmpresa('fieldLogoUpload')}
-              title={tEmpresa('uploadLogoTitle')}
-              preview={logoPreview}
-              uploading={uploadingLogo}
-              disabled={loading}
-              variant="logo"
-              onSelect={handleLogoChange}
-            />
-            {errors.logo?.message && (
-              <p className="text-xs font-semibold text-destructive">
-                {errors.logo.message}
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                {tEmpresa('verificationLabel')}
               </p>
-            )}
-          </section>
-
-          {/* El correo viaja oculto (no editable); la BD lo congela igual. */}
-          <input type="hidden" {...register('contactEmail')} />
-          <input type="hidden" {...register('profilePhoto')} />
-
-          <div className="flex items-center justify-between pt-6 border-t border-border/40">
-            <Link
-              href="/empresario"
-              className="text-muted-foreground hover:text-foreground font-extrabold text-xs tracking-wider uppercase px-4 py-2 transition-colors"
-            >
-              {tEmpresa('discardChanges')}
-            </Link>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-magenta hover:bg-magenta/95 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-surface/20 text-white">
-                {loading ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Save className="w-3.5 h-3.5" />
-                )}
-              </span>
-              {loading ? tCommon('loading') : tEmpresa('saveProfile')}
-            </Button>
+              <p className="text-[11px] text-muted-foreground">
+                {tEmpresa('verificationHint')}
+              </p>
+            </div>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+          {verif ? (
+            <span
+              className={cn(
+                'text-xs font-extrabold px-5 py-2 rounded-full text-white bg-warning shadow-sm',
+              )}
+            >
+              {verif === 'verificado'
+                ? tEmpresa('selloConfianza')
+                : tEmpresa(VERIF_KEY[verif])}
+            </span>
+          ) : (
+            <span className="text-xs font-bold px-4 py-1.5 rounded-full border border-border bg-muted text-muted-foreground">
+              {tEmpresa('verifNone')}
+            </span>
+          )}
+        </div>
+
+        <CardContent className="p-6 sm:p-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Sección: datos personales */}
+            <section className="space-y-6">
+              <SectionHeading
+                icon={<User className="w-5 h-5" />}
+                title={tEmpresa('sectionPersonalTitle')}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Field
+                  id="firstName"
+                  label={tEmpresa('fieldFirstName')}
+                  error={errors.firstName?.message}
+                >
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder={tEmpresa('fieldFirstNamePlaceholder')}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('firstName')}
+                  />
+                </Field>
+                <Field
+                  id="lastName1"
+                  label={tEmpresa('fieldLastName1')}
+                  error={errors.lastName1?.message}
+                >
+                  <Input
+                    id="lastName1"
+                    type="text"
+                    placeholder={tEmpresa('fieldLastName1Placeholder')}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('lastName1')}
+                  />
+                </Field>
+                <Field
+                  id="lastName2"
+                  label={tEmpresa('fieldLastName2')}
+                  optional={tEmpresa('optionalTag')}
+                  error={errors.lastName2?.message}
+                >
+                  <Input
+                    id="lastName2"
+                    type="text"
+                    placeholder={tEmpresa('fieldLastName2Placeholder')}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('lastName2')}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Field
+                  id="birthDate"
+                  label={tEmpresa('fieldBirthDate')}
+                  error={errors.birthDate?.message}
+                >
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    max={maxBirthDate}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('birthDate')}
+                  />
+                </Field>
+                <ReadonlyField
+                  label={tEmpresa('emailReadonly')}
+                  value={initialProfile.contactEmail}
+                  hint={tEmpresa('emailReadonlyHint')}
+                />
+              </div>
+
+              <ImageUploadField
+                label={tEmpresa('fieldPhoto')}
+                title={tEmpresa('uploadPhotoTitle')}
+                preview={photoPreview}
+                uploading={uploadingPhoto}
+                disabled={loading}
+                variant="avatar"
+                onSelect={handlePhotoChange}
+              />
+            </section>
+
+            {/* Sección: datos de la empresa */}
+            <section className="space-y-6 pt-6 border-t border-border/40">
+              <SectionHeading
+                icon={<Building2 className="w-5 h-5" />}
+                title={tEmpresa('sectionCompanyTitle')}
+              />
+
+              <Field
+                id="name"
+                label={tEmpresa('fieldName')}
+                error={errors.name?.message}
+              >
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder={tEmpresa('fieldNamePlaceholder')}
+                  className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                  {...register('name')}
+                />
+              </Field>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Field
+                  id="companyType"
+                  label={tEmpresa('fieldType')}
+                  error={errors.companyType?.message}
+                >
+                  <Controller
+                    name="companyType"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
+                          <SelectValue
+                            placeholder={tEmpresa('selectTypePlaceholder')}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="formal">
+                            {tEmpresa('typeFormal')}
+                          </SelectItem>
+                          <SelectItem value="emprendedor">
+                            {tEmpresa('typeEmprendedor')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </Field>
+                <Field
+                  id="sector"
+                  label={tEmpresa('fieldSector')}
+                  error={errors.sector?.message}
+                >
+                  <Input
+                    id="sector"
+                    type="text"
+                    placeholder={tEmpresa('fieldSectorPlaceholder')}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('sector')}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Field
+                  id="cedula"
+                  label={
+                    watchedType === 'emprendedor'
+                      ? tEmpresa('fieldCedulaIdentidad')
+                      : tEmpresa('fieldCedulaJuridica')
+                  }
+                  error={errors.cedula?.message}
+                >
+                  <Input
+                    id="cedula"
+                    type="text"
+                    placeholder={tEmpresa('fieldCedulaPlaceholder')}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('cedula')}
+                  />
+                </Field>
+
+                <Field
+                  id="operatingScope"
+                  label={tEmpresa('fieldScope')}
+                  error={errors.operatingScope?.message}
+                >
+                  <Controller
+                    name="operatingScope"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value ?? ''}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all">
+                          <SelectValue
+                            placeholder={tEmpresa('selectScopePlaceholder')}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="nacional">
+                            {tEmpresa('scopeNacional')}
+                          </SelectItem>
+                          <SelectItem value="internacional">
+                            {tEmpresa('scopeInternacional')}
+                          </SelectItem>
+                          <SelectItem value="ambos">
+                            {tEmpresa('scopeAmbos')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </Field>
+              </div>
+
+              <CountryRegionFields
+                countries={countries}
+                initialRegions={initialRegions}
+                countryValue={watch('country') ?? ''}
+                regionValue={watch('city') ?? ''}
+                onCountryChange={(code) =>
+                  setValue('country', code, { shouldValidate: true })
+                }
+                onRegionChange={(code) =>
+                  setValue('city', code, { shouldValidate: true })
+                }
+                countryLabel={tEmpresa('fieldCountry')}
+                countryId="country"
+                regionId="city"
+                countryInvalid={Boolean(errors.country)}
+                comboboxClassName="bg-surface-sunken border-transparent rounded-2xl h-11 focus:ring-primary text-foreground font-medium transition-all"
+              />
+
+              <Field
+                id="website"
+                label={tEmpresa('fieldWebsite')}
+                optional={tEmpresa('optionalTag')}
+                error={errors.website?.message}
+              >
+                <div className="relative">
+                  <Input
+                    id="website"
+                    type="url"
+                    placeholder={tEmpresa('fieldWebsitePlaceholder')}
+                    className="bg-surface-sunken border-transparent rounded-2xl h-11 pl-10 focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                    {...register('website')}
+                  />
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60">
+                    <Globe className="w-4 h-4" />
+                  </div>
+                </div>
+              </Field>
+
+              <Field
+                id="description"
+                label={tEmpresa('fieldDescription')}
+                optional={tEmpresa('optionalTag')}
+                hint={tCommon('minCharsLabel', { n: 20 })}
+                error={errors.description?.message}
+              >
+                <Textarea
+                  id="description"
+                  rows={4}
+                  placeholder={tEmpresa('fieldDescriptionPlaceholder')}
+                  className="bg-surface-sunken border-transparent rounded-2xl focus-visible:ring-primary focus-visible:bg-surface text-foreground font-medium transition-all"
+                  {...register('description')}
+                />
+              </Field>
+
+              <input type="hidden" {...register('logo')} />
+              <ImageUploadField
+                label={tEmpresa('fieldLogoUpload')}
+                title={tEmpresa('uploadLogoTitle')}
+                preview={logoPreview}
+                uploading={uploadingLogo}
+                disabled={loading}
+                variant="logo"
+                onSelect={handleLogoChange}
+              />
+              {errors.logo?.message && (
+                <p className="text-xs font-semibold text-destructive">
+                  {errors.logo.message}
+                </p>
+              )}
+            </section>
+
+            {/* El correo viaja oculto (no editable); la BD lo congela igual. */}
+            <input type="hidden" {...register('contactEmail')} />
+            <input type="hidden" {...register('profilePhoto')} />
+
+            <div className="flex items-center justify-between pt-6 border-t border-border/40">
+              <Link
+                href="/empresario"
+                className="text-muted-foreground hover:text-foreground font-extrabold text-xs tracking-wider uppercase px-4 py-2 transition-colors"
+              >
+                {tEmpresa('discardChanges')}
+              </Link>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-magenta hover:bg-magenta/95 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-surface/20 text-white">
+                  {loading ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Save className="w-3.5 h-3.5" />
+                  )}
+                </span>
+                {loading ? tCommon('loading') : tEmpresa('saveProfile')}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   )
 }
 

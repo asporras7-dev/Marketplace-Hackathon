@@ -50,7 +50,7 @@ export default async function CompanyProfilePage() {
     sector: p.sector,
     cedula: p.cedula ?? '',
     description: p.description,
-    logo: p.logo,
+    logo: p.profilePhoto || p.logo,
     status: p.verificationStatus
       ? VERIF_TO_STATUS[p.verificationStatus]
       : 'pending',

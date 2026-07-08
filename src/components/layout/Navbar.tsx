@@ -81,19 +81,19 @@ export function Navbar({
     // First fallback to the one from AuthContext (from usuarios table)
     setActualAvatar(authAvatarUrl)
 
-    // Then try to fetch role-specific ones
     const fetchRoleAvatar = async () => {
-      const supabase = createSupabaseBrowserClient()
-      if (role === 'empresario') {
-        const { data } = await supabase
-          .from('empresarios')
-          .select('logo')
-          .eq('id_usuario', currentUser.id)
-          .maybeSingle()
-        if (data?.logo) setActualAvatar(data.logo)
-      } else {
-        // Egresado or Admin just use the base user foto_perfil
-        setActualAvatar(authAvatarUrl)
+      // First try the server action which bypasses RLS and cache to ensure we get the URL if it exists
+      const { getNavbarAvatarForcefully } =
+        await import('@/lib/auth/navbarAction')
+      const result = await getNavbarAvatarForcefully()
+
+      let finalAvatar = authAvatarUrl
+      if (result.ok && result.data) {
+        finalAvatar = result.data
+      }
+
+      if (finalAvatar) {
+        setActualAvatar(finalAvatar)
       }
     }
     void fetchRoleAvatar()
@@ -402,11 +402,10 @@ export function Navbar({
                   aria-label={t('profile')}
                 >
                   {actualAvatar ? (
-                    <Image
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       src={actualAvatar}
                       alt={displayName ?? ''}
-                      width={36}
-                      height={36}
                       className="w-full h-full object-cover"
                     />
                   ) : initials ? (
