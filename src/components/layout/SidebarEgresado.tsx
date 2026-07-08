@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Calculator,
 } from 'lucide-react'
 
 import { SupportTicketDialog } from '@/components/features/shared/SupportTicketDialog'
@@ -57,6 +58,11 @@ export function SidebarEgresado() {
       href: '/egresado/contrataciones',
       label: t('myContracts'),
       icon: FileCheck2,
+    },
+    {
+      href: '/egresado/cotizador',
+      label: t('cotizaciones'),
+      icon: Calculator,
     },
   ]
 

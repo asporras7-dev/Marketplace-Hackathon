@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
 import { toast } from 'sonner'
@@ -24,9 +24,11 @@ import {
   Lightbulb,
   Play,
   ChevronDown,
+  Calculator,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { postularse } from '@/lib/applications/actions'
+import { CotizadorForm } from '../cotizaciones/CotizadorForm'
 
 const MAX_CARTA_LEN = 2800
 const MIN_PLANTEAMIENTO_LEN = 30
@@ -63,12 +65,15 @@ function createApplySchema(
         }),
       )
       .max(MAX_ENLACES_EXTRA),
-    documentacionTecnica:
-      typeof window === 'undefined'
-        ? zod.any()
-        : zod.any().refine((files) => files && files.length > 0, {
-            message: tCommon('required'),
-          }),
+    documentacionTecnica: zod
+      .custom<FileList | undefined>()
+      .refine((files) => files && files.length > 0, {
+        message: tCommon('required'),
+      }),
+    monto_propuesto: zod.coerce
+      .number()
+      .positive({ message: tCommon('required') }),
+    id_cotizacion: zod.string().optional().nullable(),
   })
 }
 
@@ -76,12 +81,20 @@ interface ApplyProjectClientProps {
   projectId: string
   projectTitle: string
   projectCompanyName: string
+  projectDescription?: string
+  projectBudget?: number
+  projectStack?: string[]
+  projectMode?: string
 }
 
 export function ApplyProjectClient({
   projectId,
   projectTitle,
   projectCompanyName,
+  projectDescription,
+  projectBudget,
+  projectStack,
+  projectMode,
 }: ApplyProjectClientProps) {
   const router = useRouter()
   const tCommon = useTranslations('Common')
@@ -92,6 +105,7 @@ export function ApplyProjectClient({
   const { isPending } = useAccountStatus()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false)
 
   const applySchema = useMemo(
     () => createApplySchema(tValidation, tCommon),
@@ -103,14 +117,17 @@ export function ApplyProjectClient({
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<ApplyFormValues>({
-    resolver: zodResolver(applySchema),
+    resolver: zodResolver(applySchema) as Resolver<ApplyFormValues>,
     defaultValues: {
       coverLetter: '',
       planteamientoSolucion: '',
       prototipoUrl: '',
       enlacesExtra: [],
+      monto_propuesto: undefined as unknown as number,
+      id_cotizacion: '',
       // documentacionTecnica is uncontrolled for type="file"
     },
   })
@@ -127,7 +144,8 @@ export function ApplyProjectClient({
     setIsSubmitting(true)
 
     try {
-      const file = data.documentacionTecnica[0] as File
+      const file = data.documentacionTecnica?.[0] as File | undefined
+      if (!file) return
 
       const extras = data.enlacesExtra
         .map((enlace) => enlace.value.trim())
@@ -143,6 +161,8 @@ export function ApplyProjectClient({
       formData.append('carta_postulacion', data.coverLetter.trim())
       formData.append('prototipo_enlaces', JSON.stringify(prototipoEnlaces))
       formData.append('file', file)
+      formData.append('monto_propuesto', String(data.monto_propuesto))
+      formData.append('id_cotizacion', data.id_cotizacion || '')
 
       const result = await postularse(formData)
 
@@ -522,6 +542,97 @@ export function ApplyProjectClient({
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* PROPUESTA ECONÓMICA */}
+              <div className="space-y-6 pt-4">
+                <h3 className="text-xs font-extrabold uppercase tracking-widest text-primary border-b border-border/40 pb-2 flex items-center gap-1.5">
+                  <Calculator className="w-4 h-4" />
+                  Propuesta Económica
+                </h3>
+
+                {projectBudget && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex justify-between items-center text-xs">
+                    <span className="font-semibold text-primary">
+                      Presupuesto Máximo de la Empresa:
+                    </span>
+                    <span className="font-bold text-foreground">
+                      {projectBudget} USD
+                    </span>
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsCalculatorOpen(!isCalculatorOpen)}
+                    className="w-full border-primary/20 text-primary hover:bg-primary/5 font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5"
+                  >
+                    <Calculator className="w-4 h-4" />
+                    {isCalculatorOpen
+                      ? 'Cerrar Calculadora de Cotizaciones'
+                      : 'Usar Calculadora de Cotizaciones'}
+                  </Button>
+
+                  {isCalculatorOpen && (
+                    <div className="border border-border-strong/60 rounded-3xl p-5 bg-background/30 backdrop-blur-sm">
+                      <CotizadorForm
+                        embeddedProjectId={projectId}
+                        projects={[
+                          {
+                            id: projectId,
+                            title: projectTitle,
+                            description: projectDescription || '',
+                            stack: projectStack || [],
+                            budget: projectBudget || 0,
+                            mode:
+                              (projectMode as
+                                | 'remoto'
+                                | 'hibrido'
+                                | 'presencial') || 'remoto',
+                            companyName: projectCompanyName,
+                          },
+                        ]}
+                        onSaveCallback={(idCotizacion, totalUsd) => {
+                          setValue('id_cotizacion', idCotizacion)
+                          setValue('monto_propuesto', totalUsd)
+                          setIsCalculatorOpen(false)
+                          toast.success(
+                            '¡Cotización calculada y cargada exitosamente!',
+                          )
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* MONTO PROPUESTO */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="monto_propuesto"
+                    className="text-[10px] font-extrabold uppercase tracking-wider text-accent flex items-center gap-1"
+                  >
+                    Monto de tu Propuesta (USD)
+                  </Label>
+                  <Input
+                    id="monto_propuesto"
+                    type="number"
+                    placeholder="Ej: 1200"
+                    className={`bg-card border-border/80 text-ink-strong ${errors.monto_propuesto ? 'border-destructive' : 'focus-visible:ring-primary'}`}
+                    {...register('monto_propuesto', { valueAsNumber: true })}
+                  />
+                  {errors.monto_propuesto && (
+                    <p className="text-xs font-semibold text-destructive">
+                      {errors.monto_propuesto.message}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-ink-muted leading-relaxed">
+                    Indica el monto total que consideras justo para la
+                    realización de este proyecto. Tu propuesta permanecerá
+                    sellada hasta que el empresario decida abrir tu oferta.
+                  </p>
                 </div>
               </div>
 

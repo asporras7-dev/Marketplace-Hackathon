@@ -35,6 +35,7 @@ import {
   ShieldCheck,
   MessageSquare,
   FileCheck2,
+  Calculator,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils/cn'
@@ -200,6 +201,11 @@ export function Navbar({
         icon: 'search',
       },
       { href: '/egresado/portfolio', label: t('portfolio'), icon: 'portfolio' },
+      {
+        href: '/egresado/cotizador',
+        label: t('cotizaciones'),
+        icon: 'calculator',
+      },
     ],
     empresario: [
       { href: '/empresario', label: t('dashboard'), icon: 'dashboard' },
@@ -249,6 +255,8 @@ export function Navbar({
         return <MessageSquare className={className} />
       case 'contracts':
         return <FileCheck2 className={className} />
+      case 'calculator':
+        return <Calculator className={className} />
       default:
         return null
     }

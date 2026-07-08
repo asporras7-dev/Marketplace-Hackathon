@@ -58,6 +58,8 @@ export interface ParticipacionEmpresario {
   tienePrototipo: boolean
   tieneRepositorio: boolean
   tieneDocumentacion: boolean
+  montoPropuesto: number | null
+  idCotizacion: string | null
 }
 
 /** Participación cross-project: lleva el proyecto al que pertenece la oferta. */
@@ -91,6 +93,8 @@ function mapParticipacionRow(
     tienePrototipo: fila.tiene_prototipo,
     tieneRepositorio: fila.tiene_repositorio,
     tieneDocumentacion: fila.tiene_documentacion,
+    montoPropuesto: fila.monto_propuesto,
+    idCotizacion: fila.id_cotizacion,
   }
 }
 

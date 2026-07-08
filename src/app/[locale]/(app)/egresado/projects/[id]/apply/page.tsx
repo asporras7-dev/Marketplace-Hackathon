@@ -14,13 +14,25 @@ export default async function ApplyProjectPage({ params }: PageProps) {
   if (!projectResult.ok) {
     notFound()
   }
-  const { id: projectId, title, companyName } = projectResult.data
+  const {
+    id: projectId,
+    title,
+    companyName,
+    description,
+    budget,
+    stack,
+    mode,
+  } = projectResult.data
 
   return (
     <ApplyProjectClient
       projectId={projectId}
       projectTitle={title}
       projectCompanyName={companyName}
+      projectDescription={description}
+      projectBudget={budget}
+      projectStack={stack}
+      projectMode={mode}
     />
   )
 }

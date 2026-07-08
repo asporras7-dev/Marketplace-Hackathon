@@ -31,6 +31,8 @@ const PostularseSchema = z.object({
     .min(MIN_PROTOTIPO_ENLACES)
     .max(MAX_PROTOTIPO_ENLACES),
   carta_postulacion: z.string().min(MIN_CARTA_LEN).max(MAX_CARTA_LEN),
+  monto_propuesto: z.coerce.number().positive(),
+  id_cotizacion: z.string().uuid().optional().nullable().or(z.literal('')),
 })
 
 const RetirarSchema = z.object({
@@ -57,6 +59,8 @@ export async function postularse(formData: FormData): Promise<Result<void>> {
     planteamiento_solucion: formData.get('planteamiento_solucion'),
     prototipo_enlaces: prototipoEnlaces,
     carta_postulacion: formData.get('carta_postulacion'),
+    monto_propuesto: formData.get('monto_propuesto'),
+    id_cotizacion: formData.get('id_cotizacion'),
   })
   if (!parsed.success) {
     return err('invalid_input')
@@ -179,6 +183,11 @@ export async function postularse(formData: FormData): Promise<Result<void>> {
     planteamiento_solucion: parsed.data.planteamiento_solucion,
     prototipo_enlaces: parsed.data.prototipo_enlaces,
     documentacion_tecnica: archivoPath,
+    monto_propuesto: parsed.data.monto_propuesto,
+    id_cotizacion:
+      parsed.data.id_cotizacion && parsed.data.id_cotizacion !== ''
+        ? parsed.data.id_cotizacion
+        : null,
   })
 
   if (insertError) {
