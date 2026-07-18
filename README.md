@@ -31,19 +31,6 @@ El proyecto está construido utilizando un stack moderno y escalable, enfocado e
 
 ---
 
-## Valor de Negocio y Logros Técnicos (Highlights para Reclutadores)
-
-El FWD Marketplace es un SaaS robusto "Full-Stack" construido con los estándares tecnológicos más exigentes de la industria actual, demostrando dominio en arquitecturas modernas y escalables:
-
-- **Arquitectura Monolítica Serverless (Next.js 15 App Router)**: Empleo profundo de *React Server Components* (RSC) y *Server Actions* para la mutación segura de datos, eliminando la necesidad de crear APIs REST tradicionales y garantizando un SEO técnico superior junto con cargas ultrarrápidas.
-- **Diseño de Base de Datos y RLS Perimetral**: Integración nativa con **Supabase (PostgreSQL)**. Empleo de control de accesos a nivel de fila (*Row Level Security - RLS*) directamente en la base de datos, lo que blinda la privacidad corporativa impidiendo que usuarios no autorizados consulten proyectos ajenos.
-- **Inteligencia Artificial y Lógica Compleja (Dual-Sided Marketplace)**: Integración asíncrona de la API de OpenAI para un agente de soporte especializado. Asimismo, incluye el desarrollo algorítmico de máquinas de estado para ofertas/postulaciones y cálculos automatizados de reputación bi-direccional a través de *Triggers* y *RPCs* en SQL.
-- **End-to-End Type Safety**: Tipado estricto desde la base de datos (con tipos autogenerados de Supabase) hasta el cliente, utilizando **Zod** para la validación de esquemas en *Server Actions* y formularios, asegurando que no existan errores de tiempo de ejecución por datos malformados.
-- **Desarrollo Global "Day-One" (i18n)**: Aplicación estructurada para múltiples mercados internacionales desde su concepción, implementando una sólida lógica de enrutamiento localizado con `next-intl` (ej: `/es/`, `/en/`).
-- **Cultura de Calidad y DevOps (Testing)**: Un ecosistema de desarrollo impecable respaldado por **Vitest** (Unitario) y **Playwright** (E2E), junto a políticas de *Conventional Commits* (Husky) y validaciones estrictas en TypeScript.
-
----
-
 ## Funcionalidades Principales
 
 La plataforma opera bajo un modelo "Dual-Sided" atendiendo a tres tipos de usuarios con flujos completamente independientes:
@@ -69,6 +56,19 @@ La plataforma opera bajo un modelo "Dual-Sided" atendiendo a tres tipos de usuar
 
 ---
 
+## Valor de Negocio y Logros Técnicos (Highlights para Reclutadores)
+
+El FWD Marketplace es un SaaS robusto "Full-Stack" construido con los estándares tecnológicos más exigentes de la industria actual, demostrando dominio en arquitecturas modernas y escalables:
+
+- **Arquitectura Monolítica Serverless (Next.js 15 App Router)**: Empleo profundo de *React Server Components* (RSC) y *Server Actions* para la mutación segura de datos, eliminando la necesidad de crear APIs REST tradicionales y garantizando un SEO técnico superior junto con cargas ultrarrápidas.
+- **Diseño de Base de Datos y RLS Perimetral**: Integración nativa con **Supabase (PostgreSQL)**. Empleo de control de accesos a nivel de fila (*Row Level Security - RLS*) directamente en la base de datos, lo que blinda la privacidad corporativa impidiendo que usuarios no autorizados consulten proyectos ajenos.
+- **Inteligencia Artificial y Lógica Compleja (Dual-Sided Marketplace)**: Integración asíncrona de la API de OpenAI para un agente de soporte especializado. Asimismo, incluye el desarrollo algorítmico de máquinas de estado para ofertas/postulaciones y cálculos automatizados de reputación bi-direccional a través de *Triggers* y *RPCs* en SQL.
+- **End-to-End Type Safety**: Tipado estricto desde la base de datos (con tipos autogenerados de Supabase) hasta el cliente, utilizando **Zod** para la validación de esquemas en *Server Actions* y formularios, asegurando que no existan errores de tiempo de ejecución por datos malformados.
+- **Desarrollo Global "Day-One" (i18n)**: Aplicación estructurada para múltiples mercados internacionales desde su concepción, implementando una sólida lógica de enrutamiento localizado con `next-intl` (ej: `/es/`, `/en/`).
+- **Cultura de Calidad y DevOps (Testing)**: Un ecosistema de desarrollo impecable respaldado por **Vitest** (Unitario) y **Playwright** (E2E), junto a políticas de *Conventional Commits* (Husky) y validaciones estrictas en TypeScript.
+
+---
+
 ## Arquitectura de Despliegue (Producción en Vercel)
 
 El proyecto se encuentra totalmente desplegado en producción, habiéndose estructurado bajo protocolos corporativos para garantizar una ejecución en la nube ágil y de alcance global:
@@ -91,7 +91,7 @@ El proyecto se encuentra totalmente desplegado en producción, habiéndose estru
 
 ### 2. Clonar el Repositorio e Instalar Dependencias
 ```bash
-git clone https://github.com/a/Marketplace-Hackathon.git
+git clone https://github.com/TuUsuario/Marketplace-Hackathon.git
 cd Marketplace-Hackathon
 npm install
 ```
