@@ -11,9 +11,10 @@ Plataforma SaaS (Software as a Service) de talento donde empresas publican proye
 El proyecto está construido utilizando un stack moderno y escalable, enfocado en el rendimiento y la experiencia de usuario (UX/UI).
 
 **Frontend & Core (React / Next.js)**
+- **Lenguajes Base:** TypeScript (Tipado Estricto), JavaScript (ES6+), HTML5 semántico.
 - **Framework:** Next.js 15 (App Router, Server Components, Server Actions)
 - **Librería UI:** React 19
-- **Estilizado:** Tailwind CSS v4, shadcn/ui (Radix UI)
+- **Estilizado (CSS3):** Tailwind CSS v4, shadcn/ui (Radix UI)
 - **Validación y Formularios:** React Hook Form + Zod
 - **Internacionalización:** next-intl (Soporte nativo Español/Inglés)
 - **Iconografía:** Lucide React
