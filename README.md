@@ -2,7 +2,7 @@
 
 **[🚀 Ver Demo en Vivo (Desplegado en Vercel)](https://marketplace-hackathon-three.vercel.app)**
 
-Plataforma SaaS (Software as a Service) de talento donde empresas publican proyectos de corto plazo y profesionales egresados postulan para ejecutarlos. Una solución integral "Dual-Sided" que conecta talento tecnológico con necesidades corporativas reales, impulsada por Inteligencia Artificial y arquitecturas Serverless.
+Plataforma SaaS (Software as a Service) de talento donde empresas publican proyectos de corto plazo y egresados de Forward CostaRica postulan para ejecutarlos. Una solución integral "Dual-Sided" que conecta talento tecnológico con necesidades corporativas reales, impulsada por Inteligencia Artificial y arquitecturas Serverless.
 
 ---
 
@@ -56,7 +56,7 @@ La plataforma opera bajo un modelo "Dual-Sided" atendiendo a tres tipos de usuar
 
 ---
 
-## Valor de Negocio y Logros Técnicos (Highlights para Reclutadores)
+## Valor de Negocio y Logros Técnicos
 
 El FWD Marketplace es un SaaS robusto "Full-Stack" construido con los estándares tecnológicos más exigentes de la industria actual, demostrando dominio en arquitecturas modernas y escalables:
 
@@ -91,7 +91,7 @@ El proyecto se encuentra totalmente desplegado en producción, habiéndose estru
 
 ### 2. Clonar el Repositorio e Instalar Dependencias
 ```bash
-git clone https://github.com/TuUsuario/Marketplace-Hackathon.git
+git clone https://github.com/asporras7-dev/Marketplace-Hackathon.git
 cd Marketplace-Hackathon
 npm install
 ```
