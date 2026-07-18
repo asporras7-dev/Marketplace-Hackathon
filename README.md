@@ -117,6 +117,7 @@ npm run dev
 La aplicación estará disponible en `http://localhost:3000` (con redirección automática al idioma por defecto, ej: `/es`).
 
 </details>
+
 ---
 
 ## Estructura del Proyecto
@@ -124,7 +125,7 @@ La aplicación estará disponible en `http://localhost:3000` (con redirección a
 El proyecto sigue una arquitectura de carpetas limpia y orientada a características (*Feature-Sliced* adaptado a Next.js App Router):
 
 <details>
-<summary><b>📂 Haz clic aquí para desplegar la Arquitectura de Carpetas Avanzada</b></summary>
+<summary><b>Haz clic aquí para desplegar la Arquitectura de Carpetas Avanzada</b></summary>
 
 ```text
 Marketplace-Hackathon/
@@ -170,9 +171,15 @@ Marketplace-Hackathon/
 ├── supabase/             # Entorno local de Supabase
 │   ├── migrations/       # Migraciones SQL versionadas
 │   └── seeds/            # Datos semilla para la base de datos
-└── tests/                # Ecosistema de control de calidad
-    ├── unit/             # Pruebas unitarias (Vitest)
-    └── e2e/              # Pruebas End-to-End (Playwright)
+├── tests/                # Ecosistema de control de calidad
+│   ├── unit/             # Pruebas unitarias (Vitest)
+│   └── e2e/              # Pruebas End-to-End (Playwright)
+├── next.config.ts        # Configuración del framework Next.js
+├── tsconfig.json         # Reglas estrictas de compilación TypeScript
+├── components.json       # Configuración de los componentes shadcn/ui
+├── vitest.config.ts      # Configuración del entorno de testing
+├── package.json          # Registro de dependencias y scripts
+└── .env.local.example    # Plantilla de variables de entorno seguras
 ```
 </details>
 
