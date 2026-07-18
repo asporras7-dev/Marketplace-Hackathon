@@ -110,6 +110,8 @@ export async function getMisPostulaciones(): Promise<
       documentacion_tecnica,
       estado,
       fecha_postulacion,
+      monto_propuesto,
+      id_cotizacion,
       proyectos (
         titulo,
         estado,
@@ -151,6 +153,8 @@ export async function getMisPostulaciones(): Promise<
         ? computeEstadoParticipacionEfectivo(p.estado, proyectoEstado)
         : p.estado,
       fecha_postulacion: p.fecha_postulacion,
+      monto_propuesto: p.monto_propuesto,
+      id_cotizacion: p.id_cotizacion,
     }
   })
 

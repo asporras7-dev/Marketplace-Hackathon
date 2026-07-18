@@ -343,6 +343,111 @@ export type Database = {
           },
         ]
       }
+      cotizaciones: {
+        Row: {
+          created_at: string
+          duracion_semanas: number
+          id_cotizacion: string
+          id_estudiante: string
+          id_proyecto: string | null
+          nombre_cotizacion: string
+          horas_estimadas: number
+          complejidad: string
+          stack: string[]
+          tipo_entregable: string
+          funcionalidades: string[]
+          tarifa_base_hora: number
+          modalidad: string
+          incluye_iva: boolean
+          subtotal_usd: number
+          subtotal_crc: number
+          iva_usd: number
+          iva_crc: number
+          total_usd: number
+          total_crc: number
+          rango_min_usd: number
+          rango_max_usd: number
+          rango_min_crc: number
+          rango_max_crc: number
+          desglose_calculo: Json
+          explicacion_ia: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duracion_semanas: number
+          id_cotizacion?: string
+          id_estudiante: string
+          id_proyecto?: string | null
+          nombre_cotizacion: string
+          horas_estimadas: number
+          complejidad: string
+          stack: string[]
+          tipo_entregable: string
+          funcionalidades: string[]
+          tarifa_base_hora: number
+          modalidad: string
+          incluye_iva?: boolean
+          subtotal_usd: number
+          subtotal_crc: number
+          iva_usd: number
+          iva_crc: number
+          total_usd: number
+          total_crc: number
+          rango_min_usd: number
+          rango_max_usd: number
+          rango_min_crc: number
+          rango_max_crc: number
+          desglose_calculo: Json
+          explicacion_ia?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duracion_semanas?: number
+          id_cotizacion?: string
+          id_estudiante?: string
+          id_proyecto?: string | null
+          nombre_cotizacion?: string
+          horas_estimadas?: number
+          complejidad?: string
+          stack?: string[]
+          tipo_entregable?: string
+          funcionalidades?: string[]
+          tarifa_base_hora?: number
+          modalidad?: string
+          incluye_iva?: boolean
+          subtotal_usd?: number
+          subtotal_crc?: number
+          iva_usd?: number
+          iva_crc?: number
+          total_usd?: number
+          total_crc?: number
+          rango_min_usd?: number
+          rango_max_usd?: number
+          rango_min_crc?: number
+          rango_max_crc?: number
+          desglose_calculo?: Json
+          explicacion_ia?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'cotizaciones_id_estudiante_fkey'
+            columns: ['id_estudiante']
+            isOneToOne: false
+            referencedRelation: 'estudiantes'
+            referencedColumns: ['id_estudiante']
+          },
+          {
+            foreignKeyName: 'cotizaciones_id_proyecto_fkey'
+            columns: ['id_proyecto']
+            isOneToOne: false
+            referencedRelation: 'proyectos'
+            referencedColumns: ['id_proyecto']
+          },
+        ]
+      }
       conversaciones_ia: {
         Row: {
           contexto_inicial: string | null
@@ -881,6 +986,8 @@ export type Database = {
           revision_iniciada_at: string | null
           updated_at: string
           url_repositorio_proyecto: string | null
+          id_cotizacion: string | null
+          monto_propuesto: number | null
         }
         Insert: {
           adjudicada_at?: string | null
@@ -903,6 +1010,8 @@ export type Database = {
           revision_iniciada_at?: string | null
           updated_at?: string
           url_repositorio_proyecto?: string | null
+          id_cotizacion?: string | null
+          monto_propuesto?: number | null
         }
         Update: {
           adjudicada_at?: string | null
@@ -925,6 +1034,8 @@ export type Database = {
           revision_iniciada_at?: string | null
           updated_at?: string
           url_repositorio_proyecto?: string | null
+          id_cotizacion?: string | null
+          monto_propuesto?: number | null
         }
         Relationships: [
           {
@@ -940,6 +1051,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'proyectos'
             referencedColumns: ['id_proyecto']
+          },
+          {
+            foreignKeyName: 'participaciones_id_cotizacion_fkey'
+            columns: ['id_cotizacion']
+            isOneToOne: false
+            referencedRelation: 'cotizaciones'
+            referencedColumns: ['id_cotizacion']
           },
         ]
       }
@@ -1554,6 +1672,8 @@ export type Database = {
           tiene_repositorio: boolean
           titulo_fwd: Database['public']['Enums']['titulo_fwd_enum'] | null
           url_repositorio_proyecto: string | null
+          monto_propuesto: number | null
+          id_cotizacion: string | null
         }[]
       }
       mis_proyectos_como_empresario: { Args: never; Returns: string[] }
