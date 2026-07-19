@@ -2,7 +2,7 @@
 
 **[🚀 Ver Demo en Vivo (Desplegado en Vercel)](https://marketplace-hackathon-three.vercel.app)**
 
-Plataforma SaaS (Software as a Service) de talento donde empresas publican proyectos de corto plazo y egresados de Forward CostaRica postulan para ejecutarlos. Una solución integral "Dual-Sided" que conecta talento tecnológico con necesidades corporativas reales, impulsada por Inteligencia Artificial y arquitecturas Serverless.
+Plataforma SaaS (Software as a Service) de talento donde empresas publican proyectos de corto plazo y egresados de Forward Costa Rica postulan para ejecutarlos; la cual, brinda también la opción de contactarse directamente con los egresados para una posible contratación o adquisición de servicios también. Una solución integral "Dual-Sided" que conecta talento tecnológico con necesidades corporativas reales, impulsada por Inteligencia Artificial y arquitecturas Serverless.
 
 ---
 
